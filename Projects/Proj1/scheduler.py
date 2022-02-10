@@ -37,7 +37,7 @@ def FCFS_scheduler(processes, ready, CPU, time, debug=True):
     start_time = time
 
     # while process is not finished
-    while(process.burst_time != 0):
+    while(process.burst_time > 0):
         # decrement process burst time by one
         process.burst_time += -1
 
@@ -60,9 +60,9 @@ def FCFS_scheduler(processes, ready, CPU, time, debug=True):
         print(f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
 
 
-    # Run until ready
-    while(ready):
-        FCFS_scheduler(processes, ready, CPU, time, debug=debug)
+    # # Run until ready
+    # while(ready):
+    #     FCFS_scheduler(processes, ready, CPU, time, debug=debug)
 
     return time
 

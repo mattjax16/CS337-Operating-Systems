@@ -40,7 +40,8 @@ def kernal(selected_scheduler,debug=False):
 
 
     #runnig schuedler for all processes in ready
-    selected_scheduler(processes, ready, CPU, time, debug=debug)
+    while(ready):
+         time = selected_scheduler(processes, ready, CPU, time, debug=debug)
 
 
     return
