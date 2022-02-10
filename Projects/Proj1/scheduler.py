@@ -30,9 +30,9 @@ def FCFS_scheduler(processes, ready, CPU, time, debug=True):
             switch. It is useful for debugging.
     '''
 
-    # pick process with lowest arrival time and remove it from ready
-    process = min(ready, lambda x:x.arrival_time)
-
+    # pick process with lowest arrival time and remove it from ready (sorting list)
+    ready.sort(key = lambda x: x.arrival_time)
+    process = ready.pop()
     # set start time to time
     start_time = time
 
@@ -59,6 +59,11 @@ def FCFS_scheduler(processes, ready, CPU, time, debug=True):
     if debug:
         print(f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
 
+
+    # Run until ready
+    while(ready):
+        FCFS_scheduler(processes, ready, CPU, time, debug=debug)
+
     return time
 
 
@@ -80,5 +85,5 @@ def add_ready(processes,ready,time):
     :param process:
     :return:
     '''
-    for i in range(len(processes)):
-        ready.push(processes.pop())
+    while processes:
+        ready.append(processes.pop())
