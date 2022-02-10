@@ -18,8 +18,10 @@ CS337-OPERATING SYSTEMS at Colby College
     ├── Projects
     │   └── Proj1
     │       ├── Project 1_ Non-preemptive CPU Scheduling.pdf
-    │       └── process.py
+    │       ├── process.py
+    │       └── scheduler.py
     └── readme.md
+
 
 
 
