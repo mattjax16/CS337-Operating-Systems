@@ -15,16 +15,22 @@ from process import Process
 # import numpy #using numpy to make more efficient
 
 
-def kernal(selected_scheduler,debug=False):
+def kernal(selected_scheduler,debug=False,
+           CPU_to_csv = True,Processes_to_csv = True):
     """
      Simulates the CPU scheduling aspects of an operating system kernel.
 
     :param selected_scheduler: (Function) one of the scheduling functions from scheduler.py
     :param debug: (Boolean) If true output messages will be printed from the selected_scheduler function
+    :param CPU_to_csv: (Boolean) if true results of CPU will be written to a csv
+    :param Processes_to_csv: (Boolean) if true results of Scheduled_Processes will be written to a csv
     :return:
     """
 
-    CPU = [] # A list to hold the scheduled process for the CPU
+    CPU = [] # A list to hold the data for some of the
+            # scheduled process for the CPU
+
+    Scheduled_Processes = [] # A list to hold the scheduled process for the CPU
 
     ready = []  # A list to hold the process scheduled ready to be scheduled
 
@@ -41,10 +47,40 @@ def kernal(selected_scheduler,debug=False):
 
     #runnig schuedler for all processes in ready
     while(ready):
-         time = selected_scheduler(processes, ready, CPU, time, debug=debug)
+         time = selected_scheduler(processes, ready, CPU,Scheduled_Processes, time, debug=debug)
+
+
+
+
+    # Once all the processes in the CPU that have finished
+    # and calculate their wait time and turn around time
+    calc_wait_and_tunaround(CPU,Scheduled_Processes)
 
 
     return
+
+
+def calc_wait_and_tunaround(CPU,Scheduled_Processes):
+    '''
+    Calculates the wait tiem and turn around for all the schuedled processes
+
+    :param CPU: this is a list that simulates the CPU by holding beginning runtime
+            and end of runtime for each process. This is the same as the Gantt bar
+            that we have been using in lecture slides at the bottom of each example.
+    :param Scheduled_Processes: this is a list of all the process that have been scheduled
+    :return:
+    '''
+
+    #Sort the CPU and Schedled_process based on their id
+    CPU.sort(key = lambda x: x['process'],reverse = True)
+    Scheduled_Processes.sort(key=lambda x: x.id, reverse=True)
+
+    for cpu_info , proc in zip(CPU,Scheduled_Processes):
+        proc.wait_time = cpu_info['Start'] - proc.arrival_time
+        proc.turnaround_time =  cpu_info['Finish'] - proc.arrival_time
+
+    return
+
 
 
 

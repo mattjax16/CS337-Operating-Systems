@@ -5,7 +5,7 @@
 
 # This is a file to the different process scheduling functions for the OS
 
-def FCFS_scheduler(processes, ready, CPU, time, debug=True):
+def FCFS_scheduler(processes, ready, CPU, Scheduled_Processes ,time, debug=True):
     ''' non-preemptive FCFS scheduler
 
     Parameters:
@@ -22,6 +22,8 @@ def FCFS_scheduler(processes, ready, CPU, time, debug=True):
             and end of runtime for each process. This is the same as the Gantt bar
             that we have been using in lecture slides at the bottom of each example.
 
+        Scheduled_Processes: this is a list of all the process that have been scheduled
+
         time: this is an integer that represents the current time, where simulation starts
             at time zero and time is incremented by one after each time slice.
 
@@ -31,7 +33,7 @@ def FCFS_scheduler(processes, ready, CPU, time, debug=True):
     '''
 
     # pick process with lowest arrival time and remove it from ready (sorting list)
-    ready.sort(key = lambda x: x.arrival_time)
+    ready.sort(key = lambda x: x.arrival_time,reverse = True)
     process = ready.pop()
     # set start time to time
     start_time = time
@@ -56,6 +58,8 @@ def FCFS_scheduler(processes, ready, CPU, time, debug=True):
                     Finish=end_time,
                     Priority=process.priority))
 
+    Scheduled_Processes.append(process)
+
     if debug:
         print(f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
 
@@ -69,6 +73,7 @@ def FCFS_scheduler(processes, ready, CPU, time, debug=True):
 
 def add_ready(processes,ready,time):
     '''
+    Adds Processes to ready that have arrived based on the time
     Parameters:
         processes: is a list of all the processes in the simulation,
             whether they arrived or not, they are in this list.
@@ -85,5 +90,11 @@ def add_ready(processes,ready,time):
     :param process:
     :return:
     '''
-    while processes:
-        ready.append(processes.pop())
+    # sort the processes list
+    processes.sort(key = lambda x: x.arrival_time,reverse = True)
+
+    #If there are Proceeses left,
+    # while the front of the processes list has arrived
+    if processes:
+        while processes[0].arrival_time <= time:
+            ready.append(processes.pop())

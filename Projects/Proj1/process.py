@@ -13,6 +13,7 @@ class Process:
         # Defining private properties
         self.__id = id
         self.__burst_time = burst_time
+        self.__inital_burst_time = burst_time
         self.__arrival_time = arrival_time
         self.__priority = priority
         self.__wait_time = 0
@@ -43,6 +44,10 @@ class Process:
     @property
     def turnaround_time(self):
         return self.__turnaround_time
+
+    @property
+    def initial_burst_time(self):
+        return self.__inital_burst_time
 
 
     #Defining setters
