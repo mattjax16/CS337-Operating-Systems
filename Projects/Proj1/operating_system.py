@@ -18,12 +18,13 @@ from datetime import datetime as dt
 # import numpy #using numpy to make more efficient
 
 
-def kernal(selected_scheduler, debug=False,
+def kernal(selected_scheduler,processes = [], debug=False,
            CPU_to_csv=True, Processes_to_csv=True):
     """
      Simulates the CPU scheduling aspects of an operating system kernel.
 
     :param selected_scheduler: (Function) one of the scheduling functions from scheduler.py
+    :param processes: (list) a list of processes for the kernal to schuedle
     :param debug: (Boolean) If true output messages will be printed from the selected_scheduler function
     :param CPU_to_csv: (Boolean) if true results of CPU will be written to a csv
     :param Processes_to_csv: (Boolean) if true results of Scheduled_Processes will be written to a csv
@@ -39,9 +40,16 @@ def kernal(selected_scheduler, debug=False,
 
     time = 0  # creating the intial time for the kernal
 
-    processes = [Process(0, 5, 0, 30), Process(1, 4, 2, 35),
+
+    #If there are no processes passed make a test list of 5 processes
+    if len(processes) == 0:
+        if debug:
+            print(f"Warning no processes were passed!! Making test Processes")
+
+        processes = [Process(0, 5, 0, 30), Process(1, 4, 2, 35),
                  Process(2, 1, 5, 36),
-                 Process(3, 6, 6, 20)]  # a list to hold all the processes to be schuedled for the CPU
+                 Process(3, 6, 6, 20)]
+
 
     # adding the proccesses to the ready list
     # increment time until there is one
@@ -68,14 +76,40 @@ def kernal(selected_scheduler, debug=False,
         # get the kind of scheduler used
         if selected_scheduler == scheduler.FCFS_scheduler:
             sched = "FCFS"
+        elif selected_scheduler == scheduler.SJF_scheduler():
+            sched = "SJF"
+        elif selected_scheduler == scheduler.Priority_scheduler():
+            sched = "Priority"
+        elif debug:
+            print(f"Error {selected_scheduler} is not a valid "+
+                  f"schuedling function!!")
 
 
+        # Writing CPU data
         if CPU_to_csv:
             #reverse CPU so it is written to df in process order
             CPU.reverse()
-            pd.DataFrame(CPU).to_csv(f"data/CPU_{sched}_results_"+
+            pd.DataFrame(CPU).to_csv(f"data/CPU_Data/CPU_{sched}_results_"+
                                      f"{time}.csv",index=False)
 
+        # Writing Scheduled_Processes data
+        if Processes_to_csv:
+            Scheduled_Processes.reverse()
+
+            # creating a list of dicts of all
+            # the process attributes
+            SP_dict_list = [{"id":x.id ,"burst time": x.burst_time,
+                             "inital burst time": x.inital_burst_time,
+                             "arrival time": x.arrival_time,
+                             "priority": x.priority,
+                             "wait time": x.wait_time,
+                             "turnaround time": x.turnaround_time,
+                             } for x in Scheduled_Processes]
+
+
+            # Writing the CSV file
+            pd.DataFrame(SP_dict_list).to_csv(f"data/Sched_Process_Data/Scheduled_Processes"+
+                                              f"_{sched}_results_f{time}.csv",index=False)
 
     return
 
@@ -104,7 +138,9 @@ def calc_wait_and_tunaround(CPU, Scheduled_Processes):
 
 # Main Testing function
 def main():
-    kernal(scheduler.FCFS_scheduler, True,CPU_to_csv=True)
+    kernal(scheduler.FCFS_scheduler,
+           True,CPU_to_csv=True,
+           Processes_to_csv=True)
 
 
 if __name__ == "__main__":

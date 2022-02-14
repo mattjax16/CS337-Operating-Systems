@@ -46,7 +46,7 @@ class Process:
         return self.__turnaround_time
 
     @property
-    def initial_burst_time(self):
+    def inital_burst_time(self):
         return self.__inital_burst_time
 
 
@@ -56,6 +56,8 @@ class Process:
     def burst_time(self, val):
         self.__burst_time = val
         return
+
+
 
     @arrival_time.setter
     def arrival_time(self, val):
