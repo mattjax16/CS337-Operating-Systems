@@ -79,7 +79,10 @@ def SJF_scheduler(processes, ready, CPU, Scheduled_Processes, time,
     based on the burst time (working time) of the processes in the ready
     queue. The SJF algorithm is one of the best approaches to minimize wait
     times and easy to implement when the CPU knows how long the process will
-    take (in fact it needs to know this).
+    take (in fact it needs to know this). This algorithim can be unfair to
+    processes with long burt times though.
+
+
 
     Parameters:
         processes: is a list of all the processes in the simulation,
@@ -150,9 +153,15 @@ def Priority_scheduler(processes, ready, CPU, Scheduled_Processes, time,
     The Priority algorithm schedules jobs to be executed
     based on the priority level of each job which is bases on burst time
     (working time) of the processes in the ready queue along with the
-    processes arival time. The SJF algorithm is one of the best approaches to
-    minimize wait times and easy to implement when the CPU knows how long the
-    process will take (in fact it needs to know this).
+    processes arrival time. The Priority algorithm can still face problems
+    like being unfair with it being unfair to processes with low priority
+    (when it is a correlation priority like for this algorithm). This
+    algorithm can also face starvation. One advantage of Priority scheduling
+    is that it can have very low over head (alot of times just needing to be
+    a max heap)
+
+    !!! A solution to fix starvation (not perfect) is aging by increasing
+    priority the longest the processes waits in the ready queue
 
     Warning possible to have starvation and is unfair to low priority processes
 
@@ -184,12 +193,14 @@ def Priority_scheduler(processes, ready, CPU, Scheduled_Processes, time,
 
     # Calculate turnaround time for all Processes in the ready Queue
     # output with the lowest turnaround is chosen first
-    priority_list = [(x,(x.arrival_time - time) + x.burst_time) for x in ready]
+    for proc in ready:
+        proc.priority = (proc.wait_time - time) + proc.burst_time
+
 
 
     # pick process with shortest burt time and remove it from ready (
     # sorting list)
-    priority_list.sort(key=lambda x: x[1])
+    ready.sort(key=lambda x: x.priority)
     process = ready.pop()
     # set start time to time
     start_time = time
