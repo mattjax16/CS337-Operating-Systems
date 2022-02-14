@@ -91,10 +91,16 @@ def add_ready(processes,ready,time):
     :return:
     '''
     # sort the processes list
-    processes.sort(key = lambda x: x.arrival_time,reverse = True)
+    processes.sort(key = lambda x: x.arrival_time)
 
     #If there are Proceeses left,
     # while the front of the processes list has arrived
-    if processes:
-        while processes[0].arrival_time <= time:
+    arrival_flag = True
+    while arrival_flag:
+        if (processes and (processes[0].arrival_time <= time)):
             ready.append(processes.pop())
+        else:
+            arrival_flag = False
+
+
+    return

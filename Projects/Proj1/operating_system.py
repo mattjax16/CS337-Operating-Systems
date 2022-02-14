@@ -41,12 +41,16 @@ def kernal(selected_scheduler,debug=False,
 
 
     # adding the proccesses to the ready list
-    while processes:
-        ready.append(processes.pop())
+    # increment time until there is one
+    while(len(ready) == 0):
+        scheduler.add_ready(processes,ready,time)
+        if len(ready) == 0:
+            time +=1
+
 
 
     #runnig schuedler for all processes in ready
-    while(ready):
+    while(processes or ready):
          time = selected_scheduler(processes, ready, CPU,Scheduled_Processes, time, debug=debug)
 
 
