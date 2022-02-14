@@ -145,7 +145,7 @@ def SJF_scheduler(processes, ready, CPU, Scheduled_Processes, time,
 
 
 def Priority_scheduler(processes, ready, CPU, Scheduled_Processes, time,
-                   debug=True):
+                   priority_method = None, debug =True):
     ''' non-preemptive Priority scheduler
 
     Priority is Correlation (higher number being higher priority)
@@ -164,8 +164,13 @@ def Priority_scheduler(processes, ready, CPU, Scheduled_Processes, time,
     priority the longest the processes waits in the ready queue
 
     Warning possible to have starvation and is unfair to low priority processes
+    One way to fix this is by using the priority method turnaround_time to
+    prevent starvation by aging the processes (adding 1 to their priority for each time step)
+    they are waiting in the ready queue
 
     Its overhead is minimal because it is like a max heap
+
+
 
     Parameters:
         processes: is a list of all the processes in the simulation,
@@ -186,9 +191,15 @@ def Priority_scheduler(processes, ready, CPU, Scheduled_Processes, time,
         time: this is an integer that represents the current time, where simulation starts
             at time zero and time is incremented by one after each time slice.
 
+        priority_method: decides how the priority is calculated, if no value
+            is passed it randomizes the priority. VALID INPUTS: random,
+            turnaround_time, ordered.
+
         debug: this is a boolean with the default value of True. It controls a print
             statement that shows process ID, start time, and end time at each context
             switch. It is useful for debugging.
+
+
     '''
 
     # Calculate turnaround time for all Processes in the ready Queue
