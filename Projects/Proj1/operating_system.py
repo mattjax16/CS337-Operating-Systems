@@ -18,8 +18,7 @@ from datetime import datetime as dt
 # import numpy #using numpy to make more efficient
 
 
-def kernal(selected_scheduler,processes = [], debug=False,
-           CPU_to_csv=True, Processes_to_csv=True):
+def kernal(selected_scheduler , processes = [], debug=True, CPU_to_csv=True, Processes_to_csv=True):
     """
      Simulates the CPU scheduling aspects of an operating system kernel.
 
@@ -76,9 +75,9 @@ def kernal(selected_scheduler,processes = [], debug=False,
         # get the kind of scheduler used
         if selected_scheduler == scheduler.FCFS_scheduler:
             sched = "FCFS"
-        elif selected_scheduler == scheduler.SJF_scheduler():
+        elif selected_scheduler == scheduler.SJF_scheduler:
             sched = "SJF"
-        elif selected_scheduler == scheduler.Priority_scheduler():
+        elif selected_scheduler == scheduler.Priority_scheduler:
             sched = "Priority"
         elif debug:
             print(f"Error {selected_scheduler} is not a valid "+
@@ -138,9 +137,7 @@ def calc_wait_and_tunaround(CPU, Scheduled_Processes):
 
 # Main Testing function
 def main():
-    kernal(scheduler.FCFS_scheduler,
-           True,CPU_to_csv=True,
-           Processes_to_csv=True)
+    kernal(scheduler.FCFS_scheduler)
 
 
 if __name__ == "__main__":
