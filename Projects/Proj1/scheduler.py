@@ -194,7 +194,7 @@ def Priority_scheduler(processes, ready, CPU, Scheduled_Processes, time,
     # Calculate turnaround time for all Processes in the ready Queue
     # output with the lowest turnaround is chosen first
     for proc in ready:
-        proc.priority = (proc.wait_time - time) + proc.burst_time
+        proc.priority = (time - proc.arrival_time) + proc.burst_time
 
 
 
