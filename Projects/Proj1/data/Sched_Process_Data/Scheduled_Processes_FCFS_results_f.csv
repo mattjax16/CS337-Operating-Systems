@@ -1,0 +1,5 @@
+id,burst time,inital burst time,arrival time,priority,wait time,turnaround time
+0,0,5,0,30,0,5
+1,0,4,2,35,3,7
+2,0,1,5,36,4,5
+3,0,6,6,20,4,10

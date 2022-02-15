@@ -88,7 +88,7 @@ def kernal(selected_scheduler , processes = None, debug=True, \
             sched = "Priority"
         elif debug:
             print(f"Error {selected_scheduler} is not a valid "+
-                  f"schuedling function!!")
+                  f"scheduling function!!")
 
 
         # Writing CPU data
@@ -115,7 +115,7 @@ def kernal(selected_scheduler , processes = None, debug=True, \
 
             # Writing the CSV file
             pd.DataFrame(SP_dict_list).to_csv(f"data/Sched_Process_Data/Scheduled_Processes"+
-                                              f"_{sched}_results_f{time}.csv",index=False)
+                                              f"_{sched}_results{time}.csv",index=False)
 
     return
 
