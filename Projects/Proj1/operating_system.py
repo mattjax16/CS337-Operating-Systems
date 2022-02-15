@@ -18,7 +18,9 @@ from datetime import datetime as dt
 # import numpy #using numpy to make more efficient
 
 
-def kernal(selected_scheduler , processes = [], debug=True, CPU_to_csv=True, Processes_to_csv=True):
+def kernal(selected_scheduler , processes = None, debug=True, \
+                                                          CPU_to_csv=True,
+           Processes_to_csv=True):
     """
      Simulates the CPU scheduling aspects of an operating system kernel.
 
@@ -41,7 +43,7 @@ def kernal(selected_scheduler , processes = [], debug=True, CPU_to_csv=True, Pro
 
 
     #If there are no processes passed make a test list of 5 processes
-    if len(processes) == 0:
+    if processes is None:
         if debug:
             print(f"Warning no processes were passed!! Making test Processes")
 
