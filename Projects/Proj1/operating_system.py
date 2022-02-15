@@ -20,7 +20,7 @@ from datetime import datetime as dt
 
 def kernal(selected_scheduler , processes = None, debug=True, \
                                                           CPU_to_csv=True,
-           Processes_to_csv=True):
+           Processes_to_csv=True,save_with_date = True):
     """
      Simulates the CPU scheduling aspects of an operating system kernel.
 
@@ -29,6 +29,7 @@ def kernal(selected_scheduler , processes = None, debug=True, \
     :param debug: (Boolean) If true output messages will be printed from the selected_scheduler function
     :param CPU_to_csv: (Boolean) if true results of CPU will be written to a csv
     :param Processes_to_csv: (Boolean) if true results of Scheduled_Processes will be written to a csv
+     :param save_with_date: (Boolean) if true results of csvs will be written with timestamp
     :return:
     """
 
@@ -71,8 +72,12 @@ def kernal(selected_scheduler , processes = None, debug=True, \
     # CPU_to_csv or Processes_to_csv is True
     if CPU_to_csv or Processes_to_csv:
 
-        # get the current time for writing the file
-        time = dt.now().strftime(format="%y-%m-%d_%H-%M-%S")
+        if save_with_date:
+            # get the current time for writing the file
+            time = "_"+dt.now().strftime(format="%y-%m-%d_%H-%M-%S")
+        else:
+            time = ""
+
 
         # get the kind of scheduler used
         if selected_scheduler == scheduler.FCFS_scheduler:
@@ -90,7 +95,7 @@ def kernal(selected_scheduler , processes = None, debug=True, \
         if CPU_to_csv:
             #reverse CPU so it is written to df in process order
             CPU.reverse()
-            pd.DataFrame(CPU).to_csv(f"data/CPU_Data/CPU_{sched}_results_"+
+            pd.DataFrame(CPU).to_csv(f"data/CPU_Data/CPU_{sched}_results"+
                                      f"{time}.csv",index=False)
 
         # Writing Scheduled_Processes data
