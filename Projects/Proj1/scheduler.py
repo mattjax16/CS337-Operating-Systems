@@ -58,7 +58,7 @@ def FCFS_scheduler(processes, ready, CPU, Scheduled_Processes ,time, debug=True)
     end_time = time
 
     # add processID, start, end to CPU (this will be useful later)
-    CPU.append(dict(process=process.id,
+    CPU.append(dict(id=process.id,
                     Start=start_time,
                     Finish=end_time,
                     Priority=process.priority))
@@ -130,7 +130,7 @@ def SJF_scheduler(processes, ready, CPU, Scheduled_Processes, time,
     end_time = time
 
     # add processID, start, end to CPU (this will be useful later)
-    CPU.append(dict(process=process.id,
+    CPU.append(dict(id=process.id,
                     Start=start_time,
                     Finish=end_time,
                     Priority=process.priority))
@@ -225,7 +225,7 @@ def Priority_scheduler(processes, ready, CPU, Scheduled_Processes, time, debug =
     end_time = time
 
     # add processID, start, end to CPU (this will be useful later)
-    CPU.append(dict(process=process.id,
+    CPU.append(dict(id=process.id,
                     Start=start_time,
                     Finish=end_time,
                     Priority=process.priority))
@@ -313,7 +313,7 @@ def Priority_Turnaround_scheduler(processes, ready, CPU, Scheduled_Processes,
     end_time = time
 
     # add processID, start, end to CPU (this will be useful later)
-    CPU.append(dict(process=process.id,
+    CPU.append(dict(id=process.id,
                     Start=start_time,
                     Finish=end_time,
                     Priority=process.priority))
@@ -354,7 +354,7 @@ def add_ready(processes,ready,time):
     arrival_flag = True
     while arrival_flag:
         if (processes and (processes[0].arrival_time <= time)):
-            ready.append(processes.pop())
+            ready.append(processes.pop(0))
         else:
             arrival_flag = False
     return
