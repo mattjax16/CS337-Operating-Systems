@@ -420,11 +420,11 @@ def Priority_Aging_scheduler(processes, ready, CPU, Scheduled_Processes,
 
 
     # get the max priority of all processes
-    all_procs = ready + processes
+    all_procs = ready.copy() + processes.copy() + Scheduled_Processes.copy()
     all_procs.sort(key=lambda x: x.priority)
 
     # set the aging ammount
-    age_amt = int(all_procs[0].priority / 15)
+    age_amt = int(all_procs[-1].priority / 10)
 
 
     for proc in ready:
