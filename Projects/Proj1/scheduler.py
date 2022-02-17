@@ -37,6 +37,14 @@ def FCFS_scheduler(processes, ready, CPU, Scheduled_Processes ,time, debug=True)
             switch. It is useful for debugging.
     '''
 
+    # if the ready queue has nothing
+    # add the proccesses to the ready list
+    # increment time until there is one
+    while (len(ready) == 0):
+        add_ready(processes, ready, time)
+        if len(ready) == 0:
+            time += 1
+
     # pick process with lowest arrival time and remove it from ready (sorting list)
     ready.sort(key = lambda x: x.arrival_time,reverse = True)
     process = ready.pop()
@@ -110,6 +118,15 @@ def SJF_scheduler(processes, ready, CPU, Scheduled_Processes, time,
 
     # pick process with shortest burt time and remove it from ready (
     # sorting list)
+
+    # if the ready queue has nothing
+    # add the proccesses to the ready list
+    # increment time until there is one
+    while (len(ready) == 0):
+        add_ready(processes, ready, time)
+        if len(ready) == 0:
+            time += 1
+
     ready.sort(key=lambda x: x.burst_time, reverse=True)
     process = ready.pop()
     # set start time to time
@@ -199,10 +216,13 @@ def Priority_scheduler(processes, ready, CPU, Scheduled_Processes, time, debug =
 
     '''
 
-
-
-
-
+    # if the ready queue has nothing
+    # add the proccesses to the ready list
+    # increment time until there is one
+    while (len(ready) == 0):
+        add_ready(processes, ready, time)
+        if len(ready) == 0:
+            time += 1
 
     # pick process with highest priority and remove it from ready
     ready.sort(key=lambda x: x.priority)
@@ -289,6 +309,15 @@ def Priority_Turnaround_scheduler(processes, ready, CPU, Scheduled_Processes,
 
     # Calculate turnaround time for all Processes in the ready Queue
     # output with the lowest turnaround is chosen first
+
+    # if the ready queue has nothing
+    # add the proccesses to the ready list
+    # increment time until there is one
+    while (len(ready) == 0):
+        add_ready(processes, ready, time)
+        if len(ready) == 0:
+            time += 1
+
     for proc in ready:
         proc.priority = (time - proc.arrival_time) + proc.burst_time
 

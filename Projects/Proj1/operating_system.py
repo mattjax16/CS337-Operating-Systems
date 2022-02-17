@@ -63,9 +63,9 @@ def kernal(selected_scheduler , processes = None, debug=True, \
         if debug:
             print(f"Warning no processes were passed!! Making test Processes")
 
-        processes = [Process(1, 5, 0, 30), Process(2, 4, 2, 35),
+        processes = [Process(1, 5, 0, 30), Process(2, 4, 2, 20),
                  Process(3, 1, 5, 36),
-                 Process(4, 6, 6, 20)]
+                 Process(4, 6, 6, 35)]
 
 
     # adding the proccesses to the ready list
@@ -251,7 +251,7 @@ def plotKernalResults(kernal_results, title ="Scheduled Processes Results Timeli
     # Setting up the process priority colors by normalizing them
     processes_colors = kernal_results["priority"].values
     processes_colors = (processes_colors - np.min(processes_colors)) / \
-                       (np.max(processes_colors)+processes_colors/10 - np.min(
+                       (np.max(processes_colors)+processes_colors/50 - np.min(
                            processes_colors))
     color = mpl.cm.get_cmap('plasma',
                             np.max(kernal_results["priority"].values))
