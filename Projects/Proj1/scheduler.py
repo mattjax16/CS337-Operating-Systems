@@ -7,7 +7,13 @@
 import numpy as np
 
 
-def FCFS_scheduler(processes, ready, CPU, Scheduled_Processes ,time, debug=True):
+def FCFS_scheduler(
+        processes,
+        ready,
+        CPU,
+        Scheduled_Processes,
+        time,
+        debug=True):
     ''' non-preemptive FCFS scheduler
 
     The First Come First Serve algorithim schuedules jobs to be executed
@@ -47,8 +53,10 @@ def FCFS_scheduler(processes, ready, CPU, Scheduled_Processes ,time, debug=True)
         if len(ready) == 0:
             time += 1
 
-    # pick process with lowest arrival time and remove it from ready (sorting list)
-    ready.sort(key = lambda x: x.arrival_time,reverse = True)
+
+    # pick process with lowest arrival time and remove it from ready (sorting
+    # list)
+    ready.sort(key=lambda x: x.arrival_time, reverse=True)
     process = ready.pop()
     # set start time to time
     start_time = time
@@ -62,7 +70,7 @@ def FCFS_scheduler(processes, ready, CPU, Scheduled_Processes ,time, debug=True)
         time += 1
 
         # add processes that arrived now to ready queue
-        add_ready(processes,ready,time)
+        add_ready(processes, ready, time)
 
     # set end time to time
     end_time = time
@@ -76,13 +84,14 @@ def FCFS_scheduler(processes, ready, CPU, Scheduled_Processes ,time, debug=True)
     Scheduled_Processes.append(process)
 
     if debug:
-        print(f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
+        print(
+            f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
 
     return time
 
 
 def SJF_scheduler(processes, ready, CPU, Scheduled_Processes, time,
-                   debug=True):
+                  debug=True):
     ''' non-preemptive SJF scheduler
 
     The Shortest Job First algorithm schedules jobs to be executed
@@ -163,7 +172,13 @@ def SJF_scheduler(processes, ready, CPU, Scheduled_Processes, time,
     return time
 
 
-def Priority_scheduler(processes, ready, CPU, Scheduled_Processes, time, debug =True):
+def Priority_scheduler(
+        processes,
+        ready,
+        CPU,
+        Scheduled_Processes,
+        time,
+        debug=True):
     ''' non-preemptive Priority scheduler
 
     Priority is Correlation (higher number being higher priority)
@@ -263,7 +278,7 @@ def Priority_scheduler(processes, ready, CPU, Scheduled_Processes, time, debug =
 
 
 def Priority_Turnaround_scheduler(processes, ready, CPU, Scheduled_Processes,
-                               time, debug =True):
+                                  time, debug=True):
     ''' non-preemptive Priority Turnaround scheduler
 
     Priority is Correlation (higher number being higher priority)
@@ -331,7 +346,8 @@ def Priority_Turnaround_scheduler(processes, ready, CPU, Scheduled_Processes,
     max_burst_time = int(all_procs[-1].priority)
 
     for proc in ready:
-        proc.priority = (time - proc.arrival_time) + max_burst_time - proc.burst_time
+        proc.priority = (time - proc.arrival_time) + \
+            max_burst_time - proc.burst_time
 
     # pick process with highest priority and remove it from ready
     ready.sort(key=lambda x: x.priority)
@@ -367,8 +383,9 @@ def Priority_Turnaround_scheduler(processes, ready, CPU, Scheduled_Processes,
 
     return time
 
+
 def Priority_Aging_scheduler(processes, ready, CPU, Scheduled_Processes,
-                               time, debug =True):
+                             time, debug=True):
     ''' non-preemptive Priority Turnaround scheduler
 
     Priority is Correlation (higher number being higher priority)
@@ -427,14 +444,12 @@ def Priority_Aging_scheduler(processes, ready, CPU, Scheduled_Processes,
         if len(ready) == 0:
             time += 1
 
-
     # get the max priority of all processes
     all_procs = ready.copy() + processes.copy() + Scheduled_Processes.copy()
     all_procs.sort(key=lambda x: x.priority)
 
     # set the aging ammount
     age_amt = int(all_procs[-1].priority / 10)
-
 
     for proc in ready:
         proc.priority += age_amt
@@ -474,7 +489,7 @@ def Priority_Aging_scheduler(processes, ready, CPU, Scheduled_Processes,
     return time
 
 
-def add_ready(processes,ready,time):
+def add_ready(processes, ready, time):
     '''
     Adds Processes to ready that have arrived based on the time
     Parameters:
@@ -494,9 +509,9 @@ def add_ready(processes,ready,time):
     :return:
     '''
     # sort the processes list
-    processes.sort(key = lambda x: x.arrival_time)
+    processes.sort(key=lambda x: x.arrival_time)
 
-    #If there are Proceeses left,
+    # If there are Proceeses left,
     # while the front of the processes list has arrived
     arrival_flag = True
     while arrival_flag:

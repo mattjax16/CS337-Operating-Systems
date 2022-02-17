@@ -24,13 +24,15 @@ import plotly.express as px
 import palettable
 
 
-
-
-
-def kernal(selected_scheduler , processes = None, debug=True, \
-                                                          CPU_to_csv=False,
-           Processes_to_csv=False,save_with_date = False, file_proc_name =
-           None, write_both_results = True):
+def kernal(
+        selected_scheduler,
+        processes=None,
+        debug=True,
+        CPU_to_csv=False,
+        Processes_to_csv=False,
+        save_with_date=False,
+        file_proc_name=None,
+        write_both_results=True):
     """
      Simulates the CPU scheduling aspects of an operating system kernel.
 
@@ -57,16 +59,14 @@ def kernal(selected_scheduler , processes = None, debug=True, \
 
     time = 0  # creating the intial time for the kernal
 
-
-    #If there are no processes passed make a test list of 5 processes
+    # If there are no processes passed make a test list of 5 processes
     if processes is None:
         if debug:
             print(f"Warning no processes were passed!! Making test Processes")
 
         processes = [Process(1, 5, 0, 30), Process(2, 4, 2, 20),
-                 Process(3, 1, 5, 36),
-                 Process(4, 6, 6, 35)]
-
+                     Process(3, 1, 5, 36),
+                     Process(4, 6, 6, 35)]
 
     # adding the proccesses to the ready list
     # increment time until there is one
@@ -77,7 +77,13 @@ def kernal(selected_scheduler , processes = None, debug=True, \
 
     # runnig schuedler for all processes in ready
     while (processes or ready):
-        time = selected_scheduler(processes, ready, CPU, Scheduled_Processes, time, debug=debug)
+        time = selected_scheduler(
+            processes,
+            ready,
+            CPU,
+            Scheduled_Processes,
+            time,
+            debug=debug)
 
     # Once all the processes in the CPU that have finished
     # and calculate their wait time and turn around time
@@ -89,7 +95,7 @@ def kernal(selected_scheduler , processes = None, debug=True, \
 
         if save_with_date:
             # get the current time for writing the file
-            time = "_"+dt.now().strftime(format="%y-%m-%d_%H-%M-%S")
+            time = "_" + dt.now().strftime(format="%y-%m-%d_%H-%M-%S")
         else:
             time = ""
 
@@ -97,8 +103,6 @@ def kernal(selected_scheduler , processes = None, debug=True, \
             file_proc_name = ""
         else:
             file_proc_name = f"{file_proc_name}_"
-
-
 
         # get the kind of scheduler used
         if selected_scheduler == scheduler.FCFS_scheduler:
@@ -112,16 +116,17 @@ def kernal(selected_scheduler , processes = None, debug=True, \
         elif selected_scheduler == scheduler.Priority_Turnaround_scheduler:
             sched = "Priority_Turnaround"
         elif debug:
-            print(f"Error {selected_scheduler} is not a valid "+
+            print(f"Error {selected_scheduler} is not a valid " +
                   f"scheduling function!!")
-
 
         # Writing CPU data
         if CPU_to_csv:
-            #reverse CPU so it is written to df in process order
+            # reverse CPU so it is written to df in process order
             CPU.reverse()
-            pd.DataFrame(CPU).to_csv(f"data/CPU_Data/CPU_{sched}_{file_proc_name}results"+
-                                     f"{time}.csv",index=False)
+            pd.DataFrame(CPU).to_csv(
+                f"data/CPU_Data/CPU_{sched}_{file_proc_name}results" +
+                f"{time}.csv",
+                index=False)
 
         # Writing Scheduled_Processes data
         if Processes_to_csv:
@@ -129,7 +134,7 @@ def kernal(selected_scheduler , processes = None, debug=True, \
 
             # creating a list of dicts of all
             # the process attributes
-            SP_dict_list = [{"id":x.id ,"burst time": x.burst_time,
+            SP_dict_list = [{"id": x.id, "burst time": x.burst_time,
                              "inital burst time": x.inital_burst_time,
                              "arrival time": x.arrival_time,
                              "priority": x.priority,
@@ -137,10 +142,11 @@ def kernal(selected_scheduler , processes = None, debug=True, \
                              "turnaround time": x.turnaround_time,
                              } for x in Scheduled_Processes]
 
-
             # Writing the CSV file
-            pd.DataFrame(SP_dict_list).to_csv(f"data/Sched_Process_Data/Scheduled_Processes"+
-                                              f"_{sched}_{file_proc_name}results{time}.csv",index=False)
+            pd.DataFrame(SP_dict_list).to_csv(
+                f"data/Sched_Process_Data/Scheduled_Processes" +
+                f"_{sched}_{file_proc_name}results{time}.csv",
+                index=False)
 
         if write_both_results:
             # reverse CPU so it is written to df in process order
@@ -163,11 +169,13 @@ def kernal(selected_scheduler , processes = None, debug=True, \
             sp_df = pd.DataFrame(SP_dict_list)
 
             # Combining the 2 dataframe
-            main_df = pd.concat([sp_df,cpu_df],axis=1)
-            main_df.drop(["Priority"],inplace=True,axis=1)
+            main_df = pd.concat([sp_df, cpu_df], axis=1)
+            main_df.drop(["Priority"], inplace=True, axis=1)
 
-            main_df.to_csv(f"data/Combined_Data/All"+
-                                              f"_{sched}_{file_proc_name}results{time}.csv",index=False)
+            main_df.to_csv(
+                f"data/Combined_Data/All" +
+                f"_{sched}_{file_proc_name}results{time}.csv",
+                index=False)
 
     return
 
@@ -235,8 +243,12 @@ def plotCPU(cpu_results, title="CPU Results Timeline"):
 
 
 # defining a function to plot Scheduled_Processes data along with CPU data
-def plotKernalResults(kernal_results, title ="Scheduled Processes Results Timeline",
-                      figsize=(10, 6)):
+def plotKernalResults(
+    kernal_results,
+    title="Scheduled Processes Results Timeline",
+    figsize=(
+        10,
+        6)):
     '''
     A function to plot the kernal results df from
     operating_system.py
@@ -251,11 +263,10 @@ def plotKernalResults(kernal_results, title ="Scheduled Processes Results Timeli
     # making the figure and plot
     fig, ax = plt.subplots(figsize=figsize, tight_layout=True)
 
-
     # Setting up the process priority colors by normalizing them
     processes_colors = kernal_results["priority"].values
     processes_colors = (processes_colors - np.min(processes_colors)) / \
-                       (np.max(processes_colors)+processes_colors/50 - np.min(
+                       (np.max(processes_colors) + processes_colors / 50 - np.min(
                            processes_colors))
     color = mpl.cm.get_cmap('plasma',
                             np.max(kernal_results["priority"].values))
@@ -265,14 +276,13 @@ def plotKernalResults(kernal_results, title ="Scheduled Processes Results Timeli
     arrival_processes_turnaround_times = kernal_results["turnaround time"] \
         .values
     arrival_processes_offsets = kernal_results["arrival time"].values + \
-                                arrival_processes_turnaround_times / 2
-
+        arrival_processes_turnaround_times / 2
 
     # Calculating line widths
-    linewidth = 230/kernal_results.shape[0]
+    linewidth = 230 / kernal_results.shape[0]
 
     # Making the greyed out timeline
-    arrival_timeline = ax.eventplot(kernal_results["id"].values[:, np.newaxis],
+    arrival_timeline = ax.eventplot(kernal_results["id"].values[:,np.newaxis],
                                     orientation='vertical',
                                     lineoffsets=arrival_processes_offsets,
                                     linelengths=arrival_processes_turnaround_times,
@@ -283,7 +293,7 @@ def plotKernalResults(kernal_results, title ="Scheduled Processes Results Timeli
     # Getting the process offset points  and initial burst times
     processes_burst_times = kernal_results["inital burst time"].values
     processes_offsets = kernal_results[
-                            "Start"].values + processes_burst_times / 2
+        "Start"].values + processes_burst_times / 2
 
     # Making the main timeline
     main_timeline = ax.eventplot(kernal_results["id"].values[:, np.newaxis],
@@ -303,14 +313,9 @@ def plotKernalResults(kernal_results, title ="Scheduled Processes Results Timeli
     ax.set_yticks(proc_id_array, proc_label_list)
     ax.set_ylabel("Process ID")
 
-
     # X AXIS
-    proc_max_end_time = np.max(kernal_results["turnaround time"].values + \
+    proc_max_end_time = np.max(kernal_results["turnaround time"].values +
                                kernal_results["arrival time"].values) + 1
-
-
-
-
 
     time_array_major = np.arange(0, proc_max_end_time, 5)
     time_array_minor = np.arange(proc_max_end_time)
@@ -335,15 +340,14 @@ def plotKernalResults(kernal_results, title ="Scheduled Processes Results Timeli
     # Setting the title
     ax.set_title(title)
 
-    ###TODO: ADD wait time text
+    # TODO: ADD wait time text
 
-    #making the legend
+    # making the legend
     custom_lines = [mpl.lines.Line2D([0], [0], color="blue", lw=6),
-                    mpl.lines.Line2D([0], [0], color="blue",alpha = 0.4, lw=6)]
-    ax.legend(custom_lines,[" (solid) = running",
-                            " (transparent) = waiting"],
-              loc = "upper left")
-
+                    mpl.lines.Line2D([0], [0], color="blue", alpha=0.4, lw=6)]
+    ax.legend(custom_lines, [" (solid) = running",
+                             " (transparent) = waiting"],
+              loc="upper left")
 
     plt.tight_layout()
     # display the plot
@@ -364,8 +368,8 @@ def main():
 
     # Run the kernel with FCFS and unfair processes
     kernal(scheduler.SJF_scheduler,
-                            processes=unfair_fcfs_procs,
-                            file_proc_name="unfair")
+           processes=unfair_fcfs_procs,
+           file_proc_name="unfair")
 
     # Importing the CPU results from FCFS unfair
     fcfs_unfair_results = pd.read_csv("data/Combined_Data/" +
@@ -373,7 +377,7 @@ def main():
 
     # plotting the results
     plotKernalResults(fcfs_unfair_results,
-                                       title="FCFS Unfair Results Timeline")
+                      title="FCFS Unfair Results Timeline")
 
 
 if __name__ == "__main__":

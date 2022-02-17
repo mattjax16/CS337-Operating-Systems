@@ -22,6 +22,7 @@ algorithms:
     Pandas
     Numpy
     Plotly
+    autopep8
 <br>
 
 ---

@@ -8,7 +8,7 @@
 class Process:
     # The Process class implements a process in the ready state for scheduling
     # and takes in the parameters: id, burst_time, arrival_time, and priority
-    def __init__(self,id,burst_time, arrival_time,priority):
+    def __init__(self, id, burst_time, arrival_time, priority):
 
         # Defining private properties
         self.__id = id
@@ -49,15 +49,12 @@ class Process:
     def inital_burst_time(self):
         return self.__inital_burst_time
 
-
-    #Defining setters
+    # Defining setters
 
     @burst_time.setter
     def burst_time(self, val):
         self.__burst_time = val
         return
-
-
 
     @arrival_time.setter
     def arrival_time(self, val):
@@ -75,24 +72,21 @@ class Process:
         return
 
     @turnaround_time.setter
-    def turnaround_time(self,val):
+    def turnaround_time(self, val):
         self.__turnaround_time = val
         return
 
 
-
-
-
 # Main Testing function for Process Class
 def main():
-    test_proccess_1 = Process(1,4,3,6)
+    test_proccess_1 = Process(1, 4, 3, 6)
 
     print(test_proccess_1.id)
     # test_proccess_1.id = 1 # This shouldnt work becouse property is private
     # AttributeError: can't set attribute
     print(test_proccess_1.turnaround_time)
 
-    test_proccess_1.turnaround_time+= 9
+    test_proccess_1.turnaround_time += 9
     print(test_proccess_1.turnaround_time)
 
 
