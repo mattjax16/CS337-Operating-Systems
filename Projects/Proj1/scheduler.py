@@ -168,7 +168,8 @@ def Priority_scheduler(processes, ready, CPU, Scheduled_Processes, time, debug =
 
     Priority is Correlation (higher number being higher priority)
 
-    Scueduels the precesses in the ready queue based oon their priority.
+    Schedules the precesses in the ready queue based on their priority which
+    was externally assigned.
     The Priority algorithm can still face problems like being unfair with it
     being unfair to processes with low priority
     (when it is a correlation priority like for this algorithm). This
@@ -267,16 +268,18 @@ def Priority_Turnaround_scheduler(processes, ready, CPU, Scheduled_Processes,
 
     Priority is Correlation (higher number being higher priority)
 
-    The Priority algorithm schedules jobs to be executed
+    The Priority Turnaround algorithm schedules jobs to be executed
     based on the priority level of each job which is bases on burst time
     (working time) of the processes in the ready queue along with the
-    processes arrival time. The Priority algorithm can still face problems
-    like being unfair with it being unfair to processes with low priority
-    (when it is a correlation priority like for this algorithm). This
-    algorithm can also face starvation but shouldnt be as bad because it is aging by increasing
-    priority the longer the processes waits in the ready queue. One
-    advantage of Priority scheduling is that it can have very low over head (
-    alot of times just needing to be a max heap)
+    processes arrival time which is the turn, It subtracts the arrival time
+    from the time of the CPU, so it is slowly aging the priority as well. The
+    Priority Turnaround algorithm can
+    still face problems like being unfair with it being unfair to processes
+    with low priority (when it is a correlation priority like for this
+    algorithm). This algorithm can also face starvation but shouldnt be as
+    bad because it is aging by increasing priority the longer the processes
+    waits in the ready queue. One advantage of Priority scheduling is that it
+    can have very low over head (alot of times just needing to be a max heap)
 
 
     Parameters:
@@ -320,8 +323,15 @@ def Priority_Turnaround_scheduler(processes, ready, CPU, Scheduled_Processes,
         if len(ready) == 0:
             time += 1
 
+    # get the max byrsttime of all processes
+    all_procs = ready.copy() + processes.copy() + Scheduled_Processes.copy()
+    all_procs.sort(key=lambda x: x.burst_time)
+
+    # set the aging ammount
+    max_burst_time = int(all_procs[-1].priority)
+
     for proc in ready:
-        proc.priority = (time - proc.arrival_time) + proc.burst_time
+        proc.priority = (time - proc.arrival_time) + max_burst_time - proc.burst_time
 
     # pick process with highest priority and remove it from ready
     ready.sort(key=lambda x: x.priority)
@@ -363,10 +373,9 @@ def Priority_Aging_scheduler(processes, ready, CPU, Scheduled_Processes,
 
     Priority is Correlation (higher number being higher priority)
 
-    The Priority algorithm schedules jobs to be executed
-    based on the priority level of each job which is bases on burst time
-    (working time) of the processes in the ready queue along with the
-    processes arrival time. The Priority algorithm can still face problems
+    The Priority algorithm schedules processes to be executed
+    based on the priority level of each process which has been set externally
+    The Priority algorithm can still face problems
     like being unfair with it being unfair to processes with low priority
     (when it is a correlation priority like for this algorithm). This
     algorithm can also face starvation but shouldnt be as bad because it is aging by increasing

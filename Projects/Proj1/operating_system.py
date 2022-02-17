@@ -109,7 +109,7 @@ def kernal(selected_scheduler , processes = None, debug=True, \
             sched = "Priority"
         elif selected_scheduler == scheduler.Priority_Aging_scheduler:
             sched = "Priority_Aging"
-        elif selected_scheduler == scheduler.Priority_Turnaround_scheduler():
+        elif selected_scheduler == scheduler.Priority_Turnaround_scheduler:
             sched = "Priority_Turnaround"
         elif debug:
             print(f"Error {selected_scheduler} is not a valid "+
