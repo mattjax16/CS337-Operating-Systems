@@ -92,7 +92,7 @@ def RR_scheduler(
         # add 1 to time
         time += 1
 
-        if processes.times_worked_on == 0:
+        if process.times_worked_on == 0:
             process.response_time = process.arrival_time - time
 
         # add processes that arrived now to ready queue

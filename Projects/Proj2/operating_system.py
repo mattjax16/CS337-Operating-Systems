@@ -182,7 +182,7 @@ def kernal(
             # creating a list of dicts of all
             # the process attributes
             SP_dict_list = [{"id": x.id, "burst time": x.burst_time,
-                             "inital burst time": x.inital_burst_time,
+                             "initial burst time": x.initial_burst_time,
                              "arrival time": x.arrival_time,
                              "priority": x.priority,
                              "wait time": x.wait_time,
