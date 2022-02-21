@@ -8,8 +8,6 @@ Matthew Bass
 This is a file to the different process scheduling functions for the OS
 '''
 
-
-
 '''
 ################################################################
 Project 2 Algorithms
@@ -37,9 +35,9 @@ def FCFS_scheduler(
         debug=True):
     ''' non-preemptive FCFS scheduler
 
-    The First Come First Serve algorithim schuedules jobs to be executed
+    The First Come First Serve algorithm schedules jobs to be executed
     based on the time that the arrive to the ready queue (jobs that arrive
-    earlier are proccessed earlier). The FCFS algorithim can be thought of as
+    earlier are processed earlier). The FCFS algorithm can be thought of as
     just implementing a first in first out (FIFO) queue.
 
     Parameters:
@@ -67,7 +65,7 @@ def FCFS_scheduler(
     '''
 
     # if the ready queue has nothing
-    # add the proccesses to the ready list
+    # add the processes to the ready list
     # increment time until there is one
     while (len(ready) == 0):
         add_ready(processes, ready, time)
@@ -119,7 +117,7 @@ def SJF_scheduler(processes, ready, CPU, Scheduled_Processes, time,
     based on the burst time (working time) of the processes in the ready
     queue. The SJF algorithm is one of the best approaches to minimize wait
     times and easy to implement when the CPU knows how long the process will
-    take (in fact it needs to know this). This algorithim can be unfair to
+    take (in fact it needs to know this). This algorithm can be unfair to
     processes with long burt times though.
 
 
@@ -210,7 +208,7 @@ def Priority_scheduler(
     being unfair to processes with low priority
     (when it is a correlation priority like for this algorithm). This
     algorithm can also face starvation. One advantage of Priority scheduling
-    is that it can have very low over head (alot of times just needing to be
+    is that it can have very low over head (a lot of times just needing to be
     a max heap)
 
     !!! A solution to fix starvation (not perfect) is aging by increasing
@@ -312,10 +310,10 @@ def Priority_Turnaround_scheduler(processes, ready, CPU, Scheduled_Processes,
     Priority Turnaround algorithm can
     still face problems like being unfair with it being unfair to processes
     with low priority (when it is a correlation priority like for this
-    algorithm). This algorithm can also face starvation but shouldnt be as
+    algorithm). This algorithm can also face starvation but shouldn't be as
     bad because it is aging by increasing priority the longer the processes
     waits in the ready queue. One advantage of Priority scheduling is that it
-    can have very low over head (alot of times just needing to be a max heap)
+    can have very low over head (a lot of times just needing to be a max heap)
 
 
     Parameters:
