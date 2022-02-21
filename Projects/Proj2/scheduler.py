@@ -8,13 +8,61 @@ Matthew Bass
 This is a file to the different process scheduling functions for the OS
 '''
 
+
+
 '''
 ################################################################
 Project 2 Algorithms
 ###############################################################
 '''
 
+def RR_scheduler(
+        processes,
+        ready,
+        CPU,
+        Scheduled_Processes,
+        time,
+        quantum = 2,
+        debug=True):
+    ''' preemptive RR scheduler
 
+        The preemptive RR algorithm
+
+        Parameters:
+            processes: is a list of all the processes in the simulation,
+                whether they arrived or not, they are in this list.
+
+            ready: this is a list of processes with current arrival time.
+                Meaning, if the arrival time of a process is less than
+                the current time, it should be in the ready list.
+                Therefore, this list holds only processes that have
+                arrived at the ready list.
+
+            CPU: this is a list that simulates the CPU by holding beginning runtime
+                and end of runtime for each process. This is the same as the Gantt bar
+                that we have been using in lecture slides at the bottom of each example.
+
+            Scheduled_Processes: this is a list of all the process that have been scheduled
+
+            time: this is an integer that represents the current time, where simulation starts
+                at time zero and time is incremented by one after each time slice.
+
+            quantum: (int) the maximum ammount of timesteps a pricess will
+                    run for before it its put back to the waiting state (or finishes)
+                    and the next process is started.
+
+            debug: this is a boolean with the default value of True. It controls a print
+                statement that shows process ID, start time, and end time at each context
+                switch. It is useful for debugging.
+        '''
+
+    # if the ready queue has nothing
+    # add the processes to the ready list
+    # increment time until there is one
+    while (len(ready) == 0):
+        add_ready(processes, ready, time)
+        if len(ready) == 0:
+            time += 1
 
 
 
@@ -507,6 +555,23 @@ def Priority_Aging_scheduler(processes, ready, CPU, Scheduled_Processes,
 
     return time
 
+
+def wait_for_process(processes, ready, time):
+    '''
+    Waits for a processes to be in the ready queue. If the ready queue has
+    nothing add the processes to the ready list
+    increment time until there is one
+
+    :param processes:
+    :param ready:
+    :param time:
+    :return:
+    '''
+    while (len(ready) == 0):
+        add_ready(processes, ready, time)
+        if len(ready) == 0:
+            time += 1
+    return
 
 def add_ready(processes, ready, time):
     '''
