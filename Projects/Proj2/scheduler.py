@@ -1,12 +1,32 @@
-# CS337 Spring 2022 - Operating Systems Prof. Al Madi
-# Project 1 - Non-Preemptive CPU Scheduling Analysis
-# scheduler.py
-# Matthew Bass
-# 02/09/2022
+'''
+CS337 Spring 2022 - Operating Systems Prof. Al Madi
+Project 2 - Preemptive CPU Scheduling Analysis
+scheduler.py
+Matthew Bass
+02/21/2022
 
-# This is a file to the different process scheduling functions for the OS
-import numpy as np
+This is a file to the different process scheduling functions for the OS
+'''
 
+
+
+'''
+################################################################
+Project 2 Algorithms
+###############################################################
+'''
+
+
+
+
+
+
+
+'''
+################################################################
+Project 1 Algorithms
+###############################################################
+'''
 
 def FCFS_scheduler(
         processes,

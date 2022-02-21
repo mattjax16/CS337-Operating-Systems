@@ -1,15 +1,15 @@
 '''
 CS337 Spring 2022 - Operating Systems Prof. Al Madi
-Project 1 - Non-Preemptive CPU Scheduling Analysis
+Project 2 - Preemptive CPU Scheduling Analysis
 operating_system.py
 Matthew Bass
-02/10/2022
+02/21/2022
 
 The operating_system.py file where processes are created, scheduler runs,
 and statistics are calculated.
 '''
 
-# Importing the nessicary packages and objects
+# Importing the necessary packages and objects
 import pandas as pd
 import scheduler
 from process import Process

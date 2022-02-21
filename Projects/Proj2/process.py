@@ -1,10 +1,12 @@
-# CS337 Spring 2022 - Operating Systems Prof. Al Madi
-# Project 1 - Non-Preemptive CPU Scheduling Analysis
-# process.py
-# Matthew Bass
-# 02/09/2022
+'''
+CS337 Spring 2022 - Operating Systems Prof. Al Madi
+Project 2 - Preemptive CPU Scheduling Analysis
+process.py
+Matthew Bass
+02/21/2022
 
-# This is a file to create a Process class
+This is a file to create a Process class
+'''
 
 class Process:
     # The Process class implements a process in the ready state for scheduling
