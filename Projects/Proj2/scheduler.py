@@ -71,7 +71,7 @@ def RR_scheduler(
     wait_for_process(processes, ready, time)
 
     ## pick process that is ready with CPU work
-    ready.sort(key=lambda x: x.duty_type, reverse=True)
+    ready.sort(key=lambda x: (x.duty_type, -x.times_worked_on))
 
     # popping the start of the process
     process = ready.pop()
@@ -92,7 +92,7 @@ def RR_scheduler(
         # add 1 to time
         time += 1
 
-        if process.times_worked_on == 0:
+        if process.times_worked_on == 1:
             process.response_time = process.arrival_time - time
 
         # add processes that arrived now to ready queue

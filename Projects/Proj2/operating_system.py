@@ -69,9 +69,10 @@ def kernal(
         if debug:
             print(f"Warning no processes were passed!! Making test Processes")
 
-        processes = [Process(1, [5,3,2], 0, 30), Process(2, [4,1,3], 2, 20),
-                     Process(3, [1,2,1], 5, 36),
-                     Process(4, [6,5,6], 6, 35)]
+        processes = [Process(1, [5,6,7], 0, 30), Process(2, [4,3,3], 3, 35),
+                     Process(3, [2,3,4], 4, 36),
+                     Process(4, [5,2,7], 7, 20)]
+
 
     # adding the proccesses to the ready list
     # increment time until there is one
@@ -238,7 +239,7 @@ def plotCPU(cpu_results, title="CPU Results Timeline"):
 
     # making the timeline plot
     fig = px.timeline(cpu_results, x_start="Start", x_end="Finish", y="id",
-                      color="priority", labels={"id": "Process ID"})
+                      color="Priority", labels={"id": "Process ID"})
 
     # adding the title
     fig.update_layout(title_text=title, title_x=0.5)
@@ -394,26 +395,20 @@ def plotKernalResults(
 
 # Main Testing function
 def main():
-    # kernal(scheduler.SJF_scheduler,write_both_results=True)
+    # Run the kernel with RR and base test processes
+    kernal(scheduler.RR_scheduler, quantum=2,
+                            file_proc_name="test"
+                            , CPU_to_csv=True)
 
-    unfair_fcfs_procs = [Process(1, 1, 1, 13), Process(2, 25, 1, 53),
-                         Process(3, 1, 1, 82), Process(4, 2, 2, 5),
-                         Process(5, 1, 2, 71), Process(6, 3, 5, 100),
-                         Process(7, 1, 4, 122), Process(8, 1, 8, 63),
-                         Process(9, 1, 11, 82), Process(10, 1, 9, 73)]
 
-    # Run the kernel with FCFS and unfair processes
-    kernal(scheduler.SJF_scheduler,
-           processes=unfair_fcfs_procs,
-           file_proc_name="unfair")
 
-    # Importing the CPU results from FCFS unfair
-    fcfs_unfair_results = pd.read_csv("data/Combined_Data/" +
-                                      "All_FCFS_unfair_results.csv")
+    # Importing the results from RR test
+    rr_results_all = pd.read_csv("data/Combined_Data/All_RR_Q2_test_results.csv")
+    rr_results_cpu = pd.read_csv("data/CPU_Data/CPU_RR_Q2_test_results.csv")
 
-    # plotting the results
-    plotKernalResults(fcfs_unfair_results,
-                      title="FCFS Unfair Results Timeline")
+
+    # Plotting the Results
+    plotCPU(rr_results_cpu, "RR Test Results Timeline")
 
 
 if __name__ == "__main__":
