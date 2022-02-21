@@ -190,8 +190,32 @@ def kernal(
                              "turnaround time": x.turnaround_time,
                              } for x in Scheduled_Processes]
 
-            # making dataframe
+
+            processes_activity = {}
+            for cpu_proc in CPU:
+                if f"{cpu_proc['id']}" in processes_activity:
+                    processes_activity[f"{cpu_proc['id']}"] += [{'start' :
+                                                              cpu_proc['Start'],
+                                                          'finish':
+                                                              cpu_proc['Finish']
+                                                          }]
+                else:
+                    processes_activity[f"{cpu_proc['id']}"] = [{'start':
+                                                                     cpu_proc[
+                                                                         'Start'],
+                                                                 'finish':
+                                                                     cpu_proc[
+                                                                         'Finish'],
+                                                                'id':
+                                                                    cpu_proc[
+                                                                        'id']
+                                                                 }]
+
+            # making Start Stop dicts for
             sp_df = pd.DataFrame(SP_dict_list)
+
+            # Make Process activity df
+            cpu_df = pd.DataFrame(processes_activity)
 
             # Combining the 2 dataframe
             main_df = pd.concat([sp_df, cpu_df], axis=1)
