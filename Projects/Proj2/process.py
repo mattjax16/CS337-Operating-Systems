@@ -188,6 +188,22 @@ class Process:
 
         return
 
+    def run_process(self,debug = False):
+        '''
+        This function "runs" the process by subtracting 1 from
+        the duty list of the left most number that is greater than 0
+
+        :param debug: (bool) if true debug print outs will be displayed
+        :return:
+        '''
+        for work_id,work in enumerate(self.__duty):
+            if work > 0:
+                self.__duty[work_id] = work - 1
+                return
+
+        if debug:
+            print("Warning Nothing left to work on!!!\n")
+        return
 
 
 

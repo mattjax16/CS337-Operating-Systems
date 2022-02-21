@@ -28,6 +28,7 @@ import palettable
 def kernal(
         selected_scheduler,
         processes=None,
+        quantum = 0,
         debug=True,
         CPU_to_csv=False,
         Processes_to_csv=False,
@@ -39,6 +40,9 @@ def kernal(
 
     :param selected_scheduler: (Function) one of the scheduling functions from scheduler.py
     :param processes: (list) a list of processes for the kernal to schuedle
+    :param quantum: (int) the maximum amount of timesteps a process will
+                    run for before it its put back to the waiting state (or finishes)
+                    and the next process is started.
     :param debug: (Boolean) If true output messages will be printed from the selected_scheduler function
     :param CPU_to_csv: (Boolean) if true results of CPU will be written to a csv
     :param Processes_to_csv: (Boolean) if true results of Scheduled_Processes will be written to a csv
@@ -65,26 +69,37 @@ def kernal(
         if debug:
             print(f"Warning no processes were passed!! Making test Processes")
 
-        processes = [Process(1, 5, 0, 30), Process(2, 4, 2, 20),
-                     Process(3, 1, 5, 36),
-                     Process(4, 6, 6, 35)]
+        processes = [Process(1, [5,3,2], 0, 30), Process(2, [4,1,3], 2, 20),
+                     Process(3, [1,2,1], 5, 36),
+                     Process(4, [6,5,6], 6, 35)]
 
     # adding the proccesses to the ready list
     # increment time until there is one
-    while (len(ready) == 0):
+    while len(ready) == 0:
         scheduler.add_ready(processes, ready, time)
         if len(ready) == 0:
             time += 1
 
     # runnig schuedler for all processes in ready
-    while (processes or ready):
-        time = selected_scheduler(
-            processes,
-            ready,
-            CPU,
-            Scheduled_Processes,
-            time,
-            debug=debug)
+    while processes or ready:
+        if selected_scheduler != scheduler.RR_scheduler:
+            time = selected_scheduler(
+                processes,
+                ready,
+                CPU,
+                Scheduled_Processes,
+                time,
+                quantum,
+                debug=debug)
+        else:
+            time = selected_scheduler(
+                processes,
+                ready,
+                CPU,
+                Scheduled_Processes,
+                time,
+                debug=debug)
+
 
     # Once all the processes in the CPU that have finished
     # and calculate their wait time and turn around time
@@ -116,6 +131,14 @@ def kernal(
             sched = "Priority_Aging"
         elif selected_scheduler == scheduler.Priority_Turnaround_scheduler:
             sched = "Priority_Turnaround"
+        elif selected_scheduler == scheduler.RR_scheduler:
+            if quantum > 0:
+                sched = f"RR_Q{quantum}"
+            else:
+                if debug:
+                    print(f"Error {quantum} is not a valid " +
+                          f"Quantum Size!!")
+                    exit()
         elif debug:
             print(f"Error {selected_scheduler} is not a valid " +
                   f"scheduling function!!")

@@ -8,6 +8,9 @@ Matthew Bass
 This is a file to the different process scheduling functions for the OS
 '''
 
+#Importing need libraries
+from process import Process
+
 
 
 '''
@@ -24,9 +27,17 @@ def RR_scheduler(
         time,
         quantum = 2,
         debug=True):
-    ''' preemptive RR scheduler
+    ''' preemptive Round-Robin (RR) scheduler
 
-        The preemptive RR algorithm
+        The Round-Robin (RR) algorithm is a scheduling algorithm
+        where a processes is run for the specified quantum time or until it
+        is finished then it is paused and another process in the ready queue
+        is started. It accomplishes this by popping then appending the
+        process back to the ready list if the process still has work to be done
+        This make the algorithim preemptive at the end of the time slice.
+        Some caveats are that long processes may have to wait n*q
+        time units for another time slice where n is the number of other
+        processes and q is the quantum or length of time slice
 
         Parameters:
             processes: is a list of all the processes in the simulation,
@@ -47,7 +58,7 @@ def RR_scheduler(
             time: this is an integer that represents the current time, where simulation starts
                 at time zero and time is incremented by one after each time slice.
 
-            quantum: (int) the maximum ammount of timesteps a pricess will
+            quantum: (int) the maximum amount of timesteps a process will
                     run for before it its put back to the waiting state (or finishes)
                     and the next process is started.
 
@@ -59,15 +70,71 @@ def RR_scheduler(
     # Wait for the processes to be in ready queue
     wait_for_process(processes, ready, time)
 
-    # pick process with lowest times worked on and then by  arrival time and
-    # remove it from ready (sorting list)
-    ready.sort(key=lambda x: (x.times_worked_on,x.arrival_time), reverse=True)
+    ## pick process that is ready with CPU work
+    ready.sort(key=lambda x: x.duty_type, reverse=True)
+
+    # popping the start of the process
     process = ready.pop()
+
+    # indicate the process has been worked on
+    process.process_worked_on()
+
     # set start time to time
     start_time = time
 
     # Work on the chosen process for at most the quantum time
     # or until the process is done
+    for q_time in range(quantum):
+
+        # run the process
+        process.run_process()
+
+        # add 1 to time
+        time += 1
+
+        if processes.times_worked_on == 0:
+            process.response_time = process.arrival_time - time
+
+        # add processes that arrived now to ready queue
+        add_ready(processes, ready, time)
+
+        # if the process is done add it to Scheduled_Processes and terminate
+        # the loop
+        if sum(process.duty) == 0:
+
+            # set end time to time
+            end_time = time
+
+            Scheduled_Processes.append(process)
+
+            # add processID, start, end to CPU (this will be useful later)
+            CPU.append(dict(id=process.id,
+                            Start=start_time,
+                            Finish=end_time,
+                            Priority=process.priority))
+
+            if debug:
+                print(
+                    f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
+            return time
+
+    # If process isn't done append it to ready list
+    ready.append(process)
+
+    # set end time to time
+    end_time = time
+
+    # add processID, start, end to CPU (this will be useful later)
+    CPU.append(dict(id=process.id,
+                    Start=start_time,
+                    Finish=end_time,
+                    Priority=process.priority))
+
+    return time
+
+
+
+
 
 
 
