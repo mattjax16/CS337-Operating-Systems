@@ -247,6 +247,7 @@ def plotCPU(cpu_results, title="CPU Results Timeline"):
 def plotKernalResults(
     kernal_results,
     title="Scheduled Processes Results Timeline",
+    stats = True,
     figsize=(
         10,
         6)):
@@ -257,6 +258,7 @@ def plotKernalResults(
     :param kernal_results: (dataframe) the combined results from the kernal
     simulation
     :param title: (string) the title for the plot
+    :param stats: (bool) if true average wait and turn around time will be shown
     :param figsize: (tuple) the figure size of the plot
     :return:
     '''
@@ -341,7 +343,16 @@ def plotKernalResults(
     # Setting the title
     ax.set_title(title)
 
-    # TODO: ADD wait time text
+
+    # Adding stats
+    if stats:
+        ### TODO : ADD BOLDING
+        ax.text(0.75, 0.95, f"Avg Wait Time: "
+                            f"{kernal_results['turnaround time'].mean()}\n" +
+                f"Avg Turn-Around Time: {kernal_results['wait time'].mean()}\n"
+                , transform=ax.transAxes,
+                fontsize=9,
+                verticalalignment='top')
 
     # making the legend
     custom_lines = [mpl.lines.Line2D([0], [0], color="blue", lw=6),
@@ -351,6 +362,7 @@ def plotKernalResults(
               loc="upper left")
 
     plt.tight_layout()
+
     # display the plot
     plt.show()
 
