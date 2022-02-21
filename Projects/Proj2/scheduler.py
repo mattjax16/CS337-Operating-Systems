@@ -59,6 +59,15 @@ def RR_scheduler(
     # Wait for the processes to be in ready queue
     wait_for_process(processes, ready, time)
 
+    # pick process with lowest times worked on and then by  arrival time and
+    # remove it from ready (sorting list)
+    ready.sort(key=lambda x: (x.times_worked_on,x.arrival_time), reverse=True)
+    process = ready.pop()
+    # set start time to time
+    start_time = time
+
+    # Work on the chosen process for at most the quantum time
+    # or until the process is done
 
 
 

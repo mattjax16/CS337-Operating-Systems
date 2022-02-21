@@ -35,6 +35,7 @@ class Process:
         self.__wait_time = 0
         self.__turnaround_time = 0
         self.__status = "running"
+        self.__times_worked_on = 0
         return
 
     # Defining getters
@@ -82,6 +83,33 @@ class Process:
     def status(self):
         return self.__status
 
+    @property
+    def times_worked_on(self):
+        return self.__times_worked_on
+
+    @property
+    def duty_type(self):
+        '''
+        Indicates wether the next duty to be worked on is a
+        CPU bound or I/O bound process
+        :return: (string) CPU or I/O
+        '''
+
+        # Get dutties that still need to be worked on
+        duties_left = []
+        for duty in self.__duty:
+            if duty != 0:
+                duties_left.append(duty)
+
+        # See if CPU or IO based on length
+        #if even CPU and odd I/0
+        if(len(duties_left)%2 == 1):
+            return "CPU"
+        else:
+            return "I/O"
+
+
+
 
     # Defining setters
     @burst_time.setter
@@ -119,6 +147,23 @@ class Process:
         self.__turnaround_time = val
         return
 
+    @times_worked_on.setter
+    def times_worked_on(self, val):
+        self.__times_worked_on = val
+        return
+
+    def process_worked_on(self):
+        '''
+        Increments the process' times_worked_on by one
+        This is done to safely keep track of the process'
+        times worked on
+
+        :return:
+        '''
+        self.__times_worked_on += 1
+        return
+
+
     @status.setter
     def status(self, val):
 
@@ -129,8 +174,6 @@ class Process:
             return
         self.__status = val
         return
-
-
 
     def change_status(self):
         """
