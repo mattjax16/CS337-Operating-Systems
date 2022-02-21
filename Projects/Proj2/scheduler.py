@@ -56,13 +56,8 @@ def RR_scheduler(
                 switch. It is useful for debugging.
         '''
 
-    # if the ready queue has nothing
-    # add the processes to the ready list
-    # increment time until there is one
-    while (len(ready) == 0):
-        add_ready(processes, ready, time)
-        if len(ready) == 0:
-            time += 1
+    # Wait for the processes to be in ready queue
+    wait_for_process(processes, ready, time)
 
 
 
@@ -112,13 +107,8 @@ def FCFS_scheduler(
             switch. It is useful for debugging.
     '''
 
-    # if the ready queue has nothing
-    # add the processes to the ready list
-    # increment time until there is one
-    while (len(ready) == 0):
-        add_ready(processes, ready, time)
-        if len(ready) == 0:
-            time += 1
+    # wait for the processes to be in ready queue
+    wait_for_process(processes, ready, time)
 
 
     # pick process with lowest arrival time and remove it from ready (sorting
@@ -194,17 +184,11 @@ def SJF_scheduler(processes, ready, CPU, Scheduled_Processes, time,
             switch. It is useful for debugging.
     '''
 
+    # wait for the processes to be in ready queue
+    wait_for_process(processes, ready, time)
+
     # pick process with shortest burt time and remove it from ready (
     # sorting list)
-
-    # if the ready queue has nothing
-    # add the proccesses to the ready list
-    # increment time until there is one
-    while (len(ready) == 0):
-        add_ready(processes, ready, time)
-        if len(ready) == 0:
-            time += 1
-
     ready.sort(key=lambda x: x.burst_time, reverse=True)
     process = ready.pop()
     # set start time to time
@@ -301,13 +285,8 @@ def Priority_scheduler(
 
     '''
 
-    # if the ready queue has nothing
-    # add the proccesses to the ready list
-    # increment time until there is one
-    while (len(ready) == 0):
-        add_ready(processes, ready, time)
-        if len(ready) == 0:
-            time += 1
+    # wait for the processes to be in ready queue
+    wait_for_process(processes, ready, time)
 
     # pick process with highest priority and remove it from ready
     ready.sort(key=lambda x: x.priority)
@@ -394,17 +373,12 @@ def Priority_Turnaround_scheduler(processes, ready, CPU, Scheduled_Processes,
 
     '''
 
+
+    # wait for the processes to be in ready queue
+    wait_for_process(processes, ready, time)
+
     # Calculate turnaround time for all Processes in the ready Queue
     # output with the lowest turnaround is chosen first
-
-    # if the ready queue has nothing
-    # add the proccesses to the ready list
-    # increment time until there is one
-    while (len(ready) == 0):
-        add_ready(processes, ready, time)
-        if len(ready) == 0:
-            time += 1
-
     # get the max byrsttime of all processes
     all_procs = ready.copy() + processes.copy() + Scheduled_Processes.copy()
     all_procs.sort(key=lambda x: x.burst_time)
@@ -503,13 +477,7 @@ def Priority_Aging_scheduler(processes, ready, CPU, Scheduled_Processes,
     # Calculate turnaround time for all Processes in the ready Queue
     # output with the lowest turnaround is chosen first
 
-    # if the ready queue has nothing
-    # add the proccesses to the ready list
-    # increment time until there is one
-    while (len(ready) == 0):
-        add_ready(processes, ready, time)
-        if len(ready) == 0:
-            time += 1
+    wait_for_process(processes, ready, time)
 
     # get the max priority of all processes
     all_procs = ready.copy() + processes.copy() + Scheduled_Processes.copy()
