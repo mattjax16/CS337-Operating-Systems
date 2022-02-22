@@ -161,6 +161,7 @@ def kernal(
             SP_dict_list = [{"id": x.id, "burst time": x.burst_time,
                              "inital burst time": x.inital_burst_time,
                              "arrival time": x.arrival_time,
+                             "completion time": x.completion_time,
                              "priority": x.priority,
                              "wait time": x.wait_time,
                              "turnaround time": x.turnaround_time,
@@ -173,22 +174,8 @@ def kernal(
                 index=False)
 
         if write_both_results:
-            # reverse CPU so it is written to df in process order
-            CPU.reverse()
-            cpu_df = pd.DataFrame(CPU)
 
-            Scheduled_Processes.reverse()
-
-            # creating a list of dicts of all
-            # the process attributes
-            SP_dict_list = [{"id": x.id, "burst time": x.burst_time,
-                             "initial burst time": x.initial_burst_time,
-                             "arrival time": x.arrival_time,
-                             "priority": x.priority,
-                             "wait time": x.wait_time,
-                             "turnaround time": x.turnaround_time,
-                             } for x in Scheduled_Processes]
-
+            # Unpacking data from CPU
             processes_activity = {}
             for cpu_proc in CPU:
                 if f"{cpu_proc['id']}" in processes_activity:

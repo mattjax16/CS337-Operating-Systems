@@ -105,6 +105,9 @@ def RR_scheduler(
             # set end time to time
             end_time = time
 
+            # set the completion time of the process
+            process.completion_time = time
+
             Scheduled_Processes.append(process)
 
             # add processID, start, end to CPU

@@ -30,6 +30,7 @@ class Process:
         self.__burst_time = int(duty[0])
         self.__initial_burst_time = int(duty[0])
         self.__arrival_time = arrival_time
+        self.__completion_time = 0
         self.__priority = priority
         self.__response_time = 0
         self.__wait_time = 0
@@ -50,6 +51,10 @@ class Process:
     @property
     def arrival_time(self):
         return self.__arrival_time
+
+    @property
+    def completion_time(self):
+        return self.__completion_time
 
     @property
     def priority(self):
@@ -125,6 +130,11 @@ class Process:
     @arrival_time.setter
     def arrival_time(self, val):
         self.__arrival_time = val
+        return
+
+    @completion_time.setter
+    def completion_time(self, val):
+        self.__completion_time = val
         return
 
     @priority.setter
