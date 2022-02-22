@@ -78,7 +78,7 @@ def RR_scheduler(
     # ready.sort(key=lambda x: (x.duty_type, -x.times_worked_on))
 
     # popping the start of the process
-    process = ready.pop()
+    process = ready.pop(0)
 
     # indicate the process has been worked on
     process.process_worked_on()
