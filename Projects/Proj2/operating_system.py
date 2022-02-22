@@ -155,7 +155,7 @@ def kernal(
         # Writing CPU data
         if CPU_to_csv:
             # reverse CPU so it is written to df in process order
-            CPU.reverse()
+            CPU.sort(key = lambda x: x['id'],reverse=True)
             pd.DataFrame(CPU).to_csv(
                 f"data/CPU_Data/CPU_{sched}_{file_proc_name}results" +
                 f"{time}.csv",
@@ -163,7 +163,7 @@ def kernal(
 
         # Writing Scheduled_Processes data
         if Processes_to_csv:
-            Scheduled_Processes.reverse()
+            Scheduled_Processes.sort(key = lambda x:x.id,reverse=True)
 
             # creating a list of dicts of all
             # the process attributes
@@ -177,7 +177,9 @@ def kernal(
                              "times worked on": x.times_worked_on
                              } for x in Scheduled_Processes]
 
-            # Writing the CSV file
+
+            #Writing the CSV file
+            SP_dict_list.sort(key=lambda x:x['id'], reverse=True)
             pd.DataFrame(SP_dict_list).to_csv(
                 f"data/Sched_Process_Data/Scheduled_Processes" +
                 f"_{sched}_{file_proc_name}results{time}.csv",
@@ -234,8 +236,43 @@ def kernal(
                 padded_CPU_activities.append(dict(ChainMap(*proc_times)))
 
             # Make Process activity df
-            padded_CPU_activities.reverse()
+            padded_CPU_activities.sort(key= lambda x:x["p id"],reverse=True)
             cpu_df = pd.DataFrame(padded_CPU_activities)
+
+
+            """
+            Making IO wait times DF
+            """
+            io_df_list = []
+            for proc in Scheduled_Processes:
+
+                proc_io_dict = {"io id": proc.id}
+
+                #loop through all the io waiting times
+                for index, io_wait in enumerate(proc.io_waiting_times):
+                    proc_io_dict[f'io start {index}'] = io_wait[0]
+                    proc_io_dict[f'io end {index}'] = io_wait[1]
+
+                io_df_list.append(proc_io_dict)
+
+            # pad the io_df_list
+            max_io_wait_times = max([len(proc) for proc in io_df_list])
+            for proc_id, proc_io_times in enumerate(io_df_list):
+                if len(proc_io_times) < max_io_wait_times:  # padding the processes
+                    for num in range(len(proc_io_times) + 1, max_io_wait_times + 1):
+                        # making default padding stats
+                        proc_io_times[f'io start {index}'] = -1
+                        proc_io_times[f'io end {index}'] = -1
+
+            #making df
+            io_df_list.sort(key= lambda x:x["io id"],reverse=True)
+            io_df = pd.DataFrame(io_df_list)
+
+
+
+
+
+
 
             # creating a list of dicts of all
             # the process attributes
@@ -249,11 +286,12 @@ def kernal(
                              } for x in Scheduled_Processes]
 
             # making dataframe
+            SP_dict_list.sort(key= lambda x:x["id"],reverse=True)
             sp_df = pd.DataFrame(SP_dict_list)
 
             # Combining the 2 dataframe
-            main_df = pd.concat([sp_df, cpu_df], axis=1)
-            main_df.drop('p id', inplace=True, axis=1)
+            main_df = pd.concat([sp_df, cpu_df,io_df], axis=1)
+            main_df.drop(['p id', 'io id'], inplace=True, axis=1)
 
             main_df.to_csv(
                 f"data/Combined_Data/All" +

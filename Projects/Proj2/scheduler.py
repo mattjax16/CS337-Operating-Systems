@@ -97,7 +97,7 @@ def RR_scheduler(
         process.run_process()
 
         #run the waiting list
-        run_wait(ready,wait)
+        run_wait(ready,wait,time)
 
 
         if process.times_worked_on == 1:
@@ -147,11 +147,16 @@ def RR_scheduler(
             process.change_status()
 
 
-            # If process isn't done and needs I/O append it to ready list
-            wait.append(process)
+            new_io_wait_times = process.io_waiting_times
+            new_io_wait_times.append([time,0])
+            process.io_waiting_times =  new_io_wait_times
+
 
             # set end time to time
             end_time = time
+
+            # If process isn't done and needs I/O append it to ready list
+            wait.append(process)
 
             # add processID, start, end to CPU
             CPU.append(dict(id=process.id,
@@ -700,7 +705,7 @@ def add_ready(processes, ready, time):
 
         time: this is an integer that represents the current time, where simulation starts
             at time zero and time is incremented by one after each time slice.
-    :param process:
+
     :return:
     '''
     # sort the processes list
@@ -717,25 +722,33 @@ def add_ready(processes, ready, time):
     return
 
 
-def run_wait( ready, wait):
+def run_wait( ready, wait, time):
     '''
     A process to have all the processes in the wait time run and if any of
     them are done waiting add to ready queue
 
-    ready: this is a list of processes with current arrival time.
-                Meaning, if the arrival time of a process is less than
-                the current time, it should be in the ready list.
-                Therefore, this list holds only processes that have
-                arrived at the ready list. It also requires that the
-                processes does not have I/0 time that needs to be waiting
+    Parameters:
+        ready: this is a list of processes with current arrival time.
+                    Meaning, if the arrival time of a process is less than
+                    the current time, it should be in the ready list.
+                    Therefore, this list holds only processes that have
+                    arrived at the ready list. It also requires that the
+                    processes does not have I/0 time that needs to be waiting
 
-    waiting: this is a list of all the processes that are waiting for I/O input
+        waiting: this is a list of all the processes that are waiting for I/O input
 
+        time: this is an integer that represents the current time, where simulation starts
+                at time zero and time is incremented by one after each time slice.
     :return:
     '''
 
     for index, proc in enumerate(wait):
         proc.run_process()
         if proc.duty_type == "CPU":
-            ready.append(wait.pop(index))
+            changed_proc = wait.pop(index)
+            changed_proc.io_waiting_times[-1] = (
+                changed_proc.io_waiting_times[-1][0],
+                time
+            )
+            ready.append(changed_proc)
             ready[-1].change_status()

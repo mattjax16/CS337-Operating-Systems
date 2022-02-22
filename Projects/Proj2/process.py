@@ -39,6 +39,7 @@ class Process:
         self.__turnaround_time = 0
         self.__status = "running"
         self.__times_worked_on = 0
+        self.__io_waiting_times = []
         return
 
     # Defining getters
@@ -87,6 +88,16 @@ class Process:
     def total_IO_time(self):
         total_io_time = self.__initial_duty[1::2]
         return sum(total_io_time)
+
+    @property
+    def num_IO_times(self):
+        total_io_time = self.__initial_duty[1::2]
+        return len(total_io_time)
+
+    @property
+    def io_waiting_times(self):
+        return self.__io_waiting_times
+
 
     @property
     def burst_time(self):
@@ -173,6 +184,10 @@ class Process:
     def times_worked_on(self, val):
         self.__times_worked_on = val
         return
+
+    @io_waiting_times.setter
+    def io_waiting_times(self, val):
+        self.__io_waiting_times = val
 
     def process_worked_on(self):
         '''
