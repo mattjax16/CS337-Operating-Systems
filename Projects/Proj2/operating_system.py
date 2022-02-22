@@ -15,6 +15,7 @@ import scheduler
 from process import Process
 from datetime import datetime as dt
 import numpy as np
+from collections import ChainMap
 
 # Libraries for plotting
 import matplotlib as mpl
@@ -28,7 +29,7 @@ import palettable
 def kernal(
         selected_scheduler,
         processes=None,
-        quantum = 0,
+        quantum=0,
         debug=True,
         CPU_to_csv=False,
         Processes_to_csv=False,
@@ -69,10 +70,9 @@ def kernal(
         if debug:
             print(f"Warning no processes were passed!! Making test Processes")
 
-        processes = [Process(1, [5,6,7], 0, 30), Process(2, [4,3,3], 3, 35),
-                     Process(3, [2,3,4], 4, 36),
-                     Process(4, [5,2,7], 7, 20)]
-
+        processes = [Process(1, [5, 6, 7], 0, 30), Process(2, [4, 3, 3], 3, 35),
+                     Process(3, [2, 3, 4], 4, 36),
+                     Process(4, [5, 2, 7], 7, 20)]
 
     # adding the proccesses to the ready list
     # increment time until there is one
@@ -100,7 +100,6 @@ def kernal(
                 Scheduled_Processes,
                 time,
                 debug=debug)
-
 
     # Once all the processes in the CPU that have finished
     # and calculate their wait time and turn around time
@@ -190,36 +189,72 @@ def kernal(
                              "turnaround time": x.turnaround_time,
                              } for x in Scheduled_Processes]
 
-
             processes_activity = {}
             for cpu_proc in CPU:
                 if f"{cpu_proc['id']}" in processes_activity:
-                    processes_activity[f"{cpu_proc['id']}"] += [{'start' :
-                                                              cpu_proc['Start'],
-                                                          'finish':
-                                                              cpu_proc['Finish']
-                                                          }]
+                    processes_activity[f"{cpu_proc['id']}"] += [{'start '
+                                                                + str(len(
+                        processes_activity[f"{cpu_proc['id']}"])+1):
+                                                                     cpu_proc['start'],
+                                                                 'finish '
+                                                                + str(len(
+                                                                     processes_activity[f"{cpu_proc['id']}"])+1):
+                                                                     cpu_proc['finish'],
+                                                                 'priority '
+                                                                + str(len(
+                                                                     processes_activity[f"{cpu_proc['id']}"])+1):
+                                                                     cpu_proc['priority']}]
                 else:
-                    processes_activity[f"{cpu_proc['id']}"] = [{'start':
-                                                                     cpu_proc[
-                                                                         'Start'],
-                                                                 'finish':
-                                                                     cpu_proc[
-                                                                         'Finish'],
-                                                                'id':
-                                                                    cpu_proc[
-                                                                        'id']
-                                                                 }]
+                    processes_activity[f"{cpu_proc['id']}"] = [{'start 1':cpu_proc['start'],
+                                                                'finish 1':cpu_proc['finish'],
+                                                                'priority 1':cpu_proc['priority']}]
 
-            # making Start Stop dicts for
-            sp_df = pd.DataFrame(SP_dict_list)
+            # making Start Stop df for all data
+            # start by padding data
+            padded_CPU_activities = []
+            max_times_worked = max([len(proc) for proc in processes_activity.values()])
+            for proc_id, proc_times in processes_activity.items():
+                if len(proc_times) < max_times_worked: #padding the processes
+                    for num in range(len(proc_times)+1,max_times_worked+1):
+
+                        # making default padding stats
+                        proc_times.append({f"start {num}": -1,
+                                           f"finish {num}": -1,
+                                           f"priority {num}": 1})
+
+
+                # add the id of the process
+                proc_times.reverse()
+                proc_times.append({"p id": int(proc_id)})
+
+                # concat all the dictionaries and add them to padded
+                # activities
+                padded_CPU_activities.append(dict(ChainMap(*proc_times)))
+
 
             # Make Process activity df
-            cpu_df = pd.DataFrame(processes_activity)
+            padded_CPU_activities.reverse()
+            cpu_df = pd.DataFrame(padded_CPU_activities)
+
+
+            # creating a list of dicts of all
+            # the process attributes
+            SP_dict_list = [{"id": x.id, "burst time": x.burst_time,
+                             "initial burst time": x.initial_burst_time,
+                                 "arrival time": x.arrival_time,
+                                 "final priority": x.priority,
+                                 "wait time": x.wait_time,
+                                 "turnaround time": x.turnaround_time,
+                                 "response time": x.turnaround_time,
+                                 } for x in Scheduled_Processes]
+
+            # making dataframe
+            sp_df = pd.DataFrame(SP_dict_list)
+
 
             # Combining the 2 dataframe
             main_df = pd.concat([sp_df, cpu_df], axis=1)
-            main_df.drop(["Priority"], inplace=True, axis=1)
+            main_df.drop('p id', inplace=True)
 
             main_df.to_csv(
                 f"data/Combined_Data/All" +
@@ -245,8 +280,8 @@ def calc_wait_and_tunaround(CPU, Scheduled_Processes):
     Scheduled_Processes.sort(key=lambda x: x.id, reverse=True)
 
     for cpu_info, proc in zip(CPU, Scheduled_Processes):
-        proc.wait_time = cpu_info['Start'] - proc.arrival_time
-        proc.turnaround_time = cpu_info['Finish'] - proc.arrival_time
+        proc.wait_time = cpu_info['start'] - proc.arrival_time
+        proc.turnaround_time = cpu_info['finish'] - proc.arrival_time
 
     return
 
@@ -262,14 +297,14 @@ def plotCPU(cpu_results, title="CPU Results Timeline"):
     '''
 
     # making the timeline plot
-    fig = px.timeline(cpu_results, x_start="Start", x_end="Finish", y="id",
-                      color="Priority", labels={"id": "Process ID"})
+    fig = px.timeline(cpu_results, x_start="Start", x_end="finish", y="id",
+                      color="priority", labels={"id": "Process ID"})
 
     # adding the title
     fig.update_layout(title_text=title, title_x=0.5)
 
     # setting up the x axis by finding the delta
-    cpu_results['delta'] = cpu_results['Finish'] - cpu_results['Start']
+    cpu_results['delta'] = cpu_results['finish'] - cpu_results['Start']
     fig.data[0].x = cpu_results.delta.tolist()
     fig.layout.xaxis = dict(
         tickmode='linear',
@@ -295,7 +330,7 @@ def plotCPU(cpu_results, title="CPU Results Timeline"):
 def plotKernalResults(
     kernal_results,
     title="Scheduled Processes Results Timeline",
-    stats = True,
+    stats=True,
     figsize=(
         10,
         6)):
@@ -333,7 +368,8 @@ def plotKernalResults(
     linewidth = 230 / kernal_results.shape[0]
 
     # Making the greyed out timeline
-    arrival_timeline = ax.eventplot(kernal_results["id"].values[:,np.newaxis],
+    arrival_timeline = ax.eventplot(kernal_results["id"].values[:,
+                                                                np.newaxis],
                                     orientation='vertical',
                                     lineoffsets=arrival_processes_offsets,
                                     linelengths=arrival_processes_turnaround_times,
@@ -391,16 +427,18 @@ def plotKernalResults(
     # Setting the title
     ax.set_title(title)
 
-
     # Adding stats
     if stats:
-        ### TODO : ADD BOLDING
-        ax.text(0.75, 0.95, f"Avg Wait Time: "
-                            f"{kernal_results['turnaround time'].mean()}\n" +
-                f"Avg Turn-Around Time: {kernal_results['wait time'].mean()}\n"
-                , transform=ax.transAxes,
-                fontsize=9,
-                verticalalignment='top')
+        # TODO : ADD BOLDING
+        ax.text(
+            0.75,
+            0.95,
+            f"Avg Wait Time: "
+            f"{kernal_results['turnaround time'].mean()}\n" +
+            f"Avg Turn-Around Time: {kernal_results['wait time'].mean()}\n",
+            transform=ax.transAxes,
+            fontsize=9,
+            verticalalignment='top')
 
     # making the legend
     custom_lines = [mpl.lines.Line2D([0], [0], color="blue", lw=6),
@@ -421,15 +459,12 @@ def plotKernalResults(
 def main():
     # Run the kernel with RR and base test processes
     kernal(scheduler.RR_scheduler, quantum=2,
-                            file_proc_name="test"
-                            , CPU_to_csv=True)
-
-
+           file_proc_name="test", CPU_to_csv=True)
 
     # Importing the results from RR test
-    rr_results_all = pd.read_csv("data/Combined_Data/All_RR_Q2_test_results.csv")
+    rr_results_all = pd.read_csv(
+        "data/Combined_Data/All_RR_Q2_test_results.csv")
     rr_results_cpu = pd.read_csv("data/CPU_Data/CPU_RR_Q2_test_results.csv")
-
 
     # Plotting the Results
     plotCPU(rr_results_cpu, "RR Test Results Timeline")

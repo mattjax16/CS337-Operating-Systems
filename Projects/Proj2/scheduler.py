@@ -107,11 +107,11 @@ def RR_scheduler(
 
             Scheduled_Processes.append(process)
 
-            # add processID, start, end to CPU (this will be useful later)
+            # add processID, start, end to CPU
             CPU.append(dict(id=process.id,
-                            Start=start_time,
-                            Finish=end_time,
-                            Priority=process.priority))
+                            start=start_time,
+                            finish=end_time,
+                            priority=process.priority))
 
             if debug:
                 print(
@@ -124,11 +124,11 @@ def RR_scheduler(
     # set end time to time
     end_time = time
 
-    # add processID, start, end to CPU (this will be useful later)
+    # add processID, start, end to CPU 
     CPU.append(dict(id=process.id,
-                    Start=start_time,
-                    Finish=end_time,
-                    Priority=process.priority))
+                    start=start_time,
+                    finish=end_time,
+                    priority=process.priority))
 
     return time
 
@@ -208,11 +208,11 @@ def FCFS_scheduler(
     # set end time to time
     end_time = time
 
-    # add processID, start, end to CPU (this will be useful later)
+    # add processID, start, end to CPU 
     CPU.append(dict(id=process.id,
-                    Start=start_time,
-                    Finish=end_time,
-                    Priority=process.priority))
+                    start=start_time,
+                    finish=end_time,
+                    priority=process.priority))
 
     Scheduled_Processes.append(process)
 
@@ -284,11 +284,11 @@ def SJF_scheduler(processes, ready, CPU, Scheduled_Processes, time,
     # set end time to time
     end_time = time
 
-    # add processID, start, end to CPU (this will be useful later)
+    # add processID, start, end to CPU 
     CPU.append(dict(id=process.id,
-                    Start=start_time,
-                    Finish=end_time,
-                    Priority=process.priority))
+                    start=start_time,
+                    finish=end_time,
+                    priority=process.priority))
 
     Scheduled_Processes.append(process)
 
@@ -384,11 +384,11 @@ def Priority_scheduler(
     # set end time to time
     end_time = time
 
-    # add processID, start, end to CPU (this will be useful later)
+    # add processID, start, end to CPU 
     CPU.append(dict(id=process.id,
-                    Start=start_time,
-                    Finish=end_time,
-                    Priority=process.priority))
+                    start=start_time,
+                    finish=end_time,
+                    priority=process.priority))
 
     Scheduled_Processes.append(process)
 
@@ -486,11 +486,11 @@ def Priority_Turnaround_scheduler(processes, ready, CPU, Scheduled_Processes,
     # set end time to time
     end_time = time
 
-    # add processID, start, end to CPU (this will be useful later)
+    # add processID, start, end to CPU 
     CPU.append(dict(id=process.id,
-                    Start=start_time,
-                    Finish=end_time,
-                    Priority=process.priority))
+                    start=start_time,
+                    finish=end_time,
+                    priority=process.priority))
 
     Scheduled_Processes.append(process)
 
@@ -585,11 +585,11 @@ def Priority_Aging_scheduler(processes, ready, CPU, Scheduled_Processes,
     # set end time to time
     end_time = time
 
-    # add processID, start, end to CPU (this will be useful later)
+    # add processID, start, end to CPU 
     CPU.append(dict(id=process.id,
-                    Start=start_time,
-                    Finish=end_time,
-                    Priority=process.priority))
+                    start=start_time,
+                    finish=end_time,
+                    priority=process.priority))
 
     Scheduled_Processes.append(process)
 
