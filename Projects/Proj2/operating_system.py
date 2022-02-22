@@ -101,9 +101,9 @@ def kernal(
                 time,
                 debug=debug)
 
-    # Once all the processes in the CPU that have finished
-    # and calculate their wait time and turn around time
-    calc_wait_and_tunaround(CPU, Scheduled_Processes)
+    # Once all the processes in the Processes have been scheduled
+    # calculate their wait time and turn around time
+    calc_wait_and_tunaround(Scheduled_Processes)
 
     # Write data to csv files if either
     # CPU_to_csv or Processes_to_csv is True
@@ -142,6 +142,7 @@ def kernal(
         elif debug:
             print(f"Error {selected_scheduler} is not a valid " +
                   f"scheduling function!!")
+            exit()
 
         # Writing CPU data
         if CPU_to_csv:
@@ -241,7 +242,7 @@ def kernal(
 
             # Combining the 2 dataframe
             main_df = pd.concat([sp_df, cpu_df], axis=1)
-            main_df.drop('p id', inplace=True)
+            main_df.drop('p id', inplace=True,axis=1)
 
             main_df.to_csv(
                 f"data/Combined_Data/All" +
@@ -251,24 +252,19 @@ def kernal(
     return
 
 
-def calc_wait_and_tunaround(CPU, Scheduled_Processes):
+def calc_wait_and_tunaround(Scheduled_Processes):
     '''
-    Calculates the wait tiem and turn around for all the schuedled processes
-
-    :param CPU: this is a list that simulates the CPU by holding beginning runtime
-            and end of runtime for each process. This is the same as the Gantt bar
-            that we have been using in lecture slides at the bottom of each example.
+    Calculates the wait time and turn around for all the scheduled processes
     :param Scheduled_Processes: this is a list of all the process that have been scheduled
     :return:
     '''
 
-    # Sort the CPU and Schedled_process based on their id
-    CPU.sort(key=lambda x: x['id'], reverse=True)
+    # Sort the Scheduled_Processes based on their id
     Scheduled_Processes.sort(key=lambda x: x.id, reverse=True)
+    for proc in Scheduled_Processes:
+        proc.turnaround_time = proc.completion_time - proc.arrival_time
+        proc.wait_time = proc.turnaround_time - proc.total_CPU_time
 
-    for cpu_info, proc in zip(CPU, Scheduled_Processes):
-        proc.wait_time = cpu_info['start'] - proc.arrival_time
-        proc.turnaround_time = cpu_info['finish'] - proc.arrival_time
 
     return
 
@@ -291,7 +287,7 @@ def plotCPU(cpu_results, title="CPU Results Timeline"):
     fig.update_layout(title_text=title, title_x=0.5)
 
     # setting up the x axis by finding the delta
-    cpu_results['delta'] = cpu_results['finish'] - cpu_results['Start']
+    cpu_results['delta'] = cpu_results['finish'] - cpu_results['start']
     fig.data[0].x = cpu_results.delta.tolist()
     fig.layout.xaxis = dict(
         tickmode='linear',

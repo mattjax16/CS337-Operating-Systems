@@ -7,6 +7,8 @@ Matthew Bass
 
 This is a file to create a Process class
 '''
+import numpy as np
+
 
 class Process:
     # The Process class implements a process for the scheduling sim
@@ -75,6 +77,16 @@ class Process:
     @property
     def initial_duty(self):
         return self.__inital_duty
+
+    @property
+    def total_CPU_time(self):
+        total_cpu_time = self.__initial_duty[0::2]
+        return sum(total_cpu_time)
+
+    @property
+    def total_IO_time(self):
+        total_io_time = self.__initial_duty[1::2]
+        return sum(total_io_time)
 
     @property
     def burst_time(self):
