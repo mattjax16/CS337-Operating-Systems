@@ -15,6 +15,7 @@ import scheduler
 from process import Process
 from datetime import datetime as dt
 import numpy as np
+from sklearn import preprocessing
 from collections import ChainMap
 
 # Libraries for plotting
@@ -181,35 +182,40 @@ def kernal(
             for cpu_proc in CPU:
                 if f"{cpu_proc['id']}" in processes_activity:
                     processes_activity[f"{cpu_proc['id']}"] += [{'start '
-                                                                + str(len(
-                        processes_activity[f"{cpu_proc['id']}"])+1):
-                                                                     cpu_proc['start'],
+                                                                 + str(len(
+                        processes_activity[f"{cpu_proc['id']}"]) + 1):
+                                                                     cpu_proc[
+                                                                         'start'],
                                                                  'finish '
-                                                                + str(len(
-                                                                     processes_activity[f"{cpu_proc['id']}"])+1):
-                                                                     cpu_proc['finish'],
+                                                                 + str(len(
+                                                                     processes_activity[
+                                                                         f"{cpu_proc['id']}"]) + 1):
+                                                                     cpu_proc[
+                                                                         'finish'],
                                                                  'priority '
-                                                                + str(len(
-                                                                     processes_activity[f"{cpu_proc['id']}"])+1):
-                                                                     cpu_proc['priority']}]
+                                                                 + str(len(
+                                                                     processes_activity[
+                                                                         f"{cpu_proc['id']}"]) + 1):
+                                                                     cpu_proc[
+                                                                         'priority']}]
                 else:
-                    processes_activity[f"{cpu_proc['id']}"] = [{'start 1':cpu_proc['start'],
-                                                                'finish 1':cpu_proc['finish'],
-                                                                'priority 1':cpu_proc['priority']}]
+                    processes_activity[f"{cpu_proc['id']}"] = [
+                        {'start 1': cpu_proc['start'],
+                         'finish 1': cpu_proc['finish'],
+                         'priority 1': cpu_proc['priority']}]
 
             # making Start Stop df for all data
             # start by padding data
             padded_CPU_activities = []
-            max_times_worked = max([len(proc) for proc in processes_activity.values()])
+            max_times_worked = max(
+                [len(proc) for proc in processes_activity.values()])
             for proc_id, proc_times in processes_activity.items():
-                if len(proc_times) < max_times_worked: #padding the processes
-                    for num in range(len(proc_times)+1,max_times_worked+1):
-
+                if len(proc_times) < max_times_worked:  # padding the processes
+                    for num in range(len(proc_times) + 1, max_times_worked + 1):
                         # making default padding stats
                         proc_times.append({f"start {num}": -1,
                                            f"finish {num}": -1,
-                                           f"priority {num}": 1})
-
+                                           f"priority {num}": -1})
 
                 # add the id of the process
                 proc_times.reverse()
@@ -219,30 +225,27 @@ def kernal(
                 # activities
                 padded_CPU_activities.append(dict(ChainMap(*proc_times)))
 
-
             # Make Process activity df
             padded_CPU_activities.reverse()
             cpu_df = pd.DataFrame(padded_CPU_activities)
-
 
             # creating a list of dicts of all
             # the process attributes
             SP_dict_list = [{"id": x.id, "burst time": x.burst_time,
                              "initial burst time": x.initial_burst_time,
-                                 "arrival time": x.arrival_time,
-                                 "final priority": x.priority,
-                                 "wait time": x.wait_time,
-                                 "turnaround time": x.turnaround_time,
-                                 "response time": x.turnaround_time,
-                                 } for x in Scheduled_Processes]
+                             "arrival time": x.arrival_time,
+                             "final priority": x.priority,
+                             "wait time": x.wait_time,
+                             "turnaround time": x.turnaround_time,
+                             "response time": x.turnaround_time,
+                             } for x in Scheduled_Processes]
 
             # making dataframe
             sp_df = pd.DataFrame(SP_dict_list)
 
-
             # Combining the 2 dataframe
             main_df = pd.concat([sp_df, cpu_df], axis=1)
-            main_df.drop('p id', inplace=True,axis=1)
+            main_df.drop('p id', inplace=True, axis=1)
 
             main_df.to_csv(
                 f"data/Combined_Data/All" +
@@ -264,7 +267,6 @@ def calc_wait_and_tunaround(Scheduled_Processes):
     for proc in Scheduled_Processes:
         proc.turnaround_time = proc.completion_time - proc.arrival_time
         proc.wait_time = proc.turnaround_time - proc.total_CPU_time
-
 
     return
 
@@ -311,14 +313,14 @@ def plotCPU(cpu_results, title="CPU Results Timeline"):
 
 # defining a function to plot Scheduled_Processes data along with CPU data
 def plotKernalResults(
-    kernal_results,
-    title="Scheduled Processes Results Timeline",
-    stats=True,
-    figsize=(
-        10,
-        6)):
+        kernal_results,
+        title="Scheduled Processes Results Timeline",
+        stats=True,
+        figsize=(
+                10,
+                6)):
     '''
-    A function to plot the kernal results df from
+    A function to plot the kernal results df from (All data)
     operating_system.py
 
     :param kernal_results: (dataframe) the combined results from the kernal
@@ -329,30 +331,46 @@ def plotKernalResults(
     :return:
     '''
 
+    """
+    Initializing the plot and figure along with
+    vars used by all graphs
+    """
     # making the figure and plot
     fig, ax = plt.subplots(figsize=figsize, tight_layout=True)
 
-    # Setting up the process priority colors by normalizing them
-    processes_colors = kernal_results["priority"].values
-    processes_colors = (processes_colors - np.min(processes_colors)) / \
-                       (np.max(processes_colors) + processes_colors / 50 - np.min(
-                           processes_colors))
+    # Setting up the process priority colors to normalizing them
+    process_priorities = kernal_results.filter(like='priority')
+    process_priorities = process_priorities.drop("final priority",axis=1).replace(-1, 10000)
+
+    # making all non entries the min
+    process_priorities = process_priorities.replace(10000,
+                                                    np.min(process_priorities.values))
+
+    processes_colors = process_priorities.values
+
+    processes_colors_normed_p0 = (processes_colors - np.min(processes_colors))
+
+    processes_colors_normed_p1 = (np.max(processes_colors) + processes_colors /
+                                50 - np.min( processes_colors))
+
+    processes_colors_normed = processes_colors_normed_p0/processes_colors_normed_p1
+
     color = mpl.cm.get_cmap('plasma',
-                            np.max(kernal_results["priority"].values))
-    my_cmap = color(processes_colors)  # making the color map
+                            np.max(processes_colors))
+    my_cmap = color(processes_colors_normed)  # making the color map
+
+    # Calculating line widths
+    linewidth = 230 / kernal_results.shape[0]
 
     # Getting the process avial time offset points  and turnaround times
     arrival_processes_turnaround_times = kernal_results["turnaround time"] \
         .values
     arrival_processes_offsets = kernal_results["arrival time"].values + \
-        arrival_processes_turnaround_times / 2
+                                arrival_processes_turnaround_times / 2
 
-    # Calculating line widths
-    linewidth = 230 / kernal_results.shape[0]
-
-    # Making the greyed out timeline
+    # Making the transparent waiting time timeline
     arrival_timeline = ax.eventplot(kernal_results["id"].values[:,
-                                                                np.newaxis],
+                                    np.newaxis],
                                     orientation='vertical',
                                     lineoffsets=arrival_processes_offsets,
                                     linelengths=arrival_processes_turnaround_times,
@@ -363,7 +381,7 @@ def plotKernalResults(
     # Getting the process offset points  and initial burst times
     processes_burst_times = kernal_results["inital burst time"].values
     processes_offsets = kernal_results[
-        "Start"].values + processes_burst_times / 2
+                            "Start"].values + processes_burst_times / 2
 
     # Making the main timeline
     main_timeline = ax.eventplot(kernal_results["id"].values[:, np.newaxis],
@@ -400,12 +418,12 @@ def plotKernalResults(
 
     ax.grid(axis="x")
 
-    # setting the colorbar for the timeline
-    norm = mpl.colors.Normalize(vmin=np.min(kernal_results["priority"].values),
-                                vmax=np.max(kernal_results["priority"].values))
-
-    fig.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=color),
-                 label="Priority (Higher = More Priority)")
+    # # setting the colorbar for the timeline
+    # norm = mpl.colors.Normalize(vmin=np.min(kernal_results["priority"].values),
+    #                             vmax=np.max(kernal_results["priority"].values))
+    #
+    # fig.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=color),
+    #              label="Priority (Higher = More Priority)")
 
     # Setting the title
     ax.set_title(title)
@@ -450,7 +468,11 @@ def main():
     rr_results_cpu = pd.read_csv("data/CPU_Data/CPU_RR_Q2_test_results.csv")
 
     # Plotting the Results
-    plotCPU(rr_results_cpu, "RR Test Results Timeline")
+    # plotCPU(rr_results_cpu, "RR Test Results Timeline")
+
+    # Plotting the Results (Enhanced Extension)
+    plotKernalResults(kernal_results=rr_results_all,
+                      title="RR Test Results Timeline (Enhanced Extension)")
 
 
 if __name__ == "__main__":
