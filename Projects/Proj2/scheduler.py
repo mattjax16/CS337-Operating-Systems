@@ -22,6 +22,7 @@ Project 2 Algorithms
 def RR_scheduler(
         processes,
         ready,
+        wait,
         CPU,
         Scheduled_Processes,
         time,
@@ -47,7 +48,10 @@ def RR_scheduler(
                 Meaning, if the arrival time of a process is less than
                 the current time, it should be in the ready list.
                 Therefore, this list holds only processes that have
-                arrived at the ready list.
+                arrived at the ready list. It also requires that the
+                processes does not have I/0 time that needs to be waiting
+
+            wait: this is a list of all the processes that are waiting for I/O input
 
             CPU: this is a list that simulates the CPU by holding beginning runtime
                 and end of runtime for each process. This is the same as the Gantt bar
@@ -67,11 +71,11 @@ def RR_scheduler(
                 switch. It is useful for debugging.
         '''
 
-    # Wait for the processes to be in ready queue
-    wait_for_process(processes, ready, time)
+    # Wait for the processes to be in ready queue or wait queue
+    wait_for_process(processes, ready, time, wait)
 
     ## pick process that is ready with CPU work
-    ready.sort(key=lambda x: (x.duty_type, -x.times_worked_on))
+    # ready.sort(key=lambda x: (x.duty_type, -x.times_worked_on))
 
     # popping the start of the process
     process = ready.pop()
@@ -86,17 +90,24 @@ def RR_scheduler(
     # or until the process is done
     for q_time in range(quantum):
 
-        # run the process
-        process.run_process()
-
         # add 1 to time
         time += 1
+
+       # run the process
+        process.run_process()
+
+        #run the waiting list
+        run_wait(ready,wait)
+
 
         if process.times_worked_on == 1:
             process.response_time = process.arrival_time - time
 
-        # add processes that arrived now to ready queue
-        add_ready(processes, ready, time)
+
+
+
+
+
 
         # if the process is done add it to Scheduled_Processes and terminate
         # the loop
@@ -116,10 +127,44 @@ def RR_scheduler(
                             finish=end_time,
                             priority=process.priority))
 
+
+
+            # add processes that arrived now to ready queue
+            add_ready(processes, ready, time)
+
             if debug:
                 print(
                     f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
             return time
+
+
+
+
+        #if the process is in the IO state now
+        if process.duty_type == "I/O":
+
+            # change the processes status
+            process.change_status()
+
+
+            # If process isn't done and needs I/O append it to ready list
+            wait.append(process)
+
+            # set end time to time
+            end_time = time
+
+            # add processID, start, end to CPU
+            CPU.append(dict(id=process.id,
+                            start=start_time,
+                            finish=end_time,
+                            priority=process.priority))
+
+            if debug:
+                print(
+                    f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
+
+            return time
+
 
     # If process isn't done append it to ready list
     ready.append(process)
@@ -132,6 +177,13 @@ def RR_scheduler(
                     start=start_time,
                     finish=end_time,
                     priority=process.priority))
+
+
+    # add processes that arrived now to ready queue
+    add_ready(processes, ready, time)
+
+    if debug:
+        print(f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
 
     return time
 
@@ -603,7 +655,7 @@ def Priority_Aging_scheduler(processes, ready, CPU, Scheduled_Processes,
     return time
 
 
-def wait_for_process(processes, ready, time):
+def wait_for_process(processes, ready, time, wait = [], debug = False):
     '''
     Waits for a processes to be in the ready queue. If the ready queue has
     nothing add the processes to the ready list
@@ -614,10 +666,22 @@ def wait_for_process(processes, ready, time):
     :param time:
     :return:
     '''
-    while (len(ready) == 0):
+
+    wait_flag = (len(ready) == 0)
+    while wait_flag:
+        if debug:
+            print("In wait_for_process")
         add_ready(processes, ready, time)
         if len(ready) == 0:
+            run_wait(ready,wait)
             time += 1
+
+        # if there is now something in the ready list
+        if ready:
+            wait_flag = False
+
+    if debug:
+        print("Done with wait_for_process")
     return
 
 def add_ready(processes, ready, time):
@@ -651,3 +715,27 @@ def add_ready(processes, ready, time):
         else:
             arrival_flag = False
     return
+
+
+def run_wait( ready, wait):
+    '''
+    A process to have all the processes in the wait time run and if any of
+    them are done waiting add to ready queue
+
+    ready: this is a list of processes with current arrival time.
+                Meaning, if the arrival time of a process is less than
+                the current time, it should be in the ready list.
+                Therefore, this list holds only processes that have
+                arrived at the ready list. It also requires that the
+                processes does not have I/0 time that needs to be waiting
+
+    waiting: this is a list of all the processes that are waiting for I/O input
+
+    :return:
+    '''
+
+    for index, proc in enumerate(wait):
+        proc.run_process()
+        if proc.duty_type == "CPU":
+            ready.append(wait.pop(index))
+            ready[-1].change_status()

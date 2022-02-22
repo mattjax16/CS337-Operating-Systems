@@ -64,6 +64,8 @@ def kernal(
 
     ready = []  # A list to hold the process scheduled ready to be scheduled
 
+    wait = [] # A list to hold all processes with I/0 work (waiting for input)
+
     time = 0  # creating the intial time for the kernal
 
     # If there are no processes passed make a test list of 5 processes
@@ -83,15 +85,20 @@ def kernal(
             time += 1
 
     # runnig schuedler for all processes in ready
-    while processes or ready:
-        if selected_scheduler != scheduler.RR_scheduler:
+    while processes or ready or wait:
+
+        if debug:
+            print("Still running kernal\n")
+
+        if selected_scheduler == scheduler.RR_scheduler:
             time = selected_scheduler(
-                processes,
-                ready,
-                CPU,
-                Scheduled_Processes,
-                time,
-                quantum,
+                processes = processes,
+                ready = ready,
+                wait = wait,
+                CPU = CPU,
+                Scheduled_Processes = Scheduled_Processes,
+                time=time,
+                quantum=quantum,
                 debug=debug)
         else:
             time = selected_scheduler(
@@ -167,6 +174,7 @@ def kernal(
                              "priority": x.priority,
                              "wait time": x.wait_time,
                              "turnaround time": x.turnaround_time,
+                             "times worked on": x.times_worked_on
                              } for x in Scheduled_Processes]
 
             # Writing the CSV file
@@ -282,7 +290,7 @@ def plotCPU(cpu_results, title="CPU Results Timeline"):
     '''
 
     # making the timeline plot
-    fig = px.timeline(cpu_results, x_start="Start", x_end="finish", y="id",
+    fig = px.timeline(cpu_results, x_start="start", x_end="finish", y="id",
                       color="priority", labels={"id": "Process ID"})
 
     # adding the title
@@ -350,6 +358,7 @@ def plotKernalResults(
 
     processes_colors_normed_p0 = (processes_colors - np.min(processes_colors))
 
+    ## TODO WHY DID I HAVE 50 - npmin()
     processes_colors_normed_p1 = (np.max(processes_colors) + processes_colors /
                                 50 - np.min( processes_colors))
 
@@ -362,34 +371,40 @@ def plotKernalResults(
     # Calculating line widths
     linewidth = 230 / kernal_results.shape[0]
 
-    # Getting the process avial time offset points  and turnaround times
-    arrival_processes_turnaround_times = kernal_results["turnaround time"] \
-        .values
-    arrival_processes_offsets = kernal_results["arrival time"].values + \
-                                arrival_processes_turnaround_times / 2
+    # for q_work in range(1,kernal_results["times worked on"].max()+1):
 
-    # Making the transparent waiting time timeline
-    arrival_timeline = ax.eventplot(kernal_results["id"].values[:,
-                                    np.newaxis],
-                                    orientation='vertical',
-                                    lineoffsets=arrival_processes_offsets,
-                                    linelengths=arrival_processes_turnaround_times,
-                                    linewidths=linewidth,
-                                    colors=my_cmap,
-                                    alpha=0.4)
+        # If it is the first time the processes has been worked on
+        # Getting the process avival time offset points  and turnaround times
+    # arrival_processes_turnaround_times = kernal_results["turnaround time"] \
+    #     .values
+    # arrival_processes_offsets = kernal_results["arrival time"].values + \
+    #                             arrival_processes_turnaround_times / 2
 
-    # Getting the process offset points  and initial burst times
-    processes_burst_times = kernal_results["inital burst time"].values
-    processes_offsets = kernal_results[
-                            "Start"].values + processes_burst_times / 2
 
-    # Making the main timeline
-    main_timeline = ax.eventplot(kernal_results["id"].values[:, np.newaxis],
-                                 orientation='vertical',
-                                 lineoffsets=processes_offsets,
-                                 linelengths=processes_burst_times,
-                                 linewidths=linewidth,
-                                 colors=my_cmap)
+    # # Making the transparent waiting time timeline
+    # arrival_timeline = ax.eventplot(kernal_results["id"].values[:,
+    #                                 np.newaxis],
+    #                                 orientation='vertical',
+    #                                 lineoffsets=arrival_processes_offsets,
+    #                                 linelengths=arrival_processes_turnaround_times,
+    #                                 linewidths=linewidth,
+    #                                 colors=my_cmap,
+    #                                 alpha=0.4)
+    #
+    # # Getting the process offset points  and initial burst times
+    # processes_burst_times = kernal_results["inital burst time"].values
+    # processes_offsets = kernal_results[
+    #                         "Start"].values + processes_burst_times / 2
+    #
+    # # Making the main timeline
+    # main_timeline = ax.eventplot(kernal_results["id"].values[:, np.newaxis],
+    #                              orientation='vertical',
+    #                              lineoffsets=processes_offsets,
+    #                              linelengths=processes_burst_times,
+    #                              linewidths=linewidth,
+    #                              colors=my_cmap)
+
+
 
     # making the ticks and grid
     #   Doing a labels list to get rid of padding proc ids
@@ -458,6 +473,9 @@ def plotKernalResults(
 
 # Main Testing function
 def main():
+
+
+
     # Run the kernel with RR and base test processes
     kernal(scheduler.RR_scheduler, quantum=2,
            file_proc_name="test", CPU_to_csv=True)
@@ -468,11 +486,11 @@ def main():
     rr_results_cpu = pd.read_csv("data/CPU_Data/CPU_RR_Q2_test_results.csv")
 
     # Plotting the Results
-    # plotCPU(rr_results_cpu, "RR Test Results Timeline")
+    plotCPU(rr_results_cpu, "RR Test Results Timeline")
 
     # Plotting the Results (Enhanced Extension)
-    plotKernalResults(kernal_results=rr_results_all,
-                      title="RR Test Results Timeline (Enhanced Extension)")
+    # plotKernalResults(kernal_results=rr_results_all,
+    #                   title="RR Test Results Timeline (Enhanced Extension)")
 
 
 if __name__ == "__main__":
