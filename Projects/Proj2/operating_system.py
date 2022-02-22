@@ -168,7 +168,7 @@ def kernal(
             # creating a list of dicts of all
             # the process attributes
             SP_dict_list = [{"id": x.id, "burst time": x.burst_time,
-                             "inital burst time": x.inital_burst_time,
+                             "initial burst time": x.initial_burst_time,
                              "arrival time": x.arrival_time,
                              "completion time": x.completion_time,
                              "priority": x.priority,
@@ -282,7 +282,8 @@ def kernal(
                              "final priority": x.priority,
                              "wait time": x.wait_time,
                              "turnaround time": x.turnaround_time,
-                             "response time": x.turnaround_time,
+                             "response time": x.response_time,
+                             "times worked on": x.times_worked_on
                              } for x in Scheduled_Processes]
 
             # making dataframe
@@ -360,6 +361,8 @@ def plotCPU(cpu_results, title="CPU Results Timeline"):
 # defining a function to plot Scheduled_Processes data along with CPU data
 def plotKernalResults(
         kernal_results,
+        plot_wait_times = True,
+        plot_io_times = True,
         title="Scheduled Processes Results Timeline",
         stats=True,
         figsize=(
@@ -372,6 +375,9 @@ def plotKernalResults(
     :param kernal_results: (dataframe) the combined results from the kernal
     simulation
     :param title: (string) the title for the plot
+    :param plot_wait_times: (bool) if true wait times when no work is being
+    done will be shown
+    :param plot_io_times: (bool) if true io working times will be shown
     :param stats: (bool) if true average wait and turn around time will be shown
     :param figsize: (tuple) the figure size of the plot
     :return:
@@ -409,39 +415,74 @@ def plotKernalResults(
     # Calculating line widths
     linewidth = 230 / kernal_results.shape[0]
 
-    # for q_work in range(1,kernal_results["times worked on"].max()+1):
+    # First plot the underlying wait times
+    if plot_wait_times:
+        processes_turnaround_times = kernal_results["turnaround time"] \
+            .values
+        waiting_processes_offsets = kernal_results["arrival time"].values + \
+                                    processes_turnaround_times / 2
 
-        # If it is the first time the processes has been worked on
-        # Getting the process avival time offset points  and turnaround times
-    # arrival_processes_turnaround_times = kernal_results["turnaround time"] \
-    #     .values
-    # arrival_processes_offsets = kernal_results["arrival time"].values + \
-    #                             arrival_processes_turnaround_times / 2
+        # Making the transparent waiting time timeline
+        waiting_timeline = ax.eventplot(kernal_results["id"].values[:,
+                                        np.newaxis],
+                                        orientation='vertical',
+                                        lineoffsets=waiting_processes_offsets,
+                                        linelengths=processes_turnaround_times,
+                                        linewidths=linewidth,
+                                        colors=my_cmap,
+                                        alpha=0.4)
 
 
-    # # Making the transparent waiting time timeline
-    # arrival_timeline = ax.eventplot(kernal_results["id"].values[:,
-    #                                 np.newaxis],
-    #                                 orientation='vertical',
-    #                                 lineoffsets=arrival_processes_offsets,
-    #                                 linelengths=arrival_processes_turnaround_times,
-    #                                 linewidths=linewidth,
-    #                                 colors=my_cmap,
-    #                                 alpha=0.4)
-    #
-    # # Getting the process offset points  and initial burst times
-    # processes_burst_times = kernal_results["inital burst time"].values
-    # processes_offsets = kernal_results[
-    #                         "Start"].values + processes_burst_times / 2
-    #
-    # # Making the main timeline
-    # main_timeline = ax.eventplot(kernal_results["id"].values[:, np.newaxis],
-    #                              orientation='vertical',
-    #                              lineoffsets=processes_offsets,
-    #                              linelengths=processes_burst_times,
-    #                              linewidths=linewidth,
-    #                              colors=my_cmap)
+    # plot the time waiting for IO
+    if plot_io_times:
 
+        #loop through all the the io start and end times
+        io_starts = kernal_results.filter(like='io start')
+        io_ends  = kernal_results.filter(like='io end')
+
+        for io_start, io_end in zip(io_starts,io_ends):
+
+            # get the numpy array of the values
+            io_end_vals = kernal_results[io_end].values
+            io_start_vals = kernal_results[io_start].values
+
+            io_length = io_end_vals - io_start_vals
+
+            io_offsets = io_start_vals + (io_length / 2)
+
+            # Making the transparent waiting time timeline
+            io_timeline = ax.eventplot(kernal_results["id"].values[:,
+                                            np.newaxis],
+                                            orientation='vertical',
+                                            lineoffsets=io_offsets,
+                                            linelengths=io_length,
+                                            linewidths=linewidth,
+                                            color = "grey",
+                                            alpha=0.65)
+
+
+
+
+
+    for q_work in range(1,kernal_results["times worked on"].max()+1):
+
+        # Getting the process offset points  and initial burst times
+        processes_cpu_times = kernal_results[f"finish {q_work}"].values - \
+                              kernal_results[f"start {q_work}"].values
+        processes_offsets = kernal_results[
+                                f"start {q_work}"].values + processes_cpu_times / 2
+
+        processes_ids = kernal_results["id"].values
+
+
+
+        # Making the main timeline
+        main_timeline = ax.eventplot(processes_ids[:, np.newaxis],
+                                     orientation='vertical',
+                                     lineoffsets=processes_offsets,
+                                     linelengths=processes_cpu_times,
+                                     linewidths=linewidth,
+                                     colors=my_cmap)
 
 
     # making the ticks and grid
@@ -472,11 +513,11 @@ def plotKernalResults(
     ax.grid(axis="x")
 
     # # setting the colorbar for the timeline
-    # norm = mpl.colors.Normalize(vmin=np.min(kernal_results["priority"].values),
-    #                             vmax=np.max(kernal_results["priority"].values))
-    #
-    # fig.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=color),
-    #              label="Priority (Higher = More Priority)")
+    norm = mpl.colors.Normalize(vmin=np.min(processes_colors),
+                                vmax=np.max(processes_colors))
+
+    fig.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=color),
+                 label="Priority (Higher = More Priority)")
 
     # Setting the title
     ax.set_title(title)
@@ -485,21 +526,28 @@ def plotKernalResults(
     if stats:
         # TODO : ADD BOLDING
         ax.text(
-            0.75,
-            0.95,
+            0.764,
+            0.97,
             f"Avg Wait Time: "
             f"{kernal_results['turnaround time'].mean()}\n" +
-            f"Avg Turn-Around Time: {kernal_results['wait time'].mean()}\n",
+            f"Avg Turn-Around Time: {kernal_results['wait time'].mean()}\n" +
+            f"Avg Response Time: {kernal_results['response time'].mean()}\n",
             transform=ax.transAxes,
             fontsize=9,
             verticalalignment='top')
 
     # making the legend
-    custom_lines = [mpl.lines.Line2D([0], [0], color="blue", lw=6),
-                    mpl.lines.Line2D([0], [0], color="blue", alpha=0.4, lw=6)]
-    ax.legend(custom_lines, [" (solid) = running",
-                             " (transparent) = waiting"],
-              loc="upper left")
+    custom_lines = [mpl.lines.Line2D([0], [0], color="blue", lw=6)]
+    lines_legend = [" (solid) = CPU"]
+    if plot_wait_times:
+        custom_lines.append(mpl.lines.Line2D([0], [0], color="blue", alpha=0.4, lw=6))
+        lines_legend.append(" (transparent) = Wait")
+    if plot_io_times:
+        custom_lines.append(mpl.lines.Line2D([0], [0], color="Grey", alpha=0.65, lw=6))
+        lines_legend.append(" (transparent grey) = I/O")
+
+
+    ax.legend(custom_lines, lines_legend, loc="upper left", fontsize = 9)
 
     plt.tight_layout()
 
@@ -524,11 +572,11 @@ def main():
     rr_results_cpu = pd.read_csv("data/CPU_Data/CPU_RR_Q2_test_results.csv")
 
     # Plotting the Results
-    plotCPU(rr_results_cpu, "RR Test Results Timeline")
+    # plotCPU(rr_results_cpu, "RR Test Results Timeline")
 
     # Plotting the Results (Enhanced Extension)
-    # plotKernalResults(kernal_results=rr_results_all,
-    #                   title="RR Test Results Timeline (Enhanced Extension)")
+    plotKernalResults(kernal_results=rr_results_all,
+                      title="RR Test Results Timeline (Enhanced Extension)")
 
 
 if __name__ == "__main__":
