@@ -101,12 +101,6 @@ def RR_scheduler(
         if process.times_worked_on == 1:
             process.response_time = time - process.arrival_time
 
-
-
-
-
-
-
         # if the process is done add it to Scheduled_Processes and terminate
         # the loop
         if sum(process.duty) == 0:
@@ -127,15 +121,12 @@ def RR_scheduler(
 
 
 
-            # add processes that arrived now to ready queue
-            add_ready(processes, ready, time)
+
 
             if debug:
                 print(
                     f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
             return time
-
-
 
 
         #if the process is in the IO state now
@@ -181,14 +172,670 @@ def RR_scheduler(
                     finish=end_time,
                     priority=process.priority))
 
-
-    # add processes that arrived now to ready queue
-    add_ready(processes, ready, time)
-
     if debug:
         print(f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
 
     return time
+
+
+
+
+def SRT_scheduler(
+        processes,
+        ready,
+        wait,
+        CPU,
+        Scheduled_Processes,
+        time,
+        debug=True):
+    ''' preemptive Shortest Remaining Time (SRT) scheduler
+
+        The Shortest Remaining Time (SRT) algorithm is a scheduling algorithm
+        where a processes is run for the specified quantum time or until it
+        is finished then it is paused and another process in the ready queue
+        is started. It accomplishes this by popping then appending the
+        process back to the ready list if the process still has work to be done
+        This make the algorithim preemptive at the end of the time slice.
+        Some caveats are that long processes may have to wait n*q
+        time units for another time slice where n is the number of other
+        processes and q is the quantum or length of time slice
+
+        Parameters:
+            processes: is a list of all the processes in the simulation,
+                whether they arrived or not, they are in this list.
+
+            ready: this is a list of processes with current arrival time.
+                Meaning, if the arrival time of a process is less than
+                the current time, it should be in the ready list.
+                Therefore, this list holds only processes that have
+                arrived at the ready list. It also requires that the
+                processes does not have I/0 time that needs to be waiting
+
+            wait: this is a list of all the processes that are waiting for I/O input
+
+            CPU: this is a list that simulates the CPU by holding beginning runtime
+                and end of runtime for each process. This is the same as the Gantt bar
+                that we have been using in lecture slides at the bottom of each example.
+
+            Scheduled_Processes: this is a list of all the process that have been scheduled
+
+            time: this is an integer that represents the current time, where simulation starts
+                at time zero and time is incremented by one after each time slice.
+
+            debug: this is a boolean with the default value of True. It controls a print
+                statement that shows process ID, start time, and end time at each context
+                switch. It is useful for debugging.
+        '''
+
+    # Wait for the processes to be in ready queue or wait queue
+    wait_for_process(processes, ready, time, wait)
+
+
+    # popping the start of the process
+    ready.sort(key = lambda x: x.current_CPU_time)
+    process = ready.pop(0)
+
+    # indicate the process has been worked on
+    process.process_worked_on()
+
+    # set start time to time
+    start_time = time
+
+    # Work on the chosen process until there is a shorter process
+    # or until the process is done
+    for w_time in range(process.current_CPU_time):
+
+        # add 1 to time
+        time += 1
+
+       # run the process
+        process.run_process()
+
+        #run the waiting list
+        run_wait(ready,wait,time)
+
+        if process.times_worked_on == 1:
+            process.response_time = time - process.arrival_time
+
+        # if the process is done add it to Scheduled_Processes and terminate
+        # the loop
+        if sum(process.duty) == 0:
+
+            # set end time to time
+            end_time = time
+
+            # set the completion time of the process
+            process.completion_time = time
+
+            Scheduled_Processes.append(process)
+
+            # add processID, start, end to CPU
+            CPU.append(dict(id=process.id,
+                            start=start_time,
+                            finish=end_time,
+                            priority=process.priority))
+
+
+
+            # add processes that arrived now to ready queue
+            add_ready(processes, ready, time)
+
+            if debug:
+                print(
+                    f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
+            return time
+
+
+        #if the process is in the IO state now
+        if process.duty_type == "I/O":
+
+            # change the processes status
+            process.change_status()
+
+
+            new_io_wait_times = process.io_waiting_times
+            new_io_wait_times.append([time,0])
+            process.io_waiting_times =  new_io_wait_times
+
+
+            # set end time to time
+            end_time = time
+
+            # If process isn't done and needs I/O append it to ready list
+            wait.append(process)
+
+            # add processID, start, end to CPU
+            CPU.append(dict(id=process.id,
+                            start=start_time,
+                            finish=end_time,
+                            priority=process.priority))
+
+            # add processes that arrived now to ready queue
+            add_ready(processes, ready, time)
+
+            if debug:
+                print(
+                    f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
+
+            return time
+
+
+        #Checking if the process is still the shortest remaining job
+        # add processes that arrived now to ready queue
+        add_ready(processes, ready, time)
+        # popping the start of the process
+        ready.sort(key=lambda x: x.current_CPU_time)
+        if ready and ready[0].current_CPU_time < process.current_CPU_time:
+            # If process isn't done append it to ready list
+            ready.append(process)
+
+            # set end time to time
+            end_time = time
+
+            # add processID, start, end to CPU
+            CPU.append(dict(id=process.id,
+                            start=start_time,
+                            finish=end_time,
+                            priority=process.priority))
+
+            if debug:
+                print(
+                    f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
+
+            return time
+
+
+
+def Preemptive_Priority_scheduler(
+        processes,
+        ready,
+        wait,
+        CPU,
+        Scheduled_Processes,
+        time,
+        debug=True):
+    ''' preemptive Preemptive_Priority scheduler
+
+        The Preemptive Priority algorithm is a scheduling algorithm
+        where a processes is run for the specified quantum time or until it
+        is finished then it is paused and another process in the ready queue
+        is started. It accomplishes this by popping then appending the
+        process back to the ready list if the process still has work to be done
+        This make the algorithim preemptive at the end of the time slice.
+        Some caveats are that long processes may have to wait n*q
+        time units for another time slice where n is the number of other
+        processes and q is the quantum or length of time slice
+
+        Parameters:
+            processes: is a list of all the processes in the simulation,
+                whether they arrived or not, they are in this list.
+
+            ready: this is a list of processes with current arrival time.
+                Meaning, if the arrival time of a process is less than
+                the current time, it should be in the ready list.
+                Therefore, this list holds only processes that have
+                arrived at the ready list. It also requires that the
+                processes does not have I/0 time that needs to be waiting
+
+            wait: this is a list of all the processes that are waiting for I/O input
+
+            CPU: this is a list that simulates the CPU by holding beginning runtime
+                and end of runtime for each process. This is the same as the Gantt bar
+                that we have been using in lecture slides at the bottom of each example.
+
+            Scheduled_Processes: this is a list of all the process that have been scheduled
+
+            time: this is an integer that represents the current time, where simulation starts
+                at time zero and time is incremented by one after each time slice.
+
+            debug: this is a boolean with the default value of True. It controls a print
+                statement that shows process ID, start time, and end time at each context
+                switch. It is useful for debugging.
+        '''
+
+    # Wait for the processes to be in ready queue or wait queue
+    wait_for_process(processes, ready, time, wait)
+
+
+    # popping the start of the process
+    ready.sort(key = lambda x: x.priority, reverse = True)
+    process = ready.pop(0)
+
+    # indicate the process has been worked on
+    process.process_worked_on()
+
+    # set start time to time
+    start_time = time
+
+    # Work on the chosen process until there is one with higher priority
+    # or until the process is done
+    for w_time in range(process.current_CPU_time):
+
+        # add 1 to time
+        time += 1
+
+       # run the process
+        process.run_process()
+
+        #run the waiting list
+        run_wait(ready,wait,time)
+
+        if process.times_worked_on == 1:
+            process.response_time = time - process.arrival_time
+
+        # if the process is done add it to Scheduled_Processes and terminate
+        # the loop
+        if sum(process.duty) == 0:
+
+            # set end time to time
+            end_time = time
+
+            # set the completion time of the process
+            process.completion_time = time
+
+            Scheduled_Processes.append(process)
+
+            # add processID, start, end to CPU
+            CPU.append(dict(id=process.id,
+                            start=start_time,
+                            finish=end_time,
+                            priority=process.priority))
+
+
+
+            # add processes that arrived now to ready queue
+            add_ready(processes, ready, time)
+
+            if debug:
+                print(
+                    f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
+            return time
+
+
+        #if the process is in the IO state now
+        if process.duty_type == "I/O":
+
+            # change the processes status
+            process.change_status()
+
+
+            new_io_wait_times = process.io_waiting_times
+            new_io_wait_times.append([time,0])
+            process.io_waiting_times =  new_io_wait_times
+
+
+            # set end time to time
+            end_time = time
+
+            # If process isn't done and needs I/O append it to ready list
+            wait.append(process)
+
+            # add processID, start, end to CPU
+            CPU.append(dict(id=process.id,
+                            start=start_time,
+                            finish=end_time,
+                            priority=process.priority))
+
+            # add processes that arrived now to ready queue
+            add_ready(processes, ready, time)
+
+            if debug:
+                print(
+                    f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
+
+            return time
+
+
+        #Checking if the process is still the highest PRiority
+        # add processes that arrived now to ready queue
+        add_ready(processes, ready, time)
+        # popping the start of the process
+        ready.sort(key=lambda x: x.priority, reverse = True)
+        if ready and ready[0].priority > process.priority:
+            # If process isn't done append it to ready list
+            ready.append(process)
+
+            # set end time to time
+            end_time = time
+
+            # add processID, start, end to CPU
+            CPU.append(dict(id=process.id,
+                            start=start_time,
+                            finish=end_time,
+                            priority=process.priority))
+
+            if debug:
+                print(
+                    f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
+
+            return time
+
+
+
+
+
+
+def MLFQ_scheduler(
+        processes,
+        ready,
+        wait,
+        CPU,
+        Scheduled_Processes,
+        time,
+        debug=True):
+    ''' Preemptive Multilevel Feedback Queue
+
+        The Preemptive Multilevel Feedback Queue algorithm is a scheduling algorithm
+        where a processes is run for the specified quantum time or until it
+        is finished then it is paused and another process in the ready queue
+        is started. It accomplishes this by popping then appending the
+        process back to the ready list if the process still has work to be done
+        This make the algorithim preemptive at the end of the time slice.
+        Some caveats are that long processes may have to wait n*q
+        time units for another time slice where n is the number of other
+        processes and q is the quantum or length of time slice
+
+        Parameters:
+            processes: is a list of all the processes in the simulation,
+                whether they arrived or not, they are in this list.
+
+            ready: this is a list of processes with current arrival time.
+                Meaning, if the arrival time of a process is less than
+                the current time, it should be in the ready list.
+                Therefore, this list holds only processes that have
+                arrived at the ready list. It also requires that the
+                processes does not have I/0 time that needs to be waiting
+
+            wait: this is a list of all the processes that are waiting for I/O input
+
+            CPU: this is a list that simulates the CPU by holding beginning runtime
+                and end of runtime for each process. This is the same as the Gantt bar
+                that we have been using in lecture slides at the bottom of each example.
+
+            Scheduled_Processes: this is a list of all the process that have been scheduled
+
+            time: this is an integer that represents the current time, where simulation starts
+                at time zero and time is incremented by one after each time slice.
+
+            debug: this is a boolean with the default value of True. It controls a print
+                statement that shows process ID, start time, and end time at each context
+                switch. It is useful for debugging.
+        '''
+
+    # Wait for the processes to be in ready queue or wait queue
+    wait_for_process(processes, ready, time, wait)
+
+
+    # popping the start of the process
+    ready.sort(key = lambda x: (x.queue, x.times_worked_on, x.arrival_time))
+    process = ready.pop(0)
+
+    # indicate the process has been worked on
+    process.process_worked_on()
+
+    # set start time to time
+    start_time = time
+
+    # Working on the process based on the queue number
+    if process.queue == 0:
+        # Work on the chosen process for at most the quantum time
+        # of 4 or until the process is done
+        for q_time in range(4):
+
+            # add 1 to time
+            time += 1
+
+            # run the process
+            process.run_process()
+
+            # run the waiting list
+            run_wait(ready, wait, time)
+
+            if process.times_worked_on == 1:
+                process.response_time = time - process.arrival_time
+
+            # if the process is done add it to Scheduled_Processes and terminate
+            # the loop
+            if sum(process.duty) == 0:
+
+                # set end time to time
+                end_time = time
+
+                # set the completion time of the process
+                process.completion_time = time
+
+                Scheduled_Processes.append(process)
+
+                # add processID, start, end to CPU
+                CPU.append(dict(id=process.id,
+                                start=start_time,
+                                finish=end_time,
+                                priority=process.priority))
+
+                if debug:
+                    print(
+                        f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
+                return time
+
+            # if the process is in the IO state now
+            if process.duty_type == "I/O":
+
+                # change the processes status
+                process.change_status()
+
+                new_io_wait_times = process.io_waiting_times
+                new_io_wait_times.append([time, 0])
+                process.io_waiting_times = new_io_wait_times
+
+                # set end time to time
+                end_time = time
+
+                # If process isn't done and needs I/O append it to ready list
+                wait.append(process)
+
+                # add processID, start, end to CPU
+                CPU.append(dict(id=process.id,
+                                start=start_time,
+                                finish=end_time,
+                                priority=process.priority))
+
+                if debug:
+                    print(
+                        f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
+
+                return time
+
+        # If process isn't done add it to the next queue
+        # append it to ready list
+        process.queue += 1
+        ready.append(process)
+
+        # set end time to time
+        end_time = time
+
+        # add processID, start, end to CPU
+        CPU.append(dict(id=process.id,
+                        start=start_time,
+                        finish=end_time,
+                        priority=process.priority))
+
+        if debug:
+            print(
+                f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
+
+        return time
+
+    elif process.queue == 1:
+        # Work on the chosen process for at most the quantum time
+        # of  or until the process is done
+        for q_time in range(4):
+
+            # add 1 to time
+            time += 1
+
+            # run the process
+            process.run_process()
+
+            # run the waiting list
+            run_wait(ready, wait, time)
+
+            if process.times_worked_on == 1:
+                process.response_time = time - process.arrival_time
+
+            # if the process is done add it to Scheduled_Processes and terminate
+            # the loop
+            if sum(process.duty) == 0:
+
+                # set end time to time
+                end_time = time
+
+                # set the completion time of the process
+                process.completion_time = time
+
+                Scheduled_Processes.append(process)
+
+                # add processID, start, end to CPU
+                CPU.append(dict(id=process.id,
+                                start=start_time,
+                                finish=end_time,
+                                priority=process.priority))
+
+                if debug:
+                    print(
+                        f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
+                return time
+
+            # if the process is in the IO state now
+            if process.duty_type == "I/O":
+
+                # change the processes status
+                process.change_status()
+
+                new_io_wait_times = process.io_waiting_times
+                new_io_wait_times.append([time, 0])
+                process.io_waiting_times = new_io_wait_times
+
+                # set end time to time
+                end_time = time
+
+                # If process isn't done and needs I/O append it to ready list
+                wait.append(process)
+
+                # add processID, start, end to CPU
+                CPU.append(dict(id=process.id,
+                                start=start_time,
+                                finish=end_time,
+                                priority=process.priority))
+
+                if debug:
+                    print(
+                        f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
+
+                return time
+
+        # If process isn't done add it to the next queue
+        # append it to ready list
+        process.queue += 1
+        ready.append(process)
+
+        # set end time to time
+        end_time = time
+
+        # add processID, start, end to CPU
+        CPU.append(dict(id=process.id,
+                        start=start_time,
+                        finish=end_time,
+                        priority=process.priority))
+
+        if debug:
+            print(
+                f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
+
+        return time
+    elif process.queue == 2:
+        pass
+
+
+
+
+
+    # Work on the chosen process for at most the quantum time
+    # or until the process is done
+    for w_time in range(process.current_CPU_time):
+
+        # add 1 to time
+        time += 1
+
+       # run the process
+        process.run_process()
+
+        #run the waiting list
+        run_wait(ready,wait,time)
+
+        if process.times_worked_on == 1:
+            process.response_time = time - process.arrival_time
+
+        # if the process is done add it to Scheduled_Processes and terminate
+        # the loop
+        if sum(process.duty) == 0:
+
+            # set end time to time
+            end_time = time
+
+            # set the completion time of the process
+            process.completion_time = time
+
+            Scheduled_Processes.append(process)
+
+            # add processID, start, end to CPU
+            CPU.append(dict(id=process.id,
+                            start=start_time,
+                            finish=end_time,
+                            priority=process.priority))
+
+
+
+            # add processes that arrived now to ready queue
+            add_ready(processes, ready, time)
+
+            if debug:
+                print(
+                    f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
+            return time
+
+
+        #if the process is in the IO state now
+        if process.duty_type == "I/O":
+
+            # change the processes status
+            process.change_status()
+
+
+            new_io_wait_times = process.io_waiting_times
+            new_io_wait_times.append([time,0])
+            process.io_waiting_times =  new_io_wait_times
+
+
+            # set end time to time
+            end_time = time
+
+            # If process isn't done and needs I/O append it to ready list
+            wait.append(process)
+
+            # add processID, start, end to CPU
+            CPU.append(dict(id=process.id,
+                            start=start_time,
+                            finish=end_time,
+                            priority=process.priority))
+
+            # add processes that arrived now to ready queue
+            add_ready(processes, ready, time)
+
+            if debug:
+                print(
+                    f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
+
+            return time
 
 
 
@@ -676,7 +1323,7 @@ def wait_for_process(processes, ready, time, wait = [], debug = False):
             print("In wait_for_process")
         add_ready(processes, ready, time)
         if len(ready) == 0:
-            run_wait(ready,wait)
+            run_wait(ready,wait,time)
             time += 1
 
         # if there is now something in the ready list

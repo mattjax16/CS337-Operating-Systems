@@ -39,6 +39,7 @@ class Process:
         self.__turnaround_time = 0
         self.__status = "running"
         self.__times_worked_on = 0
+        self.__queue = 0
         self.__io_waiting_times = []
         return
 
@@ -85,6 +86,14 @@ class Process:
         return sum(total_cpu_time)
 
     @property
+    def current_CPU_time(self):
+        cpu_times = self.__duty[0::2]
+        for cpu_time in cpu_times:
+            if cpu_time >0:
+                return cpu_time
+        return 0
+
+    @property
     def total_IO_time(self):
         total_io_time = self.__initial_duty[1::2]
         return sum(total_io_time)
@@ -116,6 +125,10 @@ class Process:
         return self.__times_worked_on
 
     @property
+    def queue(self):
+        return self.__queue
+
+    @property
     def duty_type(self):
         '''
         Indicates wether the next duty to be worked on is a
@@ -130,7 +143,7 @@ class Process:
                 duties_left.append(duty)
 
         # See if CPU or IO based on length
-        #if even CPU and odd I/0
+        # if even CPU and odd I/0
         if(len(duties_left)%2 == 1):
             return "CPU"
         else:
@@ -188,6 +201,10 @@ class Process:
     @io_waiting_times.setter
     def io_waiting_times(self, val):
         self.__io_waiting_times = val
+
+    @queue.setter
+    def queue(self, val):
+        self.__queue = val
 
     def process_worked_on(self):
         '''

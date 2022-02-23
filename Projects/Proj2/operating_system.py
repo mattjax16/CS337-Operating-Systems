@@ -100,6 +100,16 @@ def kernal(
                 time=time,
                 quantum=quantum,
                 debug=debug)
+        elif selected_scheduler == scheduler.SRT_scheduler or \
+                selected_scheduler == scheduler.Preemptive_Priority_scheduler:
+            time = selected_scheduler(
+                processes=processes,
+                ready=ready,
+                wait=wait,
+                CPU=CPU,
+                Scheduled_Processes=Scheduled_Processes,
+                time=time,
+                debug=debug)
         else:
             time = selected_scheduler(
                 processes,
@@ -137,8 +147,12 @@ def kernal(
             sched = "Priority"
         elif selected_scheduler == scheduler.Priority_Aging_scheduler:
             sched = "Priority_Aging"
+        elif selected_scheduler == scheduler.Preemptive_Priority_scheduler:
+            sched = "Preemptive_Priority"
         elif selected_scheduler == scheduler.Priority_Turnaround_scheduler:
             sched = "Priority_Turnaround"
+        elif selected_scheduler == scheduler.SRT_scheduler:
+            sched = "SRT"
         elif selected_scheduler == scheduler.RR_scheduler:
             if quantum > 0:
                 sched = f"RR_Q{quantum}"
@@ -563,7 +577,7 @@ def main():
 
 
     # Run the kernel with RR and base test processes
-    kernal(scheduler.RR_scheduler, quantum=2,
+    kernal(scheduler.Preemptive_Priority_scheduler, quantum=2,
            file_proc_name="test", CPU_to_csv=True)
 
     # Importing the results from RR test
@@ -571,12 +585,24 @@ def main():
         "data/Combined_Data/All_RR_Q2_test_results.csv")
     rr_results_cpu = pd.read_csv("data/CPU_Data/CPU_RR_Q2_test_results.csv")
 
+    # srt_test_results =  pd.read_csv(
+    #     "data/Combined_Data/All_SRT_test_results.csv")
+    # # Plotting the Results (Enhanced Extension)
+    # plotKernalResults(kernal_results=srt_test_results,
+    #                   title="SRT Test Results Timeline (Enhanced Extension)")
+
+    pp_test_results = pd.read_csv(
+        "data/Combined_Data/All_Preemptive_Priority_test_results.csv")
+    # Plotting the Results (Enhanced Extension)
+    plotKernalResults(kernal_results=pp_test_results,
+                      title="PP Test Results Timeline (Enhanced Extension)")
+
     # Plotting the Results
     # plotCPU(rr_results_cpu, "RR Test Results Timeline")
 
     # Plotting the Results (Enhanced Extension)
-    plotKernalResults(kernal_results=rr_results_all,
-                      title="RR Test Results Timeline (Enhanced Extension)")
+    # plotKernalResults(kernal_results=rr_results_all,
+    #                   title="RR Test Results Timeline (Enhanced Extension)")
 
 
 if __name__ == "__main__":
