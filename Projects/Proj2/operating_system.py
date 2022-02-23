@@ -25,13 +25,12 @@ import matplotlib.pyplot as plt
 import plotly.express as px
 
 
-
 def kernal(
         selected_scheduler,
         processes=None,
         quantum=0,
         debug=True,
-        CPU_to_csv=False,
+        CPU_To_Csv=False,
         Processes_to_csv=False,
         save_with_date=False,
         file_proc_name=None,
@@ -45,7 +44,7 @@ def kernal(
                     run for before it its put back to the waiting state (or finishes)
                     and the next process is started.
     :param debug: (Boolean) If true output messages will be printed from the selected_scheduler function
-    :param CPU_to_csv: (Boolean) if true results of CPU will be written to a csv
+    :param CPU_To_Csv: (Boolean) if true results of CPU will be written to a csv
     :param Processes_to_csv: (Boolean) if true results of Scheduled_Processes will be written to a csv
      :param save_with_date: (Boolean) if true results of csvs will be written with timestamp
      :param file_proc_name: (String) if passed csvs will be written with the
@@ -63,7 +62,7 @@ def kernal(
 
     ready = []  # A list to hold the process scheduled ready to be scheduled
 
-    wait = [] # A list to hold all processes with I/0 work (waiting for input)
+    wait = []  # A list to hold all processes with I/0 work (waiting for input)
 
     time = 0  # creating the intial time for the kernal
 
@@ -91,11 +90,11 @@ def kernal(
 
         if selected_scheduler == scheduler.RR_scheduler:
             time = selected_scheduler(
-                processes = processes,
-                ready = ready,
-                wait = wait,
-                CPU = CPU,
-                Scheduled_Processes = Scheduled_Processes,
+                processes=processes,
+                ready=ready,
+                wait=wait,
+                CPU=CPU,
+                Scheduled_Processes=Scheduled_Processes,
                 time=time,
                 quantum=quantum,
                 debug=debug)
@@ -124,8 +123,8 @@ def kernal(
     calc_wait_and_tunaround(Scheduled_Processes)
 
     # Write data to csv files if either
-    # CPU_to_csv or Processes_to_csv is True
-    if CPU_to_csv or Processes_to_csv or write_both_results:
+    # CPU_To_Csv or Processes_to_csv is True
+    if CPU_To_Csv or Processes_to_csv or write_both_results:
 
         if save_with_date:
             # get the current time for writing the file
@@ -169,9 +168,9 @@ def kernal(
             exit()
 
         # Writing CPU data
-        if CPU_to_csv:
+        if CPU_To_Csv:
             # reverse CPU so it is written to df in process order
-            CPU.sort(key = lambda x: x['id'],reverse=True)
+            CPU.sort(key=lambda x: x['id'], reverse=True)
             pd.DataFrame(CPU).to_csv(
                 f"data/CPU_Data/CPU_{sched}_{file_proc_name}results" +
                 f"{time}.csv",
@@ -179,7 +178,7 @@ def kernal(
 
         # Writing Scheduled_Processes data
         if Processes_to_csv:
-            Scheduled_Processes.sort(key = lambda x:x.id,reverse=True)
+            Scheduled_Processes.sort(key=lambda x: x.id, reverse=True)
 
             # creating a list of dicts of all
             # the process attributes
@@ -193,9 +192,8 @@ def kernal(
                              "times worked on": x.times_worked_on
                              } for x in Scheduled_Processes]
 
-
-            #Writing the CSV file
-            SP_dict_list.sort(key=lambda x:x['id'], reverse=True)
+            # Writing the CSV file
+            SP_dict_list.sort(key=lambda x: x['id'], reverse=True)
             pd.DataFrame(SP_dict_list).to_csv(
                 f"data/Sched_Process_Data/Scheduled_Processes" +
                 f"_{sched}_{file_proc_name}results{time}.csv",
@@ -207,23 +205,13 @@ def kernal(
             processes_activity = {}
             for cpu_proc in CPU:
                 if f"{cpu_proc['id']}" in processes_activity:
-                    processes_activity[f"{cpu_proc['id']}"] += [{'start '
-                                                                 + str(len(
-                        processes_activity[f"{cpu_proc['id']}"]) + 1):
-                                                                     cpu_proc[
-                                                                         'start'],
-                                                                 'finish '
-                                                                 + str(len(
-                                                                     processes_activity[
-                                                                         f"{cpu_proc['id']}"]) + 1):
-                                                                     cpu_proc[
-                                                                         'finish'],
-                                                                 'priority '
-                                                                 + str(len(
-                                                                     processes_activity[
-                                                                         f"{cpu_proc['id']}"]) + 1):
-                                                                     cpu_proc[
-                                                                         'priority']}]
+                    processes_activity[f"{cpu_proc['id']}"] += [{'start ' +
+                                                                 str(len(processes_activity[f"{cpu_proc['id']}"]) +
+                                                                     1): cpu_proc['start'], 'finish ' +
+                                                                 str(len(processes_activity[f"{cpu_proc['id']}"]) +
+                                                                     1): cpu_proc['finish'], 'priority ' +
+                                                                 str(len(processes_activity[f"{cpu_proc['id']}"]) +
+                                                                     1): cpu_proc['priority']}]
                 else:
                     processes_activity[f"{cpu_proc['id']}"] = [
                         {'start 1': cpu_proc['start'],
@@ -237,7 +225,9 @@ def kernal(
                 [len(proc) for proc in processes_activity.values()])
             for proc_id, proc_times in processes_activity.items():
                 if len(proc_times) < max_times_worked:  # padding the processes
-                    for num in range(len(proc_times) + 1, max_times_worked + 1):
+                    for num in range(
+                            len(proc_times) + 1,
+                            max_times_worked + 1):
                         # making default padding stats
                         proc_times.append({f"start {num}": -1,
                                            f"finish {num}": -1,
@@ -252,9 +242,8 @@ def kernal(
                 padded_CPU_activities.append(dict(ChainMap(*proc_times)))
 
             # Make Process activity df
-            padded_CPU_activities.sort(key= lambda x:x["p id"],reverse=True)
+            padded_CPU_activities.sort(key=lambda x: x["p id"], reverse=True)
             cpu_df = pd.DataFrame(padded_CPU_activities)
-
 
             """
             Making IO wait times DF
@@ -264,7 +253,7 @@ def kernal(
 
                 proc_io_dict = {"io id": proc.id}
 
-                #loop through all the io waiting times
+                # loop through all the io waiting times
                 for index, io_wait in enumerate(proc.io_waiting_times):
                     proc_io_dict[f'io start {index}'] = io_wait[0]
                     proc_io_dict[f'io end {index}'] = io_wait[1]
@@ -275,20 +264,16 @@ def kernal(
             max_io_wait_times = max([len(proc) for proc in io_df_list])
             for proc_id, proc_io_times in enumerate(io_df_list):
                 if len(proc_io_times) < max_io_wait_times:  # padding the processes
-                    for num in range(len(proc_io_times) + 1, max_io_wait_times + 1):
+                    for num in range(
+                            len(proc_io_times) + 1,
+                            max_io_wait_times + 1):
                         # making default padding stats
                         proc_io_times[f'io start {index}'] = -1
                         proc_io_times[f'io end {index}'] = -1
 
-            #making df
-            io_df_list.sort(key= lambda x:x["io id"],reverse=True)
+            # making df
+            io_df_list.sort(key=lambda x: x["io id"], reverse=True)
             io_df = pd.DataFrame(io_df_list)
-
-
-
-
-
-
 
             # creating a list of dicts of all
             # the process attributes
@@ -305,11 +290,11 @@ def kernal(
                              } for x in Scheduled_Processes]
 
             # making dataframe
-            SP_dict_list.sort(key= lambda x:x["id"],reverse=True)
+            SP_dict_list.sort(key=lambda x: x["id"], reverse=True)
             sp_df = pd.DataFrame(SP_dict_list)
 
             # Combining the 2 dataframe
-            main_df = pd.concat([sp_df, cpu_df,io_df], axis=1)
+            main_df = pd.concat([sp_df, cpu_df, io_df], axis=1)
             main_df.drop(['p id', 'io id'], inplace=True, axis=1)
 
             main_df.to_csv(
@@ -379,14 +364,14 @@ def plotCPU(cpu_results, title="CPU Results Timeline"):
 # defining a function to plot Scheduled_Processes data along with CPU data
 def plotKernalResults(
         kernal_results,
-        plot_wait_times = True,
-        plot_io_times = True,
+        plot_wait_times=True,
+        plot_io_times=True,
         title="Scheduled Processes Results Timeline",
         stats=True,
-        stats_text_size = 8,
+        stats_text_size=8,
         figsize=(
-                11,
-                6)):
+            11,
+            6)):
     '''
     A function to plot the kernal results df from (All data)
     operating_system.py
@@ -412,21 +397,22 @@ def plotKernalResults(
 
     # Setting up the process priority colors to normalizing them
     process_priorities = kernal_results.filter(like='priority')
-    process_priorities = process_priorities.drop("final priority",axis=1).replace(-1, 10000)
+    process_priorities = process_priorities.drop(
+        "final priority", axis=1).replace(-1, 10000)
 
     # making all non entries the min
-    process_priorities = process_priorities.replace(10000,
-                                                    np.min(process_priorities.values))
+    process_priorities = process_priorities.replace(
+        10000, np.min(process_priorities.values))
 
     processes_colors = process_priorities.values
 
     processes_colors_normed_p0 = (processes_colors - np.min(processes_colors))
 
-    ## TODO WHY DID I HAVE 50 - npmin()
+    # TODO WHY DID I HAVE 50 - npmin()
     processes_colors_normed_p1 = (np.max(processes_colors) + processes_colors /
-                                50 - np.min( processes_colors))
+                                  50 - np.min(processes_colors))
 
-    processes_colors_normed = processes_colors_normed_p0/processes_colors_normed_p1
+    processes_colors_normed = processes_colors_normed_p0 / processes_colors_normed_p1
 
     color = mpl.cm.get_cmap('plasma',
                             np.max(processes_colors))
@@ -435,21 +421,15 @@ def plotKernalResults(
     # Calculating line widths
     linewidth = 230 / kernal_results.shape[0]
 
-
-
-
-
-    for q_work in range(1,kernal_results["times worked on"].max()+1):
+    for q_work in range(1, kernal_results["times worked on"].max() + 1):
 
         # Getting the process offset points  and initial burst times
         processes_cpu_times = kernal_results[f"finish {q_work}"].values - \
-                              kernal_results[f"start {q_work}"].values
+            kernal_results[f"start {q_work}"].values
         processes_offsets = kernal_results[
-                                f"start {q_work}"].values + processes_cpu_times / 2
+            f"start {q_work}"].values + processes_cpu_times / 2
 
-        processes_ids = kernal_results["id"].values[: , np.newaxis]
-
-
+        processes_ids = kernal_results["id"].values[:, np.newaxis]
 
         # Making the main timeline
         main_timeline = ax.eventplot(processes_ids,
@@ -457,7 +437,7 @@ def plotKernalResults(
                                      lineoffsets=processes_offsets,
                                      linelengths=processes_cpu_times,
                                      linewidths=linewidth,
-                                     colors=my_cmap[:,q_work-1:,])
+                                     colors=my_cmap[:, q_work - 1:, ])
 
         # plot the wait times
         if plot_wait_times:
@@ -465,26 +445,25 @@ def plotKernalResults(
             # If it is the first time the process has been worked on
             if q_work == 1:
                 waiting_processes_lengths = kernal_results[f"start "
-                                                            f"" \
-                                                           f"{q_work}"].values - \
-                                            kernal_results[f"arrival "
-                                                           f"time"].values
+                                                           f""
+                                                           f"{q_work}"].values - kernal_results[f"arrival "
+                                                                                                f"time"].values
                 waiting_processes_offsets = kernal_results[
-                                                "arrival time"].values + \
-                                            (waiting_processes_lengths / 2)
+                    "arrival time"].values + \
+                    (waiting_processes_lengths / 2)
 
             else:
                 waiting_processes_lengths = (kernal_results[f"start "
-                                                            f"{q_work}"] - \
+                                                            f"{q_work}"] -
                                              kernal_results[f"finish "
                                                             f""
                                                             f""
                                                             f"{q_work-1}"]).values
-                waiting_processes_offsets = kernal_results[f"finish " \
-                                                           f"" \
+                waiting_processes_offsets = kernal_results[f"finish "
+                                                           f""
                                                            f"{q_work-1}"].values\
-                                            + \
-                                            (waiting_processes_lengths / 2)
+                    + \
+                    (waiting_processes_lengths / 2)
 
             # Making the transparent waiting time timeline
             waiting_timeline = ax.eventplot(processes_ids,
@@ -492,7 +471,7 @@ def plotKernalResults(
                                             lineoffsets=waiting_processes_offsets,
                                             linelengths=waiting_processes_lengths,
                                             linewidths=linewidth,
-                                            colors=my_cmap[:,q_work-1:,],
+                                            colors=my_cmap[:, q_work - 1:, ],
                                             alpha=0.4)
 
     # plot the time waiting for IO
@@ -568,8 +547,8 @@ def plotKernalResults(
             f"Wait Time "
             f"{kernal_results['turnaround time'].mean()}\n" +
             f"Turn-Around Time {kernal_results['wait time'].mean()}\n" +
-            f"Response Time {kernal_results['response time'].mean()}\n"+
-            f"CPU Time {kernal_results['total CPU time'].mean()}\n"+
+            f"Response Time {kernal_results['response time'].mean()}\n" +
+            f"CPU Time {kernal_results['total CPU time'].mean()}\n" +
             f"I/O Time {kernal_results['total I/O time'].mean()}\n",
             transform=ax.transAxes,
             fontsize=stats_text_size,
@@ -579,15 +558,24 @@ def plotKernalResults(
     custom_lines = [mpl.lines.Line2D([0], [0], color="blue", lw=6)]
     lines_legend = [" (solid) = CPU"]
     if plot_wait_times:
-        custom_lines.append(mpl.lines.Line2D([0], [0], color="blue", alpha=0.4, lw=6))
+        custom_lines.append(
+            mpl.lines.Line2D(
+                [0],
+                [0],
+                color="blue",
+                alpha=0.4,
+                lw=6))
         lines_legend.append(" (transparent) = Wait")
     if plot_io_times:
         custom_lines.append(mpl.lines.Line2D([0], [0], color="Grey",
                                              alpha=0.75, lw=6))
         lines_legend.append(" (transparent grey) = I/O")
 
-
-    ax.legend(custom_lines, lines_legend, loc="upper left", fontsize = stats_text_size)
+    ax.legend(
+        custom_lines,
+        lines_legend,
+        loc="upper left",
+        fontsize=stats_text_size)
 
     plt.tight_layout()
 
@@ -598,13 +586,13 @@ def plotKernalResults(
 
 
 # function to generate processes
-def generate_processes(n = 1000,
-                       split = 0.5,
-                       cpu_bound_range = [(8,12),(1,3)],
-                       io_bound_range = [(1,3),(8,12)],
-                       max_arrival_time = 50,
-                       max_priority = 50,
-                       duty_amt = 3):
+def generate_processes(n=1000,
+                       split=0.5,
+                       cpu_bound_range=[(8, 12), (1, 3)],
+                       io_bound_range=[(1, 3), (8, 12)],
+                       max_arrival_time=50,
+                       max_priority=50,
+                       duty_amt=3):
     '''
     This is a function to generate processes that are cpu and io bound processes
 
@@ -621,7 +609,7 @@ def generate_processes(n = 1000,
     '''
 
     # making choices 0 stands for cpu bound
-    choices =  np.random.choice([0, 1], size=(n,), p=[split, 1-split])
+    choices = np.random.choice([0, 1], size=(n,), p=[split, 1 - split])
 
     generated_processes = []
 
@@ -630,10 +618,10 @@ def generate_processes(n = 1000,
         if choice == 0:
             choice_duty = []
             for index in range(duty_amt):
-                if index%2 == 0:
+                if index % 2 == 0:
                     choice_duty.append(random.randint(cpu_bound_range[0][0],
                                                       cpu_bound_range[0][1]))
-                if index%2 == 1:
+                if index % 2 == 1:
                     choice_duty.append(random.randint(cpu_bound_range[1][0],
                                                       cpu_bound_range[1][1]))
         else:
@@ -648,8 +636,8 @@ def generate_processes(n = 1000,
 
         # Create the new Process
         new_proc = Process(idx, choice_duty,
-                           random.randint(1,max_arrival_time),
-                           random.randint(1,max_priority))
+                           random.randint(1, max_arrival_time),
+                           random.randint(1, max_priority))
 
         generated_processes.append(new_proc)
 
@@ -657,22 +645,19 @@ def generate_processes(n = 1000,
     return generated_processes
 
 
-
 # Main Testing function
 def main():
 
-
     test_processes = [Process(1, [9, 6, 7], 0, 30), Process(2, [14, 3, 7], 3,
                                                             35),
-                 Process(3, [3, 3, 13], 4, 36),
-                 Process(4, [6, 2, 7], 7, 20)]
+                      Process(3, [3, 3, 13], 4, 36),
+                      Process(4, [6, 2, 7], 7, 20)]
 
-
-    test_gen_procs = generate_processes(n = 20,max_arrival_time=16)
+    test_gen_procs = generate_processes(n=20, max_arrival_time=16)
 
     # Run the kernel with RR and base test processes
-    kernal(scheduler.MLFQ_scheduler, processes=test_gen_procs ,quantum=2,
-           file_proc_name="test_gen", CPU_to_csv=True)
+    kernal(scheduler.MLFQ_scheduler, processes=test_gen_procs, quantum=2,
+           file_proc_name="test_gen", CPU_To_Csv=True)
 
     gen_test_results = pd.read_csv(
         "data/Combined_Data/All_MLFQ_test_gen_results.csv")
@@ -706,7 +691,7 @@ def main():
     #     "data/Combined_Data/All_MLFQ_test_1_results.csv")
     # # Plotting the Results (Enhanced Extension)
     # plotKernalResults(kernal_results=mlfq_test_results,
-    #                   title="MLFQ Test Results Timeline (Enhanced Extension)")
+    # title="MLFQ Test Results Timeline (Enhanced Extension)")
 
     # Plotting the Results
     # plotCPU(rr_results_cpu, "RR Test Results Timeline")

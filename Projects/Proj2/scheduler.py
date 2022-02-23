@@ -8,9 +8,8 @@ Matthew Bass
 This is a file to the different process scheduling functions for the OS
 '''
 
-#Importing need libraries
+# Importing need libraries
 from process import Process
-
 
 
 '''
@@ -19,6 +18,7 @@ Project 2 Algorithms
 ###############################################################
 '''
 
+
 def RR_scheduler(
         processes,
         ready,
@@ -26,7 +26,7 @@ def RR_scheduler(
         CPU,
         Scheduled_Processes,
         time,
-        quantum = 2,
+        quantum=2,
         debug=True):
     ''' preemptive Round-Robin (RR) scheduler
 
@@ -74,7 +74,6 @@ def RR_scheduler(
     # Wait for the processes to be in ready queue or wait queue
     wait_for_process(processes, ready, time, wait)
 
-
     # popping the start of the process
     process = ready.pop(0)
 
@@ -91,12 +90,11 @@ def RR_scheduler(
         # add 1 to time
         time += 1
 
-       # run the process
+        #run the process
         process.run_process()
 
-        #run the waiting list
-        run_wait(ready,wait,time)
-
+        # run the waiting list
+        run_wait(ready, wait, time)
 
         if process.times_worked_on == 1:
             process.response_time = time - process.arrival_time
@@ -119,27 +117,20 @@ def RR_scheduler(
                             finish=end_time,
                             priority=process.priority))
 
-
-
-
-
             if debug:
                 print(
                     f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
             return time
 
-
-        #if the process is in the IO state now
+        # if the process is in the IO state now
         if process.duty_type == "I/O":
 
             # change the processes status
             process.change_status()
 
-
             new_io_wait_times = process.io_waiting_times
-            new_io_wait_times.append([time,0])
-            process.io_waiting_times =  new_io_wait_times
-
+            new_io_wait_times.append([time, 0])
+            process.io_waiting_times = new_io_wait_times
 
             # set end time to time
             end_time = time
@@ -159,25 +150,23 @@ def RR_scheduler(
 
             return time
 
-
     # If process isn't done append it to ready list
     ready.append(process)
 
     # set end time to time
     end_time = time
 
-    # add processID, start, end to CPU 
+    # add processID, start, end to CPU
     CPU.append(dict(id=process.id,
                     start=start_time,
                     finish=end_time,
                     priority=process.priority))
 
     if debug:
-        print(f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
+        print(
+            f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
 
     return time
-
-
 
 
 def SRT_scheduler(
@@ -230,9 +219,8 @@ def SRT_scheduler(
     # Wait for the processes to be in ready queue or wait queue
     wait_for_process(processes, ready, time, wait)
 
-
     # popping the start of the process
-    ready.sort(key = lambda x: x.current_CPU_time)
+    ready.sort(key=lambda x: x.current_CPU_time)
     process = ready.pop(0)
 
     # indicate the process has been worked on
@@ -251,8 +239,8 @@ def SRT_scheduler(
        # run the process
         process.run_process()
 
-        #run the waiting list
-        run_wait(ready,wait,time)
+        # run the waiting list
+        run_wait(ready, wait, time)
 
         if process.times_worked_on == 1:
             process.response_time = time - process.arrival_time
@@ -275,8 +263,6 @@ def SRT_scheduler(
                             finish=end_time,
                             priority=process.priority))
 
-
-
             # add processes that arrived now to ready queue
             add_ready(processes, ready, time)
 
@@ -285,18 +271,15 @@ def SRT_scheduler(
                     f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
             return time
 
-
-        #if the process is in the IO state now
+        # if the process is in the IO state now
         if process.duty_type == "I/O":
 
             # change the processes status
             process.change_status()
 
-
             new_io_wait_times = process.io_waiting_times
-            new_io_wait_times.append([time,0])
-            process.io_waiting_times =  new_io_wait_times
-
+            new_io_wait_times.append([time, 0])
+            process.io_waiting_times = new_io_wait_times
 
             # set end time to time
             end_time = time
@@ -319,8 +302,7 @@ def SRT_scheduler(
 
             return time
 
-
-        #Checking if the process is still the shortest remaining job
+        # Checking if the process is still the shortest remaining job
         # add processes that arrived now to ready queue
         add_ready(processes, ready, time)
         # popping the start of the process
@@ -343,7 +325,6 @@ def SRT_scheduler(
                     f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
 
             return time
-
 
 
 def Preemptive_Priority_scheduler(
@@ -396,9 +377,8 @@ def Preemptive_Priority_scheduler(
     # Wait for the processes to be in ready queue or wait queue
     wait_for_process(processes, ready, time, wait)
 
-
     # popping the start of the process
-    ready.sort(key = lambda x: x.priority, reverse = True)
+    ready.sort(key=lambda x: x.priority, reverse=True)
     process = ready.pop(0)
 
     # indicate the process has been worked on
@@ -414,11 +394,11 @@ def Preemptive_Priority_scheduler(
         # add 1 to time
         time += 1
 
-       # run the process
+        # run the process
         process.run_process()
 
-        #run the waiting list
-        run_wait(ready,wait,time)
+        # run the waiting list
+        run_wait(ready, wait, time)
 
         if process.times_worked_on == 1:
             process.response_time = time - process.arrival_time
@@ -441,8 +421,6 @@ def Preemptive_Priority_scheduler(
                             finish=end_time,
                             priority=process.priority))
 
-
-
             # add processes that arrived now to ready queue
             add_ready(processes, ready, time)
 
@@ -451,18 +429,15 @@ def Preemptive_Priority_scheduler(
                     f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
             return time
 
-
-        #if the process is in the IO state now
+        # if the process is in the IO state now
         if process.duty_type == "I/O":
 
             # change the processes status
             process.change_status()
 
-
             new_io_wait_times = process.io_waiting_times
-            new_io_wait_times.append([time,0])
-            process.io_waiting_times =  new_io_wait_times
-
+            new_io_wait_times.append([time, 0])
+            process.io_waiting_times = new_io_wait_times
 
             # set end time to time
             end_time = time
@@ -485,12 +460,11 @@ def Preemptive_Priority_scheduler(
 
             return time
 
-
-        #Checking if the process is still the highest PRiority
+        # Checking if the process is still the highest PRiority
         # add processes that arrived now to ready queue
         add_ready(processes, ready, time)
         # popping the start of the process
-        ready.sort(key=lambda x: x.priority, reverse = True)
+        ready.sort(key=lambda x: x.priority, reverse=True)
         if ready and ready[0].priority > process.priority:
             # If process isn't done append it to ready list
             ready.append(process)
@@ -509,10 +483,6 @@ def Preemptive_Priority_scheduler(
                     f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
 
             return time
-
-
-
-
 
 
 def MLFQ_scheduler(
@@ -565,9 +535,8 @@ def MLFQ_scheduler(
     # Wait for the processes to be in ready queue or wait queue
     wait_for_process(processes, ready, time, wait)
 
-
     # popping the start of the process
-    ready.sort(key = lambda x: (x.queue, x.times_worked_on, x.arrival_time))
+    ready.sort(key=lambda x: (x.queue, x.times_worked_on, x.arrival_time))
     process = ready.pop(0)
 
     # indicate the process has been worked on
@@ -846,13 +815,12 @@ def MLFQ_scheduler(
                 return time
 
 
-
-
 '''
 ################################################################
 Project 1 Algorithms
 ###############################################################
 '''
+
 
 def FCFS_scheduler(
         processes,
@@ -895,7 +863,6 @@ def FCFS_scheduler(
     # wait for the processes to be in ready queue
     wait_for_process(processes, ready, time)
 
-
     # pick process with lowest arrival time and remove it from ready (sorting
     # list)
     ready.sort(key=lambda x: x.arrival_time, reverse=True)
@@ -917,7 +884,7 @@ def FCFS_scheduler(
     # set end time to time
     end_time = time
 
-    # add processID, start, end to CPU 
+    # add processID, start, end to CPU
     CPU.append(dict(id=process.id,
                     start=start_time,
                     finish=end_time,
@@ -993,7 +960,7 @@ def SJF_scheduler(processes, ready, CPU, Scheduled_Processes, time,
     # set end time to time
     end_time = time
 
-    # add processID, start, end to CPU 
+    # add processID, start, end to CPU
     CPU.append(dict(id=process.id,
                     start=start_time,
                     finish=end_time,
@@ -1093,7 +1060,7 @@ def Priority_scheduler(
     # set end time to time
     end_time = time
 
-    # add processID, start, end to CPU 
+    # add processID, start, end to CPU
     CPU.append(dict(id=process.id,
                     start=start_time,
                     finish=end_time,
@@ -1158,7 +1125,6 @@ def Priority_Turnaround_scheduler(processes, ready, CPU, Scheduled_Processes,
 
     '''
 
-
     # wait for the processes to be in ready queue
     wait_for_process(processes, ready, time)
 
@@ -1195,7 +1161,7 @@ def Priority_Turnaround_scheduler(processes, ready, CPU, Scheduled_Processes,
     # set end time to time
     end_time = time
 
-    # add processID, start, end to CPU 
+    # add processID, start, end to CPU
     CPU.append(dict(id=process.id,
                     start=start_time,
                     finish=end_time,
@@ -1294,7 +1260,7 @@ def Priority_Aging_scheduler(processes, ready, CPU, Scheduled_Processes,
     # set end time to time
     end_time = time
 
-    # add processID, start, end to CPU 
+    # add processID, start, end to CPU
     CPU.append(dict(id=process.id,
                     start=start_time,
                     finish=end_time,
@@ -1309,7 +1275,7 @@ def Priority_Aging_scheduler(processes, ready, CPU, Scheduled_Processes,
     return time
 
 
-def wait_for_process(processes, ready, time, wait = [], debug = False):
+def wait_for_process(processes, ready, time, wait=[], debug=False):
     '''
     Waits for a processes to be in the ready queue. If the ready queue has
     nothing add the processes to the ready list
@@ -1327,7 +1293,7 @@ def wait_for_process(processes, ready, time, wait = [], debug = False):
             print("In wait_for_process")
         add_ready(processes, ready, time)
         if len(ready) == 0:
-            run_wait(ready,wait,time)
+            run_wait(ready, wait, time)
             time += 1
 
         # if there is now something in the ready list
@@ -1337,6 +1303,7 @@ def wait_for_process(processes, ready, time, wait = [], debug = False):
     if debug:
         print("Done with wait_for_process")
     return
+
 
 def add_ready(processes, ready, time):
     '''
@@ -1371,7 +1338,7 @@ def add_ready(processes, ready, time):
     return
 
 
-def run_wait( ready, wait, time):
+def run_wait(ready, wait, time):
     '''
     A process to have all the processes in the wait time run and if any of
     them are done waiting add to ready queue

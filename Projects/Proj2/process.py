@@ -23,11 +23,10 @@ class Process:
         :param priority: (Number) the priority of the process
         '''
 
-
         # Defining private properties
         self.__id = id
         self.__duty = [work for work in duty]
-        self.__initial_duty =  [work for work in duty]
+        self.__initial_duty = [work for work in duty]
 
         self.__burst_time = int(duty[0])
         self.__initial_burst_time = int(duty[0])
@@ -89,7 +88,7 @@ class Process:
     def current_CPU_time(self):
         cpu_times = self.__duty[0::2]
         for cpu_time in cpu_times:
-            if cpu_time >0:
+            if cpu_time > 0:
                 return cpu_time
         return 0
 
@@ -106,7 +105,6 @@ class Process:
     @property
     def io_waiting_times(self):
         return self.__io_waiting_times
-
 
     @property
     def burst_time(self):
@@ -144,15 +142,13 @@ class Process:
 
         # See if CPU or IO based on length
         # if even CPU and odd I/0
-        if(len(duties_left)%2 == 1):
+        if(len(duties_left) % 2 == 1):
             return "CPU"
         else:
             return "I/O"
 
-
-
-
     # Defining setters
+
     @burst_time.setter
     def burst_time(self, val):
         self.__burst_time = val
@@ -217,7 +213,6 @@ class Process:
         self.__times_worked_on += 1
         return
 
-
     @status.setter
     def status(self, val):
 
@@ -242,7 +237,7 @@ class Process:
 
         return
 
-    def run_process(self,debug = False):
+    def run_process(self, debug=False):
         '''
         This function "runs" the process by subtracting 1 from
         the duty list of the left most number that is greater than 0
@@ -250,7 +245,7 @@ class Process:
         :param debug: (bool) if true debug print outs will be displayed
         :return:
         '''
-        for work_id,work in enumerate(self.__duty):
+        for work_id, work in enumerate(self.__duty):
             if work > 0:
                 self.__duty[work_id] = work - 1
                 return
@@ -260,15 +255,9 @@ class Process:
         return
 
 
-
-
-
-
-
-
 # Main Testing function for Process Class
 def main():
-    test_proccess_1 = Process(id = 1, duty = [4,1,3] , arrival_time=3,
+    test_proccess_1 = Process(id=1, duty=[4, 1, 3], arrival_time=3,
                               priority=6)
 
     print(test_proccess_1.id)
