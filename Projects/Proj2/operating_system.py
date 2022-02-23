@@ -15,16 +15,15 @@ import scheduler
 from process import Process
 from datetime import datetime as dt
 import numpy as np
-from sklearn import preprocessing
+import random
 from collections import ChainMap
 
 # Libraries for plotting
 import matplotlib as mpl
-from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
-                               AutoMinorLocator)
+
 import matplotlib.pyplot as plt
 import plotly.express as px
-import palettable
+
 
 
 def kernal(
@@ -300,6 +299,8 @@ def kernal(
                              "wait time": x.wait_time,
                              "turnaround time": x.turnaround_time,
                              "response time": x.response_time,
+                             "total CPU time": x.total_CPU_time,
+                             "total I/O time": x.total_IO_time,
                              "times worked on": x.times_worked_on
                              } for x in Scheduled_Processes]
 
@@ -382,8 +383,9 @@ def plotKernalResults(
         plot_io_times = True,
         title="Scheduled Processes Results Timeline",
         stats=True,
+        stats_text_size = 8,
         figsize=(
-                10,
+                11,
                 6)):
     '''
     A function to plot the kernal results df from (All data)
@@ -396,6 +398,7 @@ def plotKernalResults(
     done will be shown
     :param plot_io_times: (bool) if true io working times will be shown
     :param stats: (bool) if true average wait and turn around time will be shown
+    :param stats_text_size: (int) the text size of the stats
     :param figsize: (tuple) the figure size of the plot
     :return:
     '''
@@ -432,54 +435,6 @@ def plotKernalResults(
     # Calculating line widths
     linewidth = 230 / kernal_results.shape[0]
 
-    # plot the wait times
-    if plot_wait_times:
-
-
-
-        processes_turnaround_times = kernal_results["turnaround time"] \
-            .values
-        waiting_processes_offsets = kernal_results["arrival time"].values + \
-                                    processes_turnaround_times / 2
-
-        # Making the transparent waiting time timeline
-        waiting_timeline = ax.eventplot(kernal_results["id"].values[:,
-                                        np.newaxis],
-                                        orientation='vertical',
-                                        lineoffsets=waiting_processes_offsets,
-                                        linelengths=processes_turnaround_times,
-                                        linewidths=linewidth,
-                                        colors=my_cmap,
-                                        alpha=0.4)
-
-
-    # plot the time waiting for IO
-    if plot_io_times:
-
-        #loop through all the the io start and end times
-        io_starts = kernal_results.filter(like='io start')
-        io_ends  = kernal_results.filter(like='io end')
-
-        for io_start, io_end in zip(io_starts,io_ends):
-
-            # get the numpy array of the values
-            io_end_vals = kernal_results[io_end].values
-            io_start_vals = kernal_results[io_start].values
-
-            io_length = io_end_vals - io_start_vals
-
-            io_offsets = io_start_vals + (io_length / 2)
-
-            # Making the transparent waiting time timeline
-            io_timeline = ax.eventplot(kernal_results["id"].values[:,
-                                            np.newaxis],
-                                            orientation='vertical',
-                                            lineoffsets=io_offsets,
-                                            linelengths=io_length,
-                                            linewidths=linewidth,
-                                            color = "grey",
-                                            alpha=0.65)
-
 
 
 
@@ -492,18 +447,79 @@ def plotKernalResults(
         processes_offsets = kernal_results[
                                 f"start {q_work}"].values + processes_cpu_times / 2
 
-        processes_ids = kernal_results["id"].values
+        processes_ids = kernal_results["id"].values[: , np.newaxis]
 
 
 
         # Making the main timeline
-        main_timeline = ax.eventplot(processes_ids[:, np.newaxis],
+        main_timeline = ax.eventplot(processes_ids,
                                      orientation='vertical',
                                      lineoffsets=processes_offsets,
                                      linelengths=processes_cpu_times,
                                      linewidths=linewidth,
                                      colors=my_cmap[:,q_work-1:,])
 
+        # plot the wait times
+        if plot_wait_times:
+
+            # If it is the first time the process has been worked on
+            if q_work == 1:
+                waiting_processes_lengths = kernal_results[f"start "
+                                                            f"" \
+                                                           f"{q_work}"].values - \
+                                            kernal_results[f"arrival "
+                                                           f"time"].values
+                waiting_processes_offsets = kernal_results[
+                                                "arrival time"].values + \
+                                            (waiting_processes_lengths / 2)
+
+            else:
+                waiting_processes_lengths = (kernal_results[f"start "
+                                                            f"{q_work}"] - \
+                                             kernal_results[f"finish "
+                                                            f""
+                                                            f""
+                                                            f"{q_work-1}"]).values
+                waiting_processes_offsets = kernal_results[f"finish " \
+                                                           f"" \
+                                                           f"{q_work-1}"].values\
+                                            + \
+                                            (waiting_processes_lengths / 2)
+
+            # Making the transparent waiting time timeline
+            waiting_timeline = ax.eventplot(processes_ids,
+                                            orientation='vertical',
+                                            lineoffsets=waiting_processes_offsets,
+                                            linelengths=waiting_processes_lengths,
+                                            linewidths=linewidth,
+                                            colors=my_cmap[:,q_work-1:,],
+                                            alpha=0.4)
+
+    # plot the time waiting for IO
+    if plot_io_times:
+
+        # loop through all the the io start and end times
+        io_starts = kernal_results.filter(like='io start')
+        io_ends = kernal_results.filter(like='io end')
+
+        for io_start, io_end in zip(io_starts, io_ends):
+            # get the numpy array of the values
+            io_end_vals = kernal_results[io_end].values
+            io_start_vals = kernal_results[io_start].values
+
+            io_length = io_end_vals - io_start_vals
+
+            io_offsets = io_start_vals + (io_length / 2)
+
+            # Making the transparent waiting time timeline
+            io_timeline = ax.eventplot(kernal_results["id"].values[:,
+                                       np.newaxis],
+                                       orientation='vertical',
+                                       lineoffsets=io_offsets,
+                                       linelengths=io_length,
+                                       linewidths=linewidth,
+                                       color="grey",
+                                       alpha=0.75)
 
     # making the ticks and grid
     #   Doing a labels list to get rid of padding proc ids
@@ -546,14 +562,17 @@ def plotKernalResults(
     if stats:
         # TODO : ADD BOLDING
         ax.text(
-            0.764,
+            0.847,
             0.97,
-            f"Avg Wait Time: "
+            f"Average\n-------\n\n"
+            f"Wait Time "
             f"{kernal_results['turnaround time'].mean()}\n" +
-            f"Avg Turn-Around Time: {kernal_results['wait time'].mean()}\n" +
-            f"Avg Response Time: {kernal_results['response time'].mean()}\n",
+            f"Turn-Around Time {kernal_results['wait time'].mean()}\n" +
+            f"Response Time {kernal_results['response time'].mean()}\n"+
+            f"CPU Time {kernal_results['total CPU time'].mean()}\n"+
+            f"I/O Time {kernal_results['total I/O time'].mean()}\n",
             transform=ax.transAxes,
-            fontsize=9,
+            fontsize=stats_text_size,
             verticalalignment='top')
 
     # making the legend
@@ -563,11 +582,12 @@ def plotKernalResults(
         custom_lines.append(mpl.lines.Line2D([0], [0], color="blue", alpha=0.4, lw=6))
         lines_legend.append(" (transparent) = Wait")
     if plot_io_times:
-        custom_lines.append(mpl.lines.Line2D([0], [0], color="Grey", alpha=0.65, lw=6))
+        custom_lines.append(mpl.lines.Line2D([0], [0], color="Grey",
+                                             alpha=0.75, lw=6))
         lines_legend.append(" (transparent grey) = I/O")
 
 
-    ax.legend(custom_lines, lines_legend, loc="upper left", fontsize = 9)
+    ax.legend(custom_lines, lines_legend, loc="upper left", fontsize = stats_text_size)
 
     plt.tight_layout()
 
@@ -575,6 +595,67 @@ def plotKernalResults(
     plt.show()
 
     return
+
+
+# function to generate processes
+def generate_processes(n = 1000,
+                       split = 0.5,
+                       cpu_bound_range = [(8,12),(1,3)],
+                       io_bound_range = [(1,3),(8,12)],
+                       max_arrival_time = 50,
+                       max_priority = 50,
+                       duty_amt = 3):
+    '''
+    This is a function to generate processes that are cpu and io bound processes
+
+    :param n: (int) the number of processes to create
+    :param split: (float) the percentage of cpu to io bound processes (higher split more CPU bound)
+    :param cpu_bound_range: (list of 2 tuples with integers) holds the max
+    and min ranges for the cpu and io tasks for the cpu bound processes
+    :param io_bound_range: (list of 2 tuples with integers) holds the max
+    and min ranges for the cpu and io tasks for the io bound processes
+    :param max_arrival_time: (int) the maximum time that a process can arrive
+     :param max_priority: (int) the maximum priority that a process can have
+     :param duty_amt: (int) the lenght of the duty of each process
+    :return:
+    '''
+
+    # making choices 0 stands for cpu bound
+    choices =  np.random.choice([0, 1], size=(n,), p=[split, 1-split])
+
+    generated_processes = []
+
+    for idx, choice in enumerate(choices):
+        # if the choice is cpu bound
+        if choice == 0:
+            choice_duty = []
+            for index in range(duty_amt):
+                if index%2 == 0:
+                    choice_duty.append(random.randint(cpu_bound_range[0][0],
+                                                      cpu_bound_range[0][1]))
+                if index%2 == 1:
+                    choice_duty.append(random.randint(cpu_bound_range[1][0],
+                                                      cpu_bound_range[1][1]))
+        else:
+            choice_duty = []
+            for index in range(duty_amt):
+                if index % 2 == 0:
+                    choice_duty.append(random.randint(io_bound_range[0][0],
+                                                      io_bound_range[0][1]))
+                if index % 2 == 1:
+                    choice_duty.append(random.randint(io_bound_range[1][0],
+                                                      io_bound_range[1][1]))
+
+        # Create the new Process
+        new_proc = Process(idx, choice_duty,
+                           random.randint(1,max_arrival_time),
+                           random.randint(1,max_priority))
+
+        generated_processes.append(new_proc)
+
+    # return the generated processes
+    return generated_processes
+
 
 
 # Main Testing function
@@ -586,9 +667,23 @@ def main():
                  Process(3, [3, 3, 13], 4, 36),
                  Process(4, [6, 2, 7], 7, 20)]
 
+
+    test_gen_procs = generate_processes(n = 20,max_arrival_time=16)
+
     # Run the kernel with RR and base test processes
-    kernal(scheduler.MLFQ_scheduler, processes=test_processes ,quantum=2,
-           file_proc_name="test_1", CPU_to_csv=True)
+    kernal(scheduler.MLFQ_scheduler, processes=test_gen_procs ,quantum=2,
+           file_proc_name="test_gen", CPU_to_csv=True)
+
+    gen_test_results = pd.read_csv(
+        "data/Combined_Data/All_MLFQ_test_gen_results.csv")
+    gen_test_results_cpu = pd.read_csv(
+        "data/CPU_Data/CPU_MLFQ_test_gen_results.csv")
+
+    # plotCPU(gen_test_results_cpu, title= "Test Gen CPU")
+    # # Plotting the Results (Enhanced Extension)
+    plotKernalResults(kernal_results=gen_test_results,
+                      title="MLFQ Test Gen Results Timeline (Enhanced "
+                            "Extension)")
 
     # Importing the results from RR test
     # rr_results_all = pd.read_csv(
@@ -607,11 +702,11 @@ def main():
     # plotKernalResults(kernal_results=pp_test_results,
     #                   title="PP Test Results Timeline (Enhanced Extension)")
 
-    mlfq_test_results = pd.read_csv(
-        "data/Combined_Data/All_MLFQ_test_1_results.csv")
-    # Plotting the Results (Enhanced Extension)
-    plotKernalResults(kernal_results=mlfq_test_results,
-                      title="PP Test Results Timeline (Enhanced Extension)")
+    # mlfq_test_results = pd.read_csv(
+    #     "data/Combined_Data/All_MLFQ_test_1_results.csv")
+    # # Plotting the Results (Enhanced Extension)
+    # plotKernalResults(kernal_results=mlfq_test_results,
+    #                   title="MLFQ Test Results Timeline (Enhanced Extension)")
 
     # Plotting the Results
     # plotCPU(rr_results_cpu, "RR Test Results Timeline")
