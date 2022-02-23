@@ -241,7 +241,7 @@ def SRT_scheduler(
     # set start time to time
     start_time = time
 
-    # Work on the chosen process until there is a shorter process
+    # Work on the chosen process until IO
     # or until the process is done
     for w_time in range(process.current_CPU_time):
 
@@ -578,6 +578,9 @@ def MLFQ_scheduler(
 
     # Working on the process based on the queue number
     if process.queue == 0:
+        # Update the priority of the process to represent the queue it is in
+        process.priority = 10
+
         # Work on the chosen process for at most the quantum time
         # of 4 or until the process is done
         for q_time in range(4):
@@ -666,6 +669,9 @@ def MLFQ_scheduler(
         return time
 
     elif process.queue == 1:
+        # Update the priority of the process to represent the queue it is in
+        process.priority = 20
+
         # Work on the chosen process for at most the quantum time
         # of  or until the process is done
         for q_time in range(4):
@@ -753,93 +759,82 @@ def MLFQ_scheduler(
 
         return time
     elif process.queue == 2:
-        pass
 
+        # Update the priority of the process to represent the queue it is in
+        process.priority = 30
 
+        # Work on the chosen process until IO
+        # or until the process is done
+        for w_time in range(process.current_CPU_time):
 
+            # add 1 to time
+            time += 1
 
+            # run the process
+            process.run_process()
 
-    # Work on the chosen process for at most the quantum time
-    # or until the process is done
-    for w_time in range(process.current_CPU_time):
+            # run the waiting list
+            run_wait(ready, wait, time)
 
-        # add 1 to time
-        time += 1
+            if process.times_worked_on == 1:
+                process.response_time = time - process.arrival_time
 
-       # run the process
-        process.run_process()
+            # if the process is done add it to Scheduled_Processes and terminate
+            # the loop
+            if sum(process.duty) == 0:
 
-        #run the waiting list
-        run_wait(ready,wait,time)
+                # set end time to time
+                end_time = time
 
-        if process.times_worked_on == 1:
-            process.response_time = time - process.arrival_time
+                # set the completion time of the process
+                process.completion_time = time
 
-        # if the process is done add it to Scheduled_Processes and terminate
-        # the loop
-        if sum(process.duty) == 0:
+                Scheduled_Processes.append(process)
 
-            # set end time to time
-            end_time = time
+                # add processID, start, end to CPU
+                CPU.append(dict(id=process.id,
+                                start=start_time,
+                                finish=end_time,
+                                priority=process.priority))
 
-            # set the completion time of the process
-            process.completion_time = time
+                # add processes that arrived now to ready queue
+                add_ready(processes, ready, time)
 
-            Scheduled_Processes.append(process)
+                if debug:
+                    print(
+                        f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
+                return time
 
-            # add processID, start, end to CPU
-            CPU.append(dict(id=process.id,
-                            start=start_time,
-                            finish=end_time,
-                            priority=process.priority))
+            # if the process is in the IO state now
+            if process.duty_type == "I/O":
 
+                # change the processes status
+                process.change_status()
 
+                new_io_wait_times = process.io_waiting_times
+                new_io_wait_times.append([time, 0])
+                process.io_waiting_times = new_io_wait_times
 
-            # add processes that arrived now to ready queue
-            add_ready(processes, ready, time)
+                # set end time to time
+                end_time = time
 
-            if debug:
-                print(
-                    f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
-            return time
+                # If process isn't done and needs I/O append it to ready list
+                wait.append(process)
 
+                # add processID, start, end to CPU
+                CPU.append(dict(id=process.id,
+                                start=start_time,
+                                finish=end_time,
+                                priority=process.priority))
 
-        #if the process is in the IO state now
-        if process.duty_type == "I/O":
+                # add processes that arrived now to ready queue
+                add_ready(processes, ready, time)
 
-            # change the processes status
-            process.change_status()
+                if debug:
+                    print(
+                        f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
 
-
-            new_io_wait_times = process.io_waiting_times
-            new_io_wait_times.append([time,0])
-            process.io_waiting_times =  new_io_wait_times
-
-
-            # set end time to time
-            end_time = time
-
-            # If process isn't done and needs I/O append it to ready list
-            wait.append(process)
-
-            # add processID, start, end to CPU
-            CPU.append(dict(id=process.id,
-                            start=start_time,
-                            finish=end_time,
-                            priority=process.priority))
-
-            # add processes that arrived now to ready queue
-            add_ready(processes, ready, time)
-
-            if debug:
-                print(
-                    f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
-
-            return time
-
-
-
-
+                return time
 
 
 
