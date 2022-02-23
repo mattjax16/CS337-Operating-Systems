@@ -594,6 +594,9 @@ def MLFQ_scheduler(
             # run the waiting list
             run_wait(ready, wait, time)
 
+            # add processes that arrived now to ready queue
+            add_ready(processes, ready, time)
+
             if process.times_worked_on == 1:
                 process.response_time = time - process.arrival_time
 
@@ -685,6 +688,9 @@ def MLFQ_scheduler(
             # run the waiting list
             run_wait(ready, wait, time)
 
+            # add processes that arrived now to ready queue
+            add_ready(processes, ready, time)
+
             if process.times_worked_on == 1:
                 process.response_time = time - process.arrival_time
 
@@ -775,6 +781,9 @@ def MLFQ_scheduler(
 
             # run the waiting list
             run_wait(ready, wait, time)
+
+            # add processes that arrived now to ready queue
+            add_ready(processes, ready, time)
 
             if process.times_worked_on == 1:
                 process.response_time = time - process.arrival_time

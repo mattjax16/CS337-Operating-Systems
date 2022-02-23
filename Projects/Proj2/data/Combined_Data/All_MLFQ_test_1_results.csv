@@ -1,0 +1,5 @@
+id,burst time,initial burst time,arrival time,final priority,wait time,turnaround time,response time,times worked on,start 1,finish 1,priority 1,start 2,finish 2,priority 2,start 3,finish 3,priority 3,start 4,finish 4,priority 4,io start 0,io end 0
+4,6,6,7,30,46,59,8,4,11,15,10,27,29,20,33,37,20,63,66,30,29,31
+3,3,3,4,30,43,59,7,4,8,11,10,15,19,10,29,33,20,58,63,30,11,14
+2,14,14,3,30,34,55,5,4,4,8,10,23,27,20,38,44,30,51,58,30,44,47
+1,9,9,0,30,35,51,4,4,0,4,10,19,23,20,37,38,30,44,51,30,38,44

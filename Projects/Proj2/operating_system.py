@@ -84,7 +84,7 @@ def kernal(
         if len(ready) == 0:
             time += 1
 
-    # runnig schuedler for all processes in ready
+    # running scheduler for all processes in ready
     while processes or ready or wait:
 
         if debug:
@@ -101,7 +101,8 @@ def kernal(
                 quantum=quantum,
                 debug=debug)
         elif selected_scheduler == scheduler.SRT_scheduler or \
-                selected_scheduler == scheduler.Preemptive_Priority_scheduler:
+                selected_scheduler == scheduler.Preemptive_Priority_scheduler or \
+                selected_scheduler == scheduler.MLFQ_scheduler:
             time = selected_scheduler(
                 processes=processes,
                 ready=ready,
@@ -153,6 +154,8 @@ def kernal(
             sched = "Priority_Turnaround"
         elif selected_scheduler == scheduler.SRT_scheduler:
             sched = "SRT"
+        elif selected_scheduler == scheduler.MLFQ_scheduler:
+            sched = "MLFQ"
         elif selected_scheduler == scheduler.RR_scheduler:
             if quantum > 0:
                 sched = f"RR_Q{quantum}"
@@ -429,8 +432,11 @@ def plotKernalResults(
     # Calculating line widths
     linewidth = 230 / kernal_results.shape[0]
 
-    # First plot the underlying wait times
+    # plot the wait times
     if plot_wait_times:
+
+
+
         processes_turnaround_times = kernal_results["turnaround time"] \
             .values
         waiting_processes_offsets = kernal_results["arrival time"].values + \
@@ -496,7 +502,7 @@ def plotKernalResults(
                                      lineoffsets=processes_offsets,
                                      linelengths=processes_cpu_times,
                                      linewidths=linewidth,
-                                     colors=my_cmap)
+                                     colors=my_cmap[:,q_work-1:,])
 
 
     # making the ticks and grid
@@ -575,15 +581,19 @@ def plotKernalResults(
 def main():
 
 
+    test_processes = [Process(1, [9, 6, 7], 0, 30), Process(2, [14, 3, 7], 3,
+                                                            35),
+                 Process(3, [3, 3, 13], 4, 36),
+                 Process(4, [6, 2, 7], 7, 20)]
 
     # Run the kernel with RR and base test processes
-    kernal(scheduler.Preemptive_Priority_scheduler, quantum=2,
-           file_proc_name="test", CPU_to_csv=True)
+    kernal(scheduler.MLFQ_scheduler, processes=test_processes ,quantum=2,
+           file_proc_name="test_1", CPU_to_csv=True)
 
     # Importing the results from RR test
-    rr_results_all = pd.read_csv(
-        "data/Combined_Data/All_RR_Q2_test_results.csv")
-    rr_results_cpu = pd.read_csv("data/CPU_Data/CPU_RR_Q2_test_results.csv")
+    # rr_results_all = pd.read_csv(
+    #     "data/Combined_Data/All_RR_Q2_test_results.csv")
+    # rr_results_cpu = pd.read_csv("data/CPU_Data/CPU_RR_Q2_test_results.csv")
 
     # srt_test_results =  pd.read_csv(
     #     "data/Combined_Data/All_SRT_test_results.csv")
@@ -591,10 +601,16 @@ def main():
     # plotKernalResults(kernal_results=srt_test_results,
     #                   title="SRT Test Results Timeline (Enhanced Extension)")
 
-    pp_test_results = pd.read_csv(
-        "data/Combined_Data/All_Preemptive_Priority_test_results.csv")
+    # pp_test_results = pd.read_csv(
+    #     "data/Combined_Data/All_Preemptive_Priority_test_results.csv")
+    # # Plotting the Results (Enhanced Extension)
+    # plotKernalResults(kernal_results=pp_test_results,
+    #                   title="PP Test Results Timeline (Enhanced Extension)")
+
+    mlfq_test_results = pd.read_csv(
+        "data/Combined_Data/All_MLFQ_test_1_results.csv")
     # Plotting the Results (Enhanced Extension)
-    plotKernalResults(kernal_results=pp_test_results,
+    plotKernalResults(kernal_results=mlfq_test_results,
                       title="PP Test Results Timeline (Enhanced Extension)")
 
     # Plotting the Results
