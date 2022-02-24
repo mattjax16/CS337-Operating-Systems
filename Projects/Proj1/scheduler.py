@@ -17,9 +17,9 @@ def FCFS_scheduler(
         debug=True):
     ''' non-preemptive FCFS scheduler
 
-    The First Come First Serve algorithim schuedules jobs to be executed
+    The First Come First Serve algorithm schuedules jobs to be executed
     based on the time that the arrive to the ready queue (jobs that arrive
-    earlier are proccessed earlier). The FCFS algorithim can be thought of as
+    earlier are proccessed earlier). The FCFS algorithm can be thought of as
     just implementing a first in first out (FIFO) queue.
 
     Parameters:
@@ -99,7 +99,7 @@ def SJF_scheduler(processes, ready, CPU, Scheduled_Processes, time,
     based on the burst time (working time) of the processes in the ready
     queue. The SJF algorithm is one of the best approaches to minimize wait
     times and easy to implement when the CPU knows how long the process will
-    take (in fact it needs to know this). This algorithim can be unfair to
+    take (in fact it needs to know this). This algorithm can be unfair to
     processes with long burt times though.
 
 

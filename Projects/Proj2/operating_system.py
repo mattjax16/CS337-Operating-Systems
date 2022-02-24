@@ -85,8 +85,7 @@ def kernal(
     # running scheduler for all processes in ready
     while processes or ready or wait:
 
-        if debug:
-            print("Still running kernal\n")
+
 
         if selected_scheduler == scheduler.RR_scheduler:
             time = selected_scheduler(

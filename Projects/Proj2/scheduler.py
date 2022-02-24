@@ -35,7 +35,7 @@ def RR_scheduler(
         is finished then it is paused and another process in the ready queue
         is started. It accomplishes this by popping then appending the
         process back to the ready list if the process still has work to be done
-        This make the algorithim preemptive at the end of the time slice.
+        This make the algorithm preemptive at the end of the time slice.
         Some caveats are that long processes may have to wait n*q
         time units for another time slice where n is the number of other
         processes and q is the quantum or length of time slice
@@ -184,7 +184,7 @@ def SRT_scheduler(
         is finished then it is paused and another process in the ready queue
         is started. It accomplishes this by popping then appending the
         process back to the ready list if the process still has work to be done
-        This make the algorithim preemptive at the end of the time slice.
+        This make the algorithm preemptive at the end of the time slice.
         Some caveats are that long processes may have to wait n*q
         time units for another time slice where n is the number of other
         processes and q is the quantum or length of time slice
@@ -342,7 +342,7 @@ def Preemptive_Priority_scheduler(
         is finished then it is paused and another process in the ready queue
         is started. It accomplishes this by popping then appending the
         process back to the ready list if the process still has work to be done
-        This make the algorithim preemptive at the end of the time slice.
+        This make the algorithm preemptive at the end of the time slice.
         Some caveats are that long processes may have to wait n*q
         time units for another time slice where n is the number of other
         processes and q is the quantum or length of time slice
@@ -500,7 +500,7 @@ def MLFQ_scheduler(
         is finished then it is paused and another process in the ready queue
         is started. It accomplishes this by popping then appending the
         process back to the ready list if the process still has work to be done
-        This make the algorithim preemptive at the end of the time slice.
+        This make the algorithm preemptive at the end of the time slice.
         Some caveats are that long processes may have to wait n*q
         time units for another time slice where n is the number of other
         processes and q is the quantum or length of time slice
