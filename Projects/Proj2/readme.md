@@ -11,7 +11,7 @@ algorithms:
     1. RR: Round Robin
     2. SRT: Shortest Remaining Time
     3. PP: Preemptive Priority
-    4. MFQ: Multilevel Feedback Queue
+    4. MLFQ: Multilevel Feedback Queue
 
 
 
