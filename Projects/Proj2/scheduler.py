@@ -250,7 +250,7 @@ def SRT_scheduler(
         # add 1 to time
         time += 1
 
-       # run the process
+        # run the process
         process.run_process()
 
         # run the waiting list
