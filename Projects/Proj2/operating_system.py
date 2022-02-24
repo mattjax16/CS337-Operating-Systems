@@ -562,7 +562,7 @@ def plotKernalResults(
             f"CPU Time {kernal_results['total CPU time'].mean():.2f}\n" +
             f"I/O Time {kernal_results['total I/O time'].mean():.2f}\n"
             f"Throughput "+
-            f"{(kernal_results.shape[0]/kernal_results.filter(like='start').values.max()) :.2f}"+
+            f"{(kernal_results.shape[0]/kernal_results.filter(like='start').values.max()) :.4f}"+
             f" proc/sec\n",
             transform=ax.transAxes,
             fontsize=stats_text_size,
