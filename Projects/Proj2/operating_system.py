@@ -88,8 +88,6 @@ def kernal(
     # running scheduler for all processes in ready
     while processes or ready or wait:
 
-
-
         if selected_scheduler == scheduler.RR_scheduler:
             time = selected_scheduler(
                 processes=processes,
@@ -378,8 +376,8 @@ def plotCPU(cpu_results, title="CPU Results Timeline"):
     return
 
 
-#defining a function to print the kernal result stats
-def printKernalResultStats(kernal_results,title = None):
+# defining a function to print the kernal result stats
+def printKernalResultStats(kernal_results, title=None):
     '''
 
     :param kernal_results: (dataframe) the combined results from the kernal
@@ -389,19 +387,22 @@ def printKernalResultStats(kernal_results,title = None):
     if not title:
         title = ""
 
-    print( f"Average {title} Stats:\n-------\n"
-            f"Wait Time "
-            f"{kernal_results['turnaround time'].mean():.2f}\n" +
-            f"Turn-Around Time {kernal_results['wait time'].mean():.2f}\n" +
-            f"Response Time {kernal_results['response time'].mean():.2f}\n" +
-            f"CPU Time {kernal_results['total CPU time'].mean():.2f}\n" +
-            f"I/O Time {kernal_results['total I/O time'].mean():.2f}\n"
-            f"Throughput "+
-            f"{(kernal_results.shape[0]/kernal_results.filter(like='start').values.max()) :.4f}"+
-            f" proc/sec\n")
+    print(
+        f"Average {title} Stats:\n-------\n"
+        f"Wait Time "
+        f"{kernal_results['turnaround time'].mean():.2f}\n" +
+        f"Turn-Around Time {kernal_results['wait time'].mean():.2f}\n" +
+        f"Response Time {kernal_results['response time'].mean():.2f}\n" +
+        f"CPU Time {kernal_results['total CPU time'].mean():.2f}\n" +
+        f"I/O Time {kernal_results['total I/O time'].mean():.2f}\n"
+        f"Throughput " +
+        f"{(kernal_results.shape[0]/kernal_results.filter(like='start').values.max()) :.4f}" +
+        f" proc/sec\n")
     return
 
 # defining a function to plot Scheduled_Processes data along with CPU data
+
+
 def plotKernalResults(
         kernal_results,
         plot_wait_times=True,
@@ -409,8 +410,8 @@ def plotKernalResults(
         title="Scheduled Processes Results Timeline",
         stats=True,
         stats_text_size=9,
-        title_size = 12,
-        linewidth = 295,
+        title_size=12,
+        linewidth=295,
         figsize=(
             18,
             7)):
@@ -450,9 +451,9 @@ def plotKernalResults(
 
     processes_colors = process_priorities.values
 
-
-    processes_colors_normed = (processes_colors - np.min(processes_colors)) / (np.max(
-        processes_colors) - np.min(processes_colors))
+    processes_colors_normed = (
+        processes_colors - np.min(processes_colors)) / (
+        np.max(processes_colors) - np.min(processes_colors))
 
     color = mpl.cm.get_cmap('plasma',
                             np.max(processes_colors))
@@ -477,7 +478,7 @@ def plotKernalResults(
                                      lineoffsets=processes_offsets,
                                      linelengths=processes_cpu_times,
                                      linewidths=linewidth,
-                                     colors=my_cmap[:, q_work - 1,: ])
+                                     colors=my_cmap[:, q_work - 1, :])
 
         # plot the wait times
         if plot_wait_times:
@@ -498,21 +499,19 @@ def plotKernalResults(
                                                             f"{q_work-1}"]).values
                 waiting_processes_offsets = kernal_results[f"finish "
                                                            f"{q_work-1}"].values\
-                                                            + (waiting_processes_lengths / 2)
+                    + (waiting_processes_lengths / 2)
 
-            #drop ids lengs and offsets where start is -1
+            # drop ids lengs and offsets where start is -1
             wait_cmap = my_cmap
-            start_vals  = kernal_results[f"start {q_work}"].values
+            start_vals = kernal_results[f"start {q_work}"].values
             drop_idxs = np.where(start_vals == -1)[0].tolist()
             if drop_idxs:
                 waiting_processes_lengths = np.delete(
-                    waiting_processes_lengths, drop_idxs,axis=0)
-                processes_ids = np.delete(processes_ids, drop_idxs,axis=0)
+                    waiting_processes_lengths, drop_idxs, axis=0)
+                processes_ids = np.delete(processes_ids, drop_idxs, axis=0)
                 waiting_processes_offsets = np.delete(
-                    waiting_processes_offsets, drop_idxs,axis=0)
-                wait_cmap = np.delete(my_cmap, drop_idxs,axis=0)
-
-
+                    waiting_processes_offsets, drop_idxs, axis=0)
+                wait_cmap = np.delete(my_cmap, drop_idxs, axis=0)
 
             # Making the transparent waiting time timeline
             waiting_timeline = ax.eventplot(processes_ids,
@@ -520,7 +519,7 @@ def plotKernalResults(
                                             lineoffsets=waiting_processes_offsets,
                                             linelengths=waiting_processes_lengths,
                                             linewidths=linewidth,
-                                            colors=wait_cmap[:, q_work - 1,: ],
+                                            colors=wait_cmap[:, q_work - 1, :],
                                             alpha=0.4)
 
     # plot the time waiting for IO
@@ -584,7 +583,7 @@ def plotKernalResults(
                  label="Priority (Higher = More Priority)")
 
     # Setting the title
-    ax.set_title(title,size = title_size)
+    ax.set_title(title, size=title_size)
 
     # these are matplotlib.patch.Patch properties
     props = dict(boxstyle='square', facecolor='wheat', alpha=0.99)
@@ -602,13 +601,13 @@ def plotKernalResults(
             f"Response Time {kernal_results['response time'].mean():.2f}\n" +
             f"CPU Time {kernal_results['total CPU time'].mean():.2f}\n" +
             f"I/O Time {kernal_results['total I/O time'].mean():.2f}\n"
-            f"Throughput "+
-            f"{(kernal_results.shape[0]/kernal_results.filter(like='start').values.max()) :.4f}"+
+            f"Throughput " +
+            f"{(kernal_results.shape[0]/kernal_results.filter(like='start').values.max()) :.4f}" +
             f" proc/sec\n",
             transform=ax.transAxes,
             fontsize=stats_text_size,
             verticalalignment='top',
-            bbox = props)
+            bbox=props)
 
     # making the legend
     custom_lines = [mpl.lines.Line2D([0], [0], color="blue", lw=6)]
@@ -632,7 +631,7 @@ def plotKernalResults(
         lines_legend,
         loc="upper left",
         fontsize=stats_text_size,
-        edgecolor = "black")
+        edgecolor="black")
 
     plt.tight_layout()
 
@@ -650,7 +649,7 @@ def generate_processes(n=10000,
                        max_arrival_time=10000,
                        max_priority=10000,
                        duty_amt=3,
-                       seed = None):
+                       seed=None):
     '''
     This is a function to generate processes that are cpu and io bound processes
 
@@ -667,10 +666,9 @@ def generate_processes(n=10000,
     :return:
     '''
 
-    #if there is a seed set the random seed
+    # if there is a seed set the random seed
     if seed:
         np.random.seed(seed)
-
 
     # making choices 0 stands for cpu bound
     choices = np.random.choice([0, 1], size=(n,), p=[split, 1 - split])
@@ -714,7 +712,15 @@ def main():
 
     # Run the kernel with RR and base test processes
     kernal(scheduler.Preemptive_Response_scheduler,
-                            file_proc_name="test")
+           file_proc_name="test")
+
+    # Importing the results from RR test
+    pr_results_all = pd.read_csv(
+        "data/Combined_Data/All_Preemptive_Response_test_results.csv")
+
+    # Plotting the Results Enhanced
+    plotKernalResults(pr_results_all,
+                      "Preemptive Response Test Results Timeline")
 
     # # making the unfair RR processes
     # unfair_rr_procs = [Process(1, [2, 35, 2], 1, 300),

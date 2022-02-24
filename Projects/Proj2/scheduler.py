@@ -90,7 +90,6 @@ def RR_scheduler(
 
     # Set the times worked on to max incase it came from waiting queue
 
-
     # indicate the process has been worked on
     process.process_worked_on()
     process.rr_num = 1
@@ -105,7 +104,7 @@ def RR_scheduler(
         # add 1 to time
         time += 1
 
-        #run the process
+        # run the process
         process.run_process()
 
         # run the waiting list
@@ -503,8 +502,8 @@ def Preemptive_Response_scheduler(
 
         The Preemptive Response algorithm is a scheduling algorithm
         I came up with that is designed to maximize response time for an
-        algorithm. It is basically a FCFS algorithm however a process that
-        is running is preempted if another processes arrives in the ready
+        algorithm. It is basically a round robin / FCFS mix algorithm,
+        however a process that is running is preempted if another processes arrives in the ready
         queue that has not been ran yet
 
         Parameters:
@@ -538,7 +537,7 @@ def Preemptive_Response_scheduler(
     wait_for_process(processes, ready, time, wait)
 
     # popping the start of the process
-    ready.sort(key=lambda x:(x.times_worked_on, x.arrival_time), reverse=True)
+    ready.sort(key=lambda x: (x.times_worked_on, x.arrival_time))
     process = ready.pop(0)
 
     # indicate the process has been worked on
@@ -620,15 +619,31 @@ def Preemptive_Response_scheduler(
 
             return time
 
-
         # Checking if any neew processes that have been added that need to be
         # ran
         add_ready(processes, ready, time)
         # popping the start of the process
-        ready.sort(key=lambda x:(x.times_worked_on, x.arrival_time), reverse=True)
-        if ready and (ready[0].times_worked_on < process.times_worked_on or
-                      (ready[0].times_worked_on >= process.times_worked_on)
-                      and ready[0].arrival_time < process.arrival_time):
+        ready.sort(key=lambda x: (x.times_worked_on, x.arrival_time))
+        if ready and ready[0].times_worked_on == 0:
+            # If process isn't done append it to ready list
+            ready.append(process)
+
+            # set end time to time
+            end_time = time
+
+            # add processID, start, end to CPU
+            CPU.append(dict(id=process.id,
+                            start=start_time,
+                            finish=end_time,
+                            priority=process.priority))
+
+            if debug:
+                print(
+                    f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
+
+            return time
+
+        if ready and ready[0].arrival_time <= process.arrival_time:
             # If process isn't done append it to ready list
             ready.append(process)
 
