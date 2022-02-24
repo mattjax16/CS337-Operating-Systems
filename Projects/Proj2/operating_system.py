@@ -367,10 +367,12 @@ def plotKernalResults(
         plot_io_times=True,
         title="Scheduled Processes Results Timeline",
         stats=True,
-        stats_text_size=8,
+        stats_text_size=9,
+        title_size = 12,
+        linewidth = 295,
         figsize=(
-            11,
-            6)):
+            18,
+            7)):
     '''
     A function to plot the kernal results df from (All data)
     operating_system.py
@@ -383,6 +385,8 @@ def plotKernalResults(
     :param plot_io_times: (bool) if true io working times will be shown
     :param stats: (bool) if true average wait and turn around time will be shown
     :param stats_text_size: (int) the text size of the stats
+    :param title_size: (int) the text size of the title
+    :param linewidth: (int) the width of the lines in the plot
     :param figsize: (tuple) the figure size of the plot
     :return:
     '''
@@ -405,20 +409,16 @@ def plotKernalResults(
 
     processes_colors = process_priorities.values
 
-    processes_colors_normed_p0 = (processes_colors - np.min(processes_colors))
 
-    # TODO WHY DID I HAVE 50 - npmin()
-    processes_colors_normed_p1 = (np.max(processes_colors) + processes_colors /
-                                  50 - np.min(processes_colors))
-
-    processes_colors_normed = processes_colors_normed_p0 / processes_colors_normed_p1
+    processes_colors_normed = (processes_colors - np.min(processes_colors)) / (np.max(
+        processes_colors) - np.min(processes_colors))
 
     color = mpl.cm.get_cmap('plasma',
                             np.max(processes_colors))
     my_cmap = color(processes_colors_normed)  # making the color map
 
     # Calculating line widths
-    linewidth = 230 / kernal_results.shape[0]
+    linewidth = linewidth / kernal_results.shape[0]
 
     for q_work in range(1, kernal_results["times worked on"].max() + 1):
 
@@ -543,17 +543,16 @@ def plotKernalResults(
                  label="Priority (Higher = More Priority)")
 
     # Setting the title
-    ax.set_title(title)
+    ax.set_title(title,size = title_size)
 
     # these are matplotlib.patch.Patch properties
     props = dict(boxstyle='square', facecolor='wheat', alpha=0.99)
 
     # Adding stats
     if stats:
-        # TODO : ADD BOLDING
 
         ax.text(
-            0.85,
+            0.91,
             1,
             f"Average:\n-------\n"
             f"Wait Time "
