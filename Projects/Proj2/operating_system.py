@@ -545,22 +545,30 @@ def plotKernalResults(
     # Setting the title
     ax.set_title(title)
 
+    # these are matplotlib.patch.Patch properties
+    props = dict(boxstyle='square', facecolor='wheat', alpha=0.99)
+
     # Adding stats
     if stats:
         # TODO : ADD BOLDING
+
         ax.text(
-            0.847,
-            0.97,
-            f"Average\n-------\n\n"
+            0.85,
+            1,
+            f"Average:\n-------\n"
             f"Wait Time "
-            f"{kernal_results['turnaround time'].mean()}\n" +
-            f"Turn-Around Time {kernal_results['wait time'].mean()}\n" +
-            f"Response Time {kernal_results['response time'].mean()}\n" +
-            f"CPU Time {kernal_results['total CPU time'].mean()}\n" +
-            f"I/O Time {kernal_results['total I/O time'].mean()}\n",
+            f"{kernal_results['turnaround time'].mean():.2f}\n" +
+            f"Turn-Around Time {kernal_results['wait time'].mean():.2f}\n" +
+            f"Response Time {kernal_results['response time'].mean():.2f}\n" +
+            f"CPU Time {kernal_results['total CPU time'].mean():.2f}\n" +
+            f"I/O Time {kernal_results['total I/O time'].mean():.2f}\n"
+            f"Throughput "+
+            f"{(kernal_results.shape[0]/kernal_results.filter(like='start').values.max()) :.2f}"+
+            f" proc/sec\n",
             transform=ax.transAxes,
             fontsize=stats_text_size,
-            verticalalignment='top')
+            verticalalignment='top',
+            bbox = props)
 
     # making the legend
     custom_lines = [mpl.lines.Line2D([0], [0], color="blue", lw=6)]
@@ -577,13 +585,14 @@ def plotKernalResults(
     if plot_io_times:
         custom_lines.append(mpl.lines.Line2D([0], [0], color="Grey",
                                              alpha=0.75, lw=6))
-        lines_legend.append(" (transparent grey) = I/O")
+        lines_legend.append(" (grey) = I/O")
 
     ax.legend(
         custom_lines,
         lines_legend,
         loc="upper left",
-        fontsize=stats_text_size)
+        fontsize=stats_text_size,
+        edgecolor = "black")
 
     plt.tight_layout()
 
