@@ -663,17 +663,40 @@ def generate_processes(n=1000,
 
 # Main Testing function
 def main():
+    # making the unfair RR processes
+    unfair_rr_procs = [Process(1, [2, 35, 2], 1, 300),
+                       Process(2, [5, 1, 6], 1, 24),
+                       Process(3, [8, 3, 9], 5, 290),
+                       Process(4, [7, 1, 6], 2, 423),
+                       Process(5, [5, 3, 7], 4, 331),
+                       Process(6, [9, 3, 9], 2, 389)]
 
-    test_processes = [Process(1, [9, 6, 7], 0, 30), Process(2, [14, 3, 7], 3,
-                                                            35),
-                      Process(3, [3, 3, 13], 4, 36),
-                      Process(4, [6, 2, 7], 7, 20)]
 
-    test_gen_procs = generate_processes(n=20, max_arrival_time=16)
 
-    # Run the kernel with RR and base test processes
-    kernal(scheduler.Priority_scheduler, quantum=2,
-           file_proc_name="test", CPU_To_Csv=True)
+    # Run the kernel with RR and unfair processes with a quantum of 10
+    kernal(scheduler.RR_scheduler, processes=unfair_rr_procs,
+                            quantum=10, file_proc_name="unfair", debug=False)
+
+
+    # Importing the CPU results from RR unfair
+    rr_unfair_results = pd.read_csv("data/Combined_Data/" +
+                                    "All_RR_Q10_unfair_results.csv")
+
+    # plotting the results
+    plotKernalResults(rr_unfair_results,
+                                       title="RR 10 Unfair Results Timeline",
+                                       figsize=(18, 7))
+
+    # test_processes = [Process(1, [9, 6, 7], 0, 30), Process(2, [14, 3, 7], 3,
+    #                                                         35),
+    #                   Process(3, [3, 3, 13], 4, 36),
+    #                   Process(4, [6, 2, 7], 7, 20)]
+    #
+    # test_gen_procs = generate_processes(n=20, max_arrival_time=16)
+    #
+    # # Run the kernel with RR and base test processes
+    # kernal(scheduler.Priority_scheduler, quantum=2,
+    #        file_proc_name="test", CPU_To_Csv=True)
 
     # gen_test_results = pd.read_csv(
     #     "data/Combined_Data/All_MLFQ_test_gen_results.csv")
@@ -697,11 +720,11 @@ def main():
     # plotKernalResults(kernal_results=srt_test_results,
     #                   title="SRT Test Results Timeline (Enhanced Extension)")
 
-    pp_test_results = pd.read_csv(
-        "data/Combined_Data/All_Preemptive_Priority_test_results.csv")
-    # Plotting the Results (Enhanced Extension)
-    plotKernalResults(kernal_results=pp_test_results,
-                      title="PP Test Results Timeline (Enhanced Extension)")
+    # pp_test_results = pd.read_csv(
+    #     "data/Combined_Data/All_Preemptive_Priority_test_results.csv")
+    # # Plotting the Results (Enhanced Extension)
+    # plotKernalResults(kernal_results=pp_test_results,
+    #                   title="PP Test Results Timeline (Enhanced Extension)")
 
     # mlfq_test_results = pd.read_csv(
     #     "data/Combined_Data/All_MLFQ_test_1_results.csv")

@@ -39,6 +39,7 @@ class Process:
         self.__status = "running"
         self.__times_worked_on = 0
         self.__queue = 0
+        self.__rr_num = 0
         self.__io_waiting_times = []
         return
 
@@ -127,6 +128,10 @@ class Process:
         return self.__queue
 
     @property
+    def rr_num(self):
+        return self.__rr_num
+
+    @property
     def duty_type(self):
         '''
         Indicates wether the next duty to be worked on is a
@@ -201,6 +206,10 @@ class Process:
     @queue.setter
     def queue(self, val):
         self.__queue = val
+
+    @rr_num.setter
+    def rr_num(self, val):
+        self.__rr_num = val
 
     def process_worked_on(self):
         '''

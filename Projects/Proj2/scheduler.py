@@ -74,11 +74,26 @@ def RR_scheduler(
     # Wait for the processes to be in ready queue or wait queue
     wait_for_process(processes, ready, time, wait)
 
-    # popping the start of the process
+    # If all processes in the ready queue have been run set rr_num to 0
+    all_ran = True
+    for proc in ready:
+        if proc.rr_num == 0:
+            all_ran = False
+            break
+    if all_ran:
+        for proc in ready:
+            proc.rr_num = 0
+
+    # popping the start of the process after sorting
+    ready.sort(key=lambda x: (x.rr_num, x.arrival_time))
     process = ready.pop(0)
+
+    # Set the times worked on to max incase it came from waiting queue
+
 
     # indicate the process has been worked on
     process.process_worked_on()
+    process.rr_num = 1
 
     # set start time to time
     start_time = time
@@ -117,6 +132,9 @@ def RR_scheduler(
                             finish=end_time,
                             priority=process.priority))
 
+            # add processes that arrived now to ready queue
+            add_ready(processes, ready, time)
+
             if debug:
                 print(
                     f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
@@ -144,6 +162,9 @@ def RR_scheduler(
                             finish=end_time,
                             priority=process.priority))
 
+            # add processes that arrived now to ready queue
+            add_ready(processes, ready, time)
+
             if debug:
                 print(
                     f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
@@ -161,6 +182,9 @@ def RR_scheduler(
                     start=start_time,
                     finish=end_time,
                     priority=process.priority))
+
+    # add processes that arrived now to ready queue
+    add_ready(processes, ready, time)
 
     if debug:
         print(
@@ -1362,6 +1386,9 @@ def run_wait(ready, wait, time):
         proc.run_process()
         if proc.duty_type == "CPU":
             changed_proc = wait.pop(index)
+
+            changed_proc.rr_num = 1
+
             changed_proc.io_waiting_times[-1] = (
                 changed_proc.io_waiting_times[-1][0],
                 time
