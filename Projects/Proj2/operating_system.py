@@ -113,7 +113,9 @@ def kernal(
                 debug=debug)
 
         elif selected_scheduler == scheduler.SRT_scheduler or \
-                selected_scheduler == scheduler.Preemptive_Priority_scheduler:
+                selected_scheduler == scheduler.Preemptive_Priority_scheduler\
+                or selected_scheduler == \
+                scheduler.Preemptive_Response_scheduler:
             time = selected_scheduler(
                 processes=processes,
                 ready=ready,
@@ -159,12 +161,12 @@ def kernal(
             sched = "Priority"
         elif selected_scheduler == scheduler.Priority_Aging_scheduler:
             sched = "Priority_Aging"
+        elif selected_scheduler == scheduler.Preemptive_Response_scheduler:
+            sched = "Preemptive_Response"
         elif selected_scheduler == scheduler.Preemptive_Priority_scheduler:
             sched = "Preemptive_Priority"
         elif selected_scheduler == scheduler.Priority_Turnaround_scheduler:
             sched = "Priority_Turnaround"
-        elif selected_scheduler == scheduler.Preemptive_Response_scheduler:
-            sched = "Priority_Response"
         elif selected_scheduler == scheduler.SRT_scheduler:
             sched = "SRT"
         elif selected_scheduler == scheduler.MLFQ_scheduler:
@@ -709,29 +711,34 @@ def generate_processes(n=10000,
 
 # Main Testing function
 def main():
-    # making the unfair RR processes
-    unfair_rr_procs = [Process(1, [2, 35, 2], 1, 300),
-                       Process(2, [5, 1, 6], 1, 24),
-                       Process(3, [8, 3, 9], 5, 290),
-                       Process(4, [7, 1, 6], 2, 423),
-                       Process(5, [5, 3, 7], 4, 331),
-                       Process(6, [9, 3, 9], 2, 389)]
 
+    # Run the kernel with RR and base test processes
+    kernal(scheduler.Preemptive_Response_scheduler,
+                            file_proc_name="test")
 
-
-    # Run the kernel with RR and unfair processes with a quantum of 10
-    kernal(scheduler.RR_scheduler, processes=unfair_rr_procs,
-                            quantum=10, file_proc_name="unfair", debug=False)
-
-
-    # Importing the CPU results from RR unfair
-    rr_unfair_results = pd.read_csv("data/Combined_Data/" +
-                                    "All_RR_Q10_unfair_results.csv")
-
-    # plotting the results
-    plotKernalResults(rr_unfair_results,
-                                       title="RR 10 Unfair Results Timeline",
-                                       figsize=(18, 7))
+    # # making the unfair RR processes
+    # unfair_rr_procs = [Process(1, [2, 35, 2], 1, 300),
+    #                    Process(2, [5, 1, 6], 1, 24),
+    #                    Process(3, [8, 3, 9], 5, 290),
+    #                    Process(4, [7, 1, 6], 2, 423),
+    #                    Process(5, [5, 3, 7], 4, 331),
+    #                    Process(6, [9, 3, 9], 2, 389)]
+    #
+    #
+    #
+    # # Run the kernel with RR and unfair processes with a quantum of 10
+    # kernal(scheduler.RR_scheduler, processes=unfair_rr_procs,
+    #                         quantum=10, file_proc_name="unfair", debug=False)
+    #
+    #
+    # # Importing the CPU results from RR unfair
+    # rr_unfair_results = pd.read_csv("data/Combined_Data/" +
+    #                                 "All_RR_Q10_unfair_results.csv")
+    #
+    # # plotting the results
+    # plotKernalResults(rr_unfair_results,
+    #                                    title="RR 10 Unfair Results Timeline",
+    #                                    figsize=(18, 7))
 
     # test_processes = [Process(1, [9, 6, 7], 0, 30), Process(2, [14, 3, 7], 3,
     #                                                         35),

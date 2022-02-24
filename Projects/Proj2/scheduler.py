@@ -502,9 +502,9 @@ def Preemptive_Response_scheduler(
     ''' preemptive Preemptive_Response scheduler
 
         The Preemptive Response algorithm is a scheduling algorithm
-        I came up with that is desighned to maximize response time for an
-        algorithiim. It is bassicly a FCFS algorithim however a process that
-        is running is preempted if another processes arives in the ready
+        I came up with that is designed to maximize response time for an
+        algorithm. It is basically a FCFS algorithm however a process that
+        is running is preempted if another processes arrives in the ready
         queue that has not been ran yet
 
         Parameters:
@@ -627,7 +627,7 @@ def Preemptive_Response_scheduler(
         # popping the start of the process
         ready.sort(key=lambda x:(x.times_worked_on, x.arrival_time), reverse=True)
         if ready and (ready[0].times_worked_on < process.times_worked_on or
-                      (ready[0].times_worked_on == process.times_worked_on)
+                      (ready[0].times_worked_on >= process.times_worked_on)
                       and ready[0].arrival_time < process.arrival_time):
             # If process isn't done append it to ready list
             ready.append(process)
