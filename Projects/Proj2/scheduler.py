@@ -516,6 +516,8 @@ def MLFQ_scheduler(
         CPU,
         Scheduled_Processes,
         time,
+        quantum1=4,
+        quantum2=7,
         debug=True):
     ''' Preemptive Multilevel Feedback Queue
 
@@ -551,6 +553,10 @@ def MLFQ_scheduler(
             time: this is an integer that represents the current time, where simulation starts
                 at time zero and time is incremented by one after each time slice.
 
+            quantum1: (int) the quantum length for the first RR queue
+
+            quantum2: (int) the quantum length for the second RR queue
+
             debug: this is a boolean with the default value of True. It controls a print
                 statement that shows process ID, start time, and end time at each context
                 switch. It is useful for debugging.
@@ -576,7 +582,7 @@ def MLFQ_scheduler(
 
         # Work on the chosen process for at most the quantum time
         # of 4 or until the process is done
-        for q_time in range(4):
+        for q_time in range(quantum1):
 
             # add 1 to time
             time += 1
@@ -670,7 +676,7 @@ def MLFQ_scheduler(
 
         # Work on the chosen process for at most the quantum time
         # of  or until the process is done
-        for q_time in range(4):
+        for q_time in range(quantum2):
 
             # add 1 to time
             time += 1

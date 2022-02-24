@@ -28,7 +28,8 @@ import plotly.express as px
 def kernal(
         selected_scheduler,
         processes=None,
-        quantum=0,
+        quantum=2,
+        quantum2=7,
         debug=True,
         CPU_To_Csv=False,
         Processes_to_csv=False,
@@ -43,6 +44,7 @@ def kernal(
     :param quantum: (int) the maximum amount of timesteps a process will
                     run for before it its put back to the waiting state (or finishes)
                     and the next process is started.
+    :param quantum2: (int) the quantum for the second RR queue in the MLFQ alg
     :param debug: (Boolean) If true output messages will be printed from the selected_scheduler function
     :param CPU_To_Csv: (Boolean) if true results of CPU will be written to a csv
     :param Processes_to_csv: (Boolean) if true results of Scheduled_Processes will be written to a csv
@@ -71,8 +73,9 @@ def kernal(
         if debug:
             print(f"Warning no processes were passed!! Making test Processes")
 
-        processes = [Process(1, [5, 6, 7], 0, 30), Process(2, [4, 3, 3], 3, 35),
-                     Process(3, [2, 3, 4], 4, 36),
+        processes = [Process(1, [10, 6, 7], 0, 30), Process(2, [4, 3, 3], 3,
+                                                            35),
+                     Process(3, [2, 3, 4], 1, 36),
                      Process(4, [5, 2, 7], 7, 20)]
 
     # adding the proccesses to the ready list
@@ -97,9 +100,20 @@ def kernal(
                 time=time,
                 quantum=quantum,
                 debug=debug)
+        elif selected_scheduler == scheduler.MLFQ_scheduler:
+            time = selected_scheduler(
+                processes=processes,
+                ready=ready,
+                wait=wait,
+                CPU=CPU,
+                Scheduled_Processes=Scheduled_Processes,
+                time=time,
+                quantum1=quantum,
+                quantum2=quantum2,
+                debug=debug)
+
         elif selected_scheduler == scheduler.SRT_scheduler or \
-                selected_scheduler == scheduler.Preemptive_Priority_scheduler or \
-                selected_scheduler == scheduler.MLFQ_scheduler:
+                selected_scheduler == scheduler.Preemptive_Priority_scheduler:
             time = selected_scheduler(
                 processes=processes,
                 ready=ready,
@@ -360,6 +374,29 @@ def plotCPU(cpu_results, title="CPU Results Timeline"):
     return
 
 
+#defining a function to print the kernal result stats
+def printKernalResultStats(kernal_results,title = None):
+    '''
+
+    :param kernal_results: (dataframe) the combined results from the kernal
+    simulation
+    :return:
+    '''
+    if not title:
+        title = ""
+
+    print( f"Average {title} Stats:\n-------\n"
+            f"Wait Time "
+            f"{kernal_results['turnaround time'].mean():.2f}\n" +
+            f"Turn-Around Time {kernal_results['wait time'].mean():.2f}\n" +
+            f"Response Time {kernal_results['response time'].mean():.2f}\n" +
+            f"CPU Time {kernal_results['total CPU time'].mean():.2f}\n" +
+            f"I/O Time {kernal_results['total I/O time'].mean():.2f}\n"
+            f"Throughput "+
+            f"{(kernal_results.shape[0]/kernal_results.filter(like='start').values.max()) :.4f}"+
+            f" proc/sec\n")
+    return
+
 # defining a function to plot Scheduled_Processes data along with CPU data
 def plotKernalResults(
         kernal_results,
@@ -602,13 +639,14 @@ def plotKernalResults(
 
 
 # function to generate processes
-def generate_processes(n=1000,
+def generate_processes(n=10000,
                        split=0.5,
                        cpu_bound_range=[(8, 12), (1, 3)],
                        io_bound_range=[(1, 3), (8, 12)],
-                       max_arrival_time=50,
-                       max_priority=50,
-                       duty_amt=3):
+                       max_arrival_time=10000,
+                       max_priority=10000,
+                       duty_amt=3,
+                       seed = None):
     '''
     This is a function to generate processes that are cpu and io bound processes
 
@@ -621,8 +659,14 @@ def generate_processes(n=1000,
     :param max_arrival_time: (int) the maximum time that a process can arrive
      :param max_priority: (int) the maximum priority that a process can have
      :param duty_amt: (int) the lenght of the duty of each process
+     :param seed: (int) the random seed for the function
     :return:
     '''
+
+    #if there is a seed set the random seed
+    if seed:
+        np.random.seed(seed)
+
 
     # making choices 0 stands for cpu bound
     choices = np.random.choice([0, 1], size=(n,), p=[split, 1 - split])
