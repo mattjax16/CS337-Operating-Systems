@@ -163,6 +163,8 @@ def kernal(
             sched = "Preemptive_Priority"
         elif selected_scheduler == scheduler.Priority_Turnaround_scheduler:
             sched = "Priority_Turnaround"
+        elif selected_scheduler == scheduler.Preemptive_Response_scheduler:
+            sched = "Priority_Response"
         elif selected_scheduler == scheduler.SRT_scheduler:
             sched = "SRT"
         elif selected_scheduler == scheduler.MLFQ_scheduler:
