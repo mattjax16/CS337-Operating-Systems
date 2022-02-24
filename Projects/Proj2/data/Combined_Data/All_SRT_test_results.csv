@@ -1,5 +1,5 @@
-id,burst time,initial burst time,arrival time,final priority,wait time,turnaround time,response time,times worked on,start 1,finish 1,priority 1,start 2,finish 2,priority 2,io start 0,io end 0
-4,5,5,7,20,18,30,16,2,18,23,20,30,37,20,23,25
-3,2,2,4,36,5,11,3,2,5,7,36,11,15,36,7,10
-2,4,4,3,35,8,15,8,2,7,11,35,15,18,35,11,14
-1,5,5,0,30,18,30,5,2,0,5,30,23,30,30,5,11
+id,burst time,initial burst time,arrival time,final priority,wait time,turnaround time,response time,total CPU time,total I/O time,times worked on,start 1,finish 1,priority 1,start 2,finish 2,priority 2,io start 0,io end 0
+4,5,5,7,20,18,30,16,12,2,2,18,23,20,30,37,20,23,25
+3,2,2,4,36,5,11,3,6,3,2,5,7,36,11,15,36,7,10
+2,4,4,3,35,8,15,8,7,3,2,7,11,35,15,18,35,11,14
+1,5,5,0,30,18,30,5,12,6,2,0,5,30,23,30,30,5,11

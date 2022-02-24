@@ -1,0 +1,5 @@
+id,burst time,initial burst time,arrival time,final priority,wait time,turnaround time,response time,total CPU time,total I/O time,times worked on,start 1,finish 1,priority 1
+4,0,5,7,20,-19,-7,0,12,2,0,11,16,20
+3,0,2,4,36,-10,-4,0,6,3,0,5,7,36
+2,0,4,3,35,-10,-3,0,7,3,0,7,11,35
+1,0,5,0,30,-12,0,0,12,6,0,0,5,30
