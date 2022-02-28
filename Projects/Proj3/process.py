@@ -41,9 +41,19 @@ class Process:
         self.__queue = 0
         self.__rr_num = 0
         self.__io_waiting_times = []
+        self.__vruntime = 0
+        self.__weight = 5
         return
 
     # Defining getters
+    @property
+    def vruntime(self):
+        return self.__vruntime
+
+    @property
+    def weight(self):
+        return self.__weight
+
     @property
     def id(self):
         return self.__id
@@ -152,7 +162,17 @@ class Process:
         else:
             return "I/O"
 
+
     # Defining setters
+    @vruntime.setter
+    def vruntime(self, val):
+        self.__vruntime = val
+        return
+
+    @weight.setter
+    def weight(self, val):
+        self.__weight = val
+        return
 
     @burst_time.setter
     def burst_time(self, val):
