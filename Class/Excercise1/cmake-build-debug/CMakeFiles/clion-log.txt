@@ -1,0 +1,4 @@
+"/Users/matthewbass/Library/Application Support/JetBrains/Toolbox/apps/CLion/ch-0/212.5457.51/CLion.app/Contents/bin/cmake/mac/bin/cmake" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_DEPENDS_USE_COMPILER=FALSE -G "CodeBlocks - Unix Makefiles" /Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/cmake-build-debug

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="Excercise1"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Excercise1">
+				<Option output="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/cmake-build-debug/libExcercise1.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/13.0.0/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/cmake-build-debug/Makefile&quot;  VERBOSE=1 Excercise1"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Excercise1/fast">
+				<Option output="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/cmake-build-debug/libExcercise1.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/13.0.0/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/cmake-build-debug/Makefile&quot;  VERBOSE=1 Excercise1/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/library.c">
+			<Option target="Excercise1"/>
+		</Unit>
+		<Unit filename="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/library.h">
+			<Option target="Excercise1"/>
+		</Unit>
+		<Unit filename="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Class/Excercise1/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
