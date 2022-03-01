@@ -20,6 +20,7 @@ algorithms:
     Numpy
     Plotly
     autopep8
+    python-igraph
 <br>
 
 ---

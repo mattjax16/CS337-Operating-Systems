@@ -8,6 +8,9 @@ Matthew Bass
 A Red Black Tree in python (used here for Completely fair scheduling)
 '''
 import numpy as np
+from igraph import Graph, EdgeSeq
+import plotly.graph_objects as go
+import sys
 
 
 class RBNode:
@@ -97,10 +100,50 @@ class RBTree:
         Initilizes an RB Tree with a nil node with value zero, and color
         black (self.nil = RBNode(0)). nil as the root and min_vruntime
         '''
-        self.nil = RBNode(0)
-        self.root = self.nil
-        self.min_vruntime = self.root
+        self.__nil = RBNode(0)
+        self.__root = self.nil
+        self.__min_vruntime = self.root
+        self.__non_nil_node_amt = 0
         return
+
+    # getters and setters
+    @property
+    def nil(self):
+        return self.__nil
+    @nil.setter
+    def nil(self, val):
+        self.__nil = val
+        return
+
+    @property
+    def root(self):
+        return self.__root
+    @root.setter
+    def root(self, val):
+        self.__root = val
+        return
+
+    @property
+    def min_vruntime(self):
+        return self.__min_vruntime
+    @min_vruntime.setter
+    def min_vruntime(self, val):
+        self.__min_vruntime = val
+        return
+
+    @property
+    def non_nil_node_amt(self):
+        return self.__non_nil_node_amt
+
+    @min_vruntime.setter
+    def non_nil_node_amt(self, val):
+        self.__non_nil_node_amt = val
+        return
+
+
+
+
+
 
     def insert(self, val):
         '''
@@ -110,12 +153,18 @@ class RBTree:
         :return:
         '''
 
+
+
         #make the val a node
         val = RBNode(val)
 
         # Set y to the nil node and x to the root
         y = self.nil
         x = self.root
+
+        #if x is not node increment non_nil_node_amt
+        if x != self.nil:
+            self.non_nil_node_amt += 1
 
         # while the root is not nill traverse the tree
         # and compare the values of the nodes
@@ -167,9 +216,34 @@ class RBTree:
         '''
         Rotates the node specified in the tree to the left.
 
-        :param node:
+        :param node: (Node) The node to be rotates
         :return:
         '''
+
+        # Y = Right child of node
+        y = node.r_child
+        # Change right child of xnodeto left child of y
+        node.r_child = y.l_child
+        y.l_child.parent = node
+
+        # Change parent of y as parent of x
+        y.parent = node.parent
+
+        # If parent of node == nil ie. root node
+        if node.parent == self.nil:
+
+            # Set y as root
+            self.root = y
+        else:
+            # if node is a left child then adjust x's parent's left child
+            if node == node.parent.l_child:
+                node.parent.l_child = y
+            # adjust nodes's parent's right child
+            else:
+                node.parent.r_child = y
+
+        y.l_child = node
+
 
         return
 
@@ -177,22 +251,98 @@ class RBTree:
         '''
         Rotates the node specified in the tree to the right.
 
-        :param node:
+        :param node: (Node) The node to be rotates
         :return:
         '''
 
+        # y now points to node to left of node
+        y = node.l_child
+
+        # y's right subtree becomes nodes's left subtree
+        y.r_child = node.l_child
+
+        # right subtree of y gets a new parent
+        y.r_child.parent = node
+
+        # y's parent is now node's parent
+        y.parent = node.parent
+
+        # set root based on the node parent
+        if node.parent == self.nil:
+            self.root = y
+        else:
+            # if node is a left child then adjust x's parent's left child
+            if node == node.parent.l_child:
+                node.parent.l_child = y
+            # adjust nodes's parent's right child
+            else:
+                node.parent.r_child = y
+
+        # the right child of y is now node
+        y.r_child = node
+
+        # the parent of node is now y
+        node.parent = y
+
+        return
+
+
+    def __repr__(self):
+        '''
+        Printing function for RB_tree
+        :return:
+        '''
+        self.print_tree()
+        return
+
+    def print_tree(self):
+        '''
+        Printing function for RB tree that can be called
+        :return:
+        '''
+        # nr_vertices = self.non_nil_node_amt
+        # v_label = list(map(str, range(nr_vertices)))
+        # G = Graph.Tree(nr_vertices, 2)  # 2 stands for children number
+        # lay = G.layout('rt')
+
+        self.print_tree_helper(self.root, "", True)
+
+        return
+
+    def print_tree_helper(self, node, indent, last):
+        '''
+        Recursive helper function for print tree
+        :param node: (RBNode) node that is being printed
+        :param indent: (string) sting representation of tree to be printed
+        :param last: (Bool) if the code is the last node in the tree
+        :return:
+        '''
+        if node != self.nil:
+            sys.stdout.write(indent)
+            if last:
+                sys.stdout.write("R----")
+                indent += "     "
+            else:
+                sys.stdout.write("L----")
+                indent += "|    "
+
+            s_color = "RED" if node.is_red else "BLACK"
+            print(str(node.key) + "(" + s_color + ")")
+            self.print_tree_helper(node.l_child, indent, False)
+            self.print_tree_helper(node.r_child, indent, True)
         return
 
 
 
 
-
-
-
-
-
-
+#main testing for RB tree
 def main():
+    test_tree = RBTree()
+
+    test_tree.insert(val=1)
+
+    test_tree.print_tree()
+
     return
 
 if __name__ == "__main__":
