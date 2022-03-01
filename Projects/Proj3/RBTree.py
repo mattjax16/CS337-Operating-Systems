@@ -11,80 +11,26 @@ import numpy as np
 from igraph import Graph, EdgeSeq
 import plotly.graph_objects as go
 import sys
+from dataclasses import dataclass
+from typing import Any
 
 
+@dataclass()
 class RBNode:
     '''
     This is a node that makes up the RB tree
+
+    :param key: the value of the node (this will be the vruntime of a process in CFS)
+    :param parent: (RBNode) Reference to parent node
+    :param l_child: (RBNode) Reference to left child node
+    :param r_child: (RBNode) Reference to right child node
+    :param is_red: (bool) if the Node is Red (if false node is black)
     '''
-
-    def __init__(self, key, parent = None, l_child = None,
-                 r_child = None, is_red = False):
-        '''
-
-        :param key: the value of the node (this will be the vruntime of a process in CFS)
-        :param parent: (RBNode) Reference to parent node
-        :param l_child: (RBNode) Reference to left child node
-        :param r_child: (RBNode) Reference to right child node
-        :param is_red: (bool) if the Node is Red (if false node is black)
-        '''
-
-        # Defining private properties
-        self.__key = key
-        self.__parent = parent
-        self.__l_child = l_child
-        self.__r_child = r_child
-        self.__is_red = is_red
-
-        return
-
-    # Defining getters
-    @property
-    def key(self):
-        return self.__key
-
-    @property
-    def parent(self):
-        return self.__parent
-
-    @property
-    def l_child(self):
-        return self.__l_child
-
-    @property
-    def r_child(self):
-        return self.__r_child
-
-    @property
-    def is_red(self):
-        return self.__is_red
-
-    #making setters
-
-    @key.setter
-    def key(self, val):
-        self.__key = val
-        return
-
-    @parent.setter
-    def parent(self, val):
-        self.__parent = val
-        return
-
-    @l_child.setter
-    def l_child(self, val):
-        self.__l_child = val
-        return
-
-    @r_child.setter
-    def r_child(self, val):
-        self.__r_child = val
-        return
-
-    @is_red.setter
-    def is_red(self, val):
-        self.__is_red = val
-        return
+    key: Any
+    parent: "RBNode" = None
+    l_child: "RBNode" = None
+    r_child: "RBNode" = None
+    is_red: bool = False
 
 
 
@@ -447,18 +393,20 @@ class RBTree:
 def main():
     test_tree = RBTree()
 
-    test_tree.insert(val=1)
-    test_tree.insert(val = 2)
-    test_tree.insert(2)
-    test_tree.insert(3)
-    test_tree.insert(4)
-    test_tree.insert(7)
-    test_tree.insert(6)
-    test_tree.insert(8)
-    test_tree.insert(9)
-    test_tree.insert(10)
+    test_nil_node = RBNode(0)
 
-    test_tree.print_tree()
+    # test_tree.insert(val=1)
+    # test_tree.insert(val = 2)
+    # test_tree.insert(2)
+    # test_tree.insert(3)
+    # test_tree.insert(4)
+    # test_tree.insert(7)
+    # test_tree.insert(6)
+    # test_tree.insert(8)
+    # test_tree.insert(9)
+    # test_tree.insert(10)
+    #
+    # test_tree.print_tree()
 
     return
 
