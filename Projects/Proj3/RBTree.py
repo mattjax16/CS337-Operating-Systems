@@ -395,6 +395,14 @@ class RBTree:
 
 
 
+    def display_tree(self):
+        '''
+        This is a function to show a visualization of the tree
+        :return:
+        '''
+
+
+
     def print_tree(self):
         '''
         Printing function for RB tree that can be called
@@ -405,9 +413,9 @@ class RBTree:
         # G = Graph.Tree(nr_vertices, 2)  # 2 stands for children number
         # lay = G.layout('rt')
 
-        self.print_tree_helper(self.root, "", True)
 
-        return
+
+        return self.print_tree_helper(self.root, "", True)
 
     def print_tree_helper(self, node, indent, last):
         '''
@@ -441,6 +449,7 @@ def main():
 
     test_tree.insert(val=1)
     test_tree.insert(val = 2)
+    test_tree.insert(2)
     test_tree.insert(3)
     test_tree.insert(4)
     test_tree.insert(7)
@@ -449,7 +458,7 @@ def main():
     test_tree.insert(9)
     test_tree.insert(10)
 
-    print(test_tree)
+    test_tree.print_tree()
 
     return
 
