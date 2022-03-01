@@ -100,13 +100,16 @@ class RBTree:
         Initilizes an RB Tree with a nil node with value zero, and color
         black (self.nil = RBNode(0)). nil as the root and min_vruntime
         '''
+        self.__non_nil_node_amt = int(0)
+
         self.__nil = RBNode(0)
         self.__root = self.nil
         self.__min_vruntime = self.root
-        self.__non_nil_node_amt = 0
+
+
         return
 
-    # getters and setters
+    # getters
     @property
     def nil(self):
         return self.__nil
@@ -118,24 +121,31 @@ class RBTree:
     @property
     def root(self):
         return self.__root
-    @root.setter
-    def root(self, val):
-        self.__root = val
-        return
 
     @property
     def min_vruntime(self):
         return self.__min_vruntime
-    @min_vruntime.setter
-    def min_vruntime(self, val):
-        self.__min_vruntime = val
-        return
 
     @property
     def non_nil_node_amt(self):
         return self.__non_nil_node_amt
 
+    #setters
+
+    @root.setter
+    def root(self, val):
+        self.__root = val
+        return
+
+
     @min_vruntime.setter
+    def min_vruntime(self, val):
+        self.__min_vruntime = val
+        return
+
+
+
+    @non_nil_node_amt.setter
     def non_nil_node_amt(self, val):
         self.__non_nil_node_amt = val
         return
@@ -200,14 +210,98 @@ class RBTree:
 
         return
 
-    def fix_insert(self, val):
+    def fix_insert(self, node):
         '''
         Helper function for insert and makes sure all the properties of an RB
         tree are still valid after insertion
 
-        :param val: (Node) the node value to be inserted
+        :param node: (Node) the node value to be inserted
         :return:
         '''
+
+        # while(node's parent is Red)
+        while node.parent.is_red:
+
+            # cases change slightly depending on if the uncle is left or right
+            if node.parent == node.parent.parent.l_child:
+
+                # get the nodes uncle
+                uncle = node.parent.parent.r_child
+
+                # if the uncle is red
+                if uncle.is_red:
+                    # color parent and uncle black
+                    uncle.is_red = False
+                    node.parent.is_red = False
+
+                    # color grandparent red
+                    node.parent.parent = True
+
+                    # set node to grandparent
+                    node = node.parent.parent
+
+                # else if it black
+                else:
+                    #if (triangle)
+                    if node == node.parent.r_child:
+                        # set node to parent
+                        node = node.parent
+
+                        # rotate to parent
+                        self.rotate_left(node)
+
+
+                    # color parent of node black
+                    node.parent.is_red = False
+
+                    # color grandparent of node red
+                    node.parent.parent.is_red = True
+
+                    # rotate grand parent of node
+                    self.rotate_right(node.parent.parent)
+
+
+            else:
+
+                # get the nodes uncle
+                uncle = node.parent.parent.l_child
+
+                # if the uncle is red
+                if uncle.is_red:
+                    # color parent and uncle black
+                    uncle.is_red = False
+                    node.parent.is_red = False
+
+                    # color grandparent red
+                    node.parent.parent.is_red = True
+
+                    # set node to grandparent
+                    node = node.parent.parent
+
+                # else if it black
+                else:
+                    # if (triangle)
+                    if node == node.parent.l_child:
+                        # set node to parent
+                        node = node.parent
+
+                        # rotate to parent
+                        self.rotate_right(node)
+
+                    # color parent of node black
+                    node.parent.is_red = False
+
+                    # color grandparent of node red
+                    node.parent.parent.is_red = True
+
+                    # rotate grand parent of node
+                    self.rotate_left(node.parent.parent)
+
+            if node == self.root:
+                break
+
+        #color the root black
+        self.root.is_red = False
 
         return
 
@@ -222,9 +316,10 @@ class RBTree:
 
         # Y = Right child of node
         y = node.r_child
-        # Change right child of xnodeto left child of y
+        # Change right child of node to left child of y
         node.r_child = y.l_child
-        y.l_child.parent = node
+        if y.l_child != self.nil:
+            y.l_child.parent = node
 
         # Change parent of y as parent of x
         y.parent = node.parent
@@ -244,6 +339,8 @@ class RBTree:
 
         y.l_child = node
 
+        # the parent of node is now y
+        node.parent = y
 
         return
 
@@ -262,7 +359,8 @@ class RBTree:
         y.r_child = node.l_child
 
         # right subtree of y gets a new parent
-        y.r_child.parent = node
+        if y.r_child != self.nil:
+            y.r_child.parent = node
 
         # y's parent is now node's parent
         y.parent = node.parent
@@ -292,8 +390,10 @@ class RBTree:
         Printing function for RB_tree
         :return:
         '''
-        self.print_tree()
-        return
+
+        return self.print_tree()
+
+
 
     def print_tree(self):
         '''
@@ -340,8 +440,16 @@ def main():
     test_tree = RBTree()
 
     test_tree.insert(val=1)
+    test_tree.insert(val = 2)
+    test_tree.insert(3)
+    test_tree.insert(4)
+    test_tree.insert(7)
+    test_tree.insert(6)
+    test_tree.insert(8)
+    test_tree.insert(9)
+    test_tree.insert(10)
 
-    test_tree.print_tree()
+    print(test_tree)
 
     return
 
