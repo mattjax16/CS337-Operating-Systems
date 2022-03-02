@@ -158,7 +158,7 @@ class RBTree:
     Inserting and Deleting
     '''
 
-    def insert(self, key : Any, data : Any):
+    def insert(self, key : Any, data : Any = None):
         '''
         Insersts a RBNode in the RB tree in the correct position based on the val
 
@@ -364,7 +364,7 @@ class RBTree:
                     fix_node = self.root
 
                 # If the fix_node is the right child
-            else:
+            elif fix_node == fix_node.parent.r_child:
                 # Get the sibling
                 sib = fix_node.parent.l_child
 
@@ -457,7 +457,8 @@ class RBTree:
             rem_node.is_red = delete_node.is_red
 
         if original_color == False:
-            self.delete_fix(replacing_node)
+            if replacing_node != self.nil:
+                self.delete_fix(replacing_node)
 
     def transplant_nodes(self, delete_node: RBNode, replacing_node: RBNode):
         '''
@@ -848,7 +849,6 @@ class RBTree:
                           )
         fig.show()
 
-        print(1)
         return
 
     def make_annotations(self, labels, M, positions, font_size=10,
@@ -916,7 +916,7 @@ class RBTree:
         return
 
     def __repr__(self) -> str:
-        """Provie the tree representation to visualize its layout."""
+        """Provides the tree representation to visualize its layout."""
         if (self.root is None) or (self.root == self.nil):
             return "empty tree"
         return (

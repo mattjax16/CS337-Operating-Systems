@@ -741,17 +741,29 @@ def generate_processes(n=10000,
 # Main Testing function
 def main():
 
-    # Run the kernel with RR and base test processes
-    kernal(scheduler.Preemptive_Response_scheduler,
+    # Run the kernel with CFS and base test processes
+    kernal(scheduler.CFS_scheduler,
            file_proc_name="test")
 
-    # Importing the results from RR test
-    pr_results_all = pd.read_csv(
-        "data/Combined_Data/All_Preemptive_Response_test_results.csv")
+    # Importing the results from CFS test
+    cfs_results_all = pd.read_csv(
+        "data/Combined_Data/All_CFS_results.csv")
 
     # Plotting the Results Enhanced
-    plotKernalResults(pr_results_all,
-                      "Preemptive Response Test Results Timeline")
+    plotKernalResults(cfs_results_all,
+                      "Completely Fair Scheduling Test Results Timeline")
+
+    # # Run the kernel with RR and base test processes
+    # kernal(scheduler.Preemptive_Response_scheduler,
+    #        file_proc_name="test")
+    #
+    # # Importing the results from RR test
+    # pr_results_all = pd.read_csv(
+    #     "data/Combined_Data/All_Preemptive_Response_test_results.csv")
+    #
+    # # Plotting the Results Enhanced
+    # plotKernalResults(pr_results_all,
+    #                   "Preemptive Response Test Results Timeline")
 
     # # making the unfair RR processes
     # unfair_rr_procs = [Process(1, [2, 35, 2], 1, 300),

@@ -284,6 +284,11 @@ class Process:
             print("Warning Nothing left to work on!!!\n")
         return
 
+    def __repr__(self) -> str:
+        """Provides the process representation its layout."""
+        return f"ID = {self.__id} , Ar_T = {self.__arrival_time} , " \
+               f"P = {self.priority}"
+
 
 # Main Testing function for Process Class
 def main():

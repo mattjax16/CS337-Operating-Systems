@@ -131,7 +131,7 @@ def CFS_scheduler(
             process.completion_time = time
 
             # Calculate the procs min_vruntime
-            process.min_vruntime = process.current_CPU_time() * \
+            process.min_vruntime = process.current_CPU_time * \
                                         process.weight
 
             Scheduled_Processes.append(process)
@@ -190,13 +190,14 @@ def CFS_scheduler(
     # the time the dynamic quantum is done
 
     # Calculate the procs min_vruntime
-    process.min_vruntime = process.current_CPU_time() * \
+    process.min_vruntime = process.current_CPU_time * \
                             process.weight
 
     # add processes that arrived now to ready queue
     add_ready(processes, ready, time)
 
-    if ready.non_nil_node_amt > 0 and ready.min_vruntime < process.min_vruntime:
+    if ready.non_nil_node_amt > 0 and ready.min_vruntime.key < \
+            process.min_vruntime:
 
         # If process isn't done insert it to ready list
         ready.insert(process.min_vruntime,process)
@@ -1756,7 +1757,7 @@ def add_ready(processes, ready, time):
                 arrived_proc.priority = arrived_proc.weight
 
                 # Calculate the procs min_vruntime
-                arrived_proc.min_vruntime = arrived_proc.current_CPU_time() * \
+                arrived_proc.min_vruntime = arrived_proc.current_CPU_time * \
                                             arrived_proc.weight
 
                 ready.insert(arrived_proc.min_vruntime,arrived_proc)
