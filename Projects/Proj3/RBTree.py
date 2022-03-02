@@ -199,7 +199,7 @@ class RBTree:
             # are at
             if insert_node < node:
                 node = node.l_child
-            elif insert_node > node:
+            elif insert_node >= node:
                 node = node.r_child
             else:
                 return
