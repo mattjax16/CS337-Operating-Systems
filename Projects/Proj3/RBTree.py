@@ -27,10 +27,12 @@ class RBNode:
     :param is_red: (bool) if the Node is Red (if false node is black)
     '''
     key: Any = field(compare=True)
-    parent: "RBNode" = field(default=None, compare=False)
-    l_child: "RBNode" = field(default=None, compare=False)
-    r_child: "RBNode" = field(default=None, compare=False)
     is_red: bool = field(default=False, compare=False)
+    data: Any = field(default=None, compare=False)
+    parent: "RBNode" = field(default=None, compare=False, repr=False)
+    l_child: "RBNode" = field(default=None, compare=False, repr=False)
+    r_child: "RBNode" = field(default=None, compare=False, repr=False)
+
 
 
 class RBTree:
