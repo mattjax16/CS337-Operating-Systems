@@ -7,7 +7,7 @@ Matthew Bass
 
 A Red Black Tree in python (used here for Completely fair scheduling)
 '''
-import numpy as np
+
 from igraph import Graph, EdgeSeq
 import plotly.graph_objects as go
 import sys
@@ -27,8 +27,8 @@ class RBNode:
     :param is_red: (bool) if the Node is Red (if false node is black)
     '''
     key: Any = field(compare=True)
-    is_red: bool = field(default=False, compare=False)
     data: Any = field(default=None, compare=False)
+    is_red: bool = field(default=False, compare=False)
     parent: "RBNode" = field(default=None, compare=False, repr=False)
     l_child: "RBNode" = field(default=None, compare=False, repr=False)
     r_child: "RBNode" = field(default=None, compare=False, repr=False)
@@ -157,65 +157,66 @@ class RBTree:
     Inserting and Deleting
     '''
 
-    def insert(self, val):
+    def insert(self, key : Any, data : Any):
         '''
         Insersts a RBNode in the RB tree in the correct position based on the val
 
-        :param val: the val of the RBNode to be inserted
+        :param key: the ket of the RBNode to be inserted
+        :param data: the data of the RBNode to be inserted
         :return:
         '''
 
 
 
-        # make the val a node
-        val = RBNode(val)
+        # make the val a insert_node
+        insert_node = RBNode(key,data)
 
 
-        self.nodes_list.append(val)
+        self.nodes_list.append(insert_node)
 
         # see if the node value is greater than the min v runtime
         # and if it is update the min v runtime
-        if val < self.min_vruntime or self.min_vruntime is self.nil:
-            self.min_vruntime = val
+        if insert_node < self.min_vruntime or self.min_vruntime is self.nil:
+            self.min_vruntime = insert_node
 
         # Set y to the nil node and node to the root
         y = self.nil
         node = self.root
 
-        # if val is not node increment non_nil_node_amt
-        if val != self.nil:
+        # if insert_node is not node increment non_nil_node_amt
+        if insert_node != self.nil:
             self.non_nil_node_amt += 1
 
-        # while the root is not nill traverse the tree
+        # while the root is not nil traverse the tree
         # and compare the values of the nodes
         while node != self.nil:
             y = node
 
-            # Now compare the key of the insertion val and node we are at
-            if val.key < node.key:
+            # Now compare the key of the insertion insert_node and node we are at
+            if insert_node.key < node.key:
                 node = node.l_child
             else:
                 node = node.r_child
 
         # set the parent after postion found
-        val.parent = y
+        insert_node.parent = y
 
         # Set root based on y
         if y == self.nil:
-            self.root = val
+            self.root = insert_node
         else:
-            if val.key < y.key:
-                y.l_child = val
+            if insert_node.key < y.key:
+                y.l_child = insert_node
             else:
-                y.r_child = val
+                y.r_child = insert_node
 
-        # Set val left and right child and color
-        val.l_child = self.nil
-        val.r_child = self.nil
-        val.is_red = True
+        # Set insert_node left and right child and color
+        insert_node.l_child = self.nil
+        insert_node.r_child = self.nil
+        insert_node.is_red = True
 
         # run the value through insert fixup
-        self.fix_insert(val)
+        self.fix_insert(insert_node)
         return
 
     def fix_insert(self, node):
@@ -478,7 +479,7 @@ class RBTree:
         return
 
 
-    def remove_min_vruntime(self) -> int:
+    def remove_min_vruntime(self) -> (int,Any):
         '''
          method that removes the node with the smallest vruntime in the tree
          and updates min_vruntime in constant time. The method should
@@ -495,7 +496,7 @@ class RBTree:
         self.min_vruntime = self.minimum(self.root)
 
 
-        return min_vrun
+        return (min_vrun.key, min_vrun.data)
 
 
     def rotate_left(self, node):
@@ -933,9 +934,9 @@ def main():
     test_tree = RBTree()
 
 
-    test_tree.insert(val=1)
+    test_tree.insert(key=1)
 
-    test_tree.insert(val = 2)
+    test_tree.insert(key = 2)
 
     test_tree.insert(3)
 

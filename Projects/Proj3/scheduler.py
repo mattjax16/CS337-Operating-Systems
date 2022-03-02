@@ -19,14 +19,14 @@ Project 3 Algorithms
 
 
 def CFS_scheduler(
-        processes : List ,
-        ready : RBTree,
-        wait : List,
-        CPU : Dict,
-        Scheduled_Processes : Dict,
-        time : int,
+        processes: List,
+        ready: RBTree,
+        wait: List,
+        CPU: Dict,
+        Scheduled_Processes: Dict,
+        time: int,
         target_latency: float = 5,
-        debug : bool = True ):
+        debug: bool = True):
     ''' Completly Fair Scheduler
 
         The scheduler takes a RB-Tree of ready
@@ -1243,7 +1243,7 @@ def FCFS_scheduler(
     start_time = time
 
     # while process is not finished
-    while(process.burst_time > 0):
+    while (process.burst_time > 0):
         # decrement process burst time by one
         process.burst_time += -1
 
@@ -1511,7 +1511,7 @@ def Priority_Turnaround_scheduler(processes, ready, CPU, Scheduled_Processes,
 
     for proc in ready:
         proc.priority = (time - proc.arrival_time) + \
-            max_burst_time - proc.burst_time
+                        max_burst_time - proc.burst_time
 
     # pick process with highest priority and remove it from ready
     ready.sort(key=lambda x: x.priority)
@@ -1717,15 +1717,35 @@ def add_ready(processes, ready, time):
 
     :return:
     '''
-    # sort the processes list
+
+    # Put a process into ready based on list vs RBtree
+    # sort the processes list based on arrival time
     processes.sort(key=lambda x: x.arrival_time)
 
     # If there are Processes left,
     # while the front of the processes list has arrived
     arrival_flag = True
     while arrival_flag:
+
+        # IF there are processes and still ones that need to arrive
         if (processes and (processes[0].arrival_time <= time)):
-            ready.append(processes.pop(0))
+
+            arrived_proc = processes.pop(0)
+
+            # If ready is a RBTree
+            if isinstance(ready, RBTree):
+
+                # make the procs prioriety the weight
+                arrived_proc.priority = arrived_proc.weight
+
+                # Calculate the procs min_vruntime
+                arrived_proc.min_vruntime = arrived_proc.current_CPU_time() * \
+                                            arrived_proc.weight
+
+                ready.insert(arrived_proc.min_vruntime,arrived_proc)
+
+            else:
+                ready.append(arrived_proc)
         else:
             arrival_flag = False
     return
@@ -1762,5 +1782,22 @@ def run_wait(ready, wait, time):
                 changed_proc.io_waiting_times[-1][0],
                 time
             )
-            ready.append(changed_proc)
-            ready[-1].change_status()
+
+            # Change the procs status
+            changed_proc.change_status()
+
+            # If ready is a RBTree
+            if isinstance(ready, RBTree):
+
+                # make the procs prioriety the weight
+                changed_proc.priority = changed_proc.weight
+
+                # Calculate the procs min_vruntime
+                changed_proc.min_vruntime = changed_proc.current_CPU_time() * \
+                                            changed_proc.weight
+
+                ready.insert(changed_proc.min_vruntime, changed_proc)
+
+            else:
+                ready.append(changed_proc)
+
