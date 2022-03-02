@@ -418,6 +418,9 @@ class RBTree:
         #Remove the delete node from the nodes list
         self.nodes_list.remove(delete_node)
 
+        # Decrease the non nil node ammount
+        self.non_nil_node_amt += -1
+
         rem_node = delete_node
         original_color = rem_node.is_red
 

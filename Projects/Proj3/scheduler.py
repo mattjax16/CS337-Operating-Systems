@@ -8,8 +8,196 @@ Matthew Bass
 This is a file to the different process scheduling functions for the OS
 '''
 
-# Importing need libraries
-from process import Process
+from RBTree import RBTree
+from typing import List, Any, Dict
+
+'''
+################################################################
+Project 3 Algorithms
+###############################################################
+'''
+
+
+def CFS_scheduler(
+        processes : List ,
+        ready : RBTree,
+        wait : List,
+        CPU : Dict,
+        Scheduled_Processes : Dict,
+        time : int,
+        target_latency: float = 5,
+        debug : bool = True ):
+    ''' Completly Fair Scheduler
+
+        The scheduler takes a RB-Tree of ready
+        processes stored in the tree according to their vruntime. The process
+        with the minimum vruntime is selected to run for a dynamic quantum
+        calculated using the following equation:
+
+        dynamic_quantum = target_latency / #ready_processes
+
+        Target latency defines the maximum response time for a process in the
+        system. This dynamic_quantum guarantees fairness. If dynamic quantum
+        is less than 1, then a value of 1 is chosen, and fairness is ignored
+        as the system runs more processes than it can handle.
+
+        It updates vruntime for each process according to how much it runs in
+        the CPU multiplied by its weight, where weight is an integer that
+        indicates priority. The highest priority is the value 1, and the
+        lowest is 10. The default priority value for a process is 5. The
+        equation for counting vruntime for each process is the following:
+
+        vruntime = t * weight
+
+        Where t is the time spent in the CPU, and weight is the priority
+        value between 1 (high priority) and 10 (low priority).
+
+
+
+        Parameters:
+            processes:(List) is a list of all the processes in the simulation,
+                whether they arrived or not, they are in this list.
+
+            ready:(RBTree) this is a Red Black Tree of processes with current
+            arrival time. Meaning, if the arrival time of a process is less
+            than the current time, it should be in the ready list. Therefore,
+            this list holds only processes that have arrived at the ready
+            list. It also requires that the processes does not have I/0 time
+            that needs to be waiting
+
+            wait:(List) this is a list of all the processes that are waiting
+            for I/O input
+
+            CPU:(DICT) this is a list that simulates the CPU by holding
+            beginning runtime and end of runtime for each process. This is
+            the same as the Gantt bar that we have been using in lecture
+            slides at the bottom of each example.
+
+            Scheduled_Processes:(DICT) this is a list of all the process that
+            have been scheduled
+
+            time:(int) this is an integer that represents the current time,
+            where simulation starts at time zero and time is incremented by
+            one after each time slice.
+
+            target_latency:(flaot) defines the maximum response time for a
+            process in the system. used to calculate the dynamic quantum
+            which determines fairnedd
+
+            debug:(bool) this is a boolean with the default value of True. It
+            controls a print statement that shows process ID, start time,
+            and end time at each context switch. It is useful for debugging.
+    '''
+
+    # Wait for the processes to be in ready queue or wait queue
+    wait_for_process(processes, ready, time, wait)
+
+    # popping the start of the process
+    ready.sort(key=lambda x: x.priority, reverse=True)
+    process = ready.pop(0)
+
+    # indicate the process has been worked on
+    process.process_worked_on()
+
+    # set start time to time
+    start_time = time
+
+    # Work on the chosen process until there is one with higher priority
+    # or until the process is done
+    for w_time in range(process.current_CPU_time):
+
+        # add 1 to time
+        time += 1
+
+        # run the process
+        process.run_process()
+
+        # run the waiting list
+        run_wait(ready, wait, time)
+
+        if process.times_worked_on == 1:
+            process.response_time = time - process.arrival_time
+
+        # if the process is done add it to Scheduled_Processes and terminate
+        # the loop
+        if sum(process.duty) == 0:
+
+            # set end time to time
+            end_time = time
+
+            # set the completion time of the process
+            process.completion_time = time
+
+            Scheduled_Processes.append(process)
+
+            # add processID, start, end to CPU
+            CPU.append(dict(id=process.id,
+                            start=start_time,
+                            finish=end_time,
+                            priority=process.priority))
+
+            # add processes that arrived now to ready queue
+            add_ready(processes, ready, time)
+
+            if debug:
+                print(
+                    f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
+            return time
+
+        # if the process is in the IO state now
+        if process.duty_type == "I/O":
+
+            # change the processes status
+            process.change_status()
+
+            new_io_wait_times = process.io_waiting_times
+            new_io_wait_times.append([time, 0])
+            process.io_waiting_times = new_io_wait_times
+
+            # set end time to time
+            end_time = time
+
+            # If process isn't done and needs I/O append it to ready list
+            wait.append(process)
+
+            # add processID, start, end to CPU
+            CPU.append(dict(id=process.id,
+                            start=start_time,
+                            finish=end_time,
+                            priority=process.priority))
+
+            # add processes that arrived now to ready queue
+            add_ready(processes, ready, time)
+
+            if debug:
+                print(
+                    f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
+
+            return time
+
+        # Checking if the process is still the highest PRiority
+        # add processes that arrived now to ready queue
+        add_ready(processes, ready, time)
+        # popping the start of the process
+        ready.sort(key=lambda x: x.priority, reverse=True)
+        if ready and ready[0].priority > process.priority:
+            # If process isn't done append it to ready list
+            ready.append(process)
+
+            # set end time to time
+            end_time = time
+
+            # add processID, start, end to CPU
+            CPU.append(dict(id=process.id,
+                            start=start_time,
+                            finish=end_time,
+                            priority=process.priority))
+
+            if debug:
+                print(
+                    f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
+
+            return time
 
 
 '''
@@ -1465,28 +1653,49 @@ def wait_for_process(processes, ready, time, wait=[], debug=False):
     nothing add the processes to the ready list
     increment time until there is one
 
+    :param wait:
+    :param debug:
     :param processes:
     :param ready:
     :param time:
     :return:
     '''
+    # If ready is an RB TREE
+    if isinstance(ready, RBTree):
+        wait_flag = (ready.non_nil_node_amt == 0)
+        while wait_flag:
+            if debug:
+                print("In wait_for_process")
+            add_ready(processes, ready, time)
+            if ready.non_nil_node_amt == 0:
+                run_wait(ready, wait, time)
+                time += 1
 
-    wait_flag = (len(ready) == 0)
-    while wait_flag:
+            # if there is now something in the ready list
+            if ready:
+                wait_flag = False
         if debug:
-            print("In wait_for_process")
-        add_ready(processes, ready, time)
-        if len(ready) == 0:
-            run_wait(ready, wait, time)
-            time += 1
+            print("Done with wait_for_process")
+        return
 
-        # if there is now something in the ready list
-        if ready:
-            wait_flag = False
+    # Else if ready is a list
+    else:
+        wait_flag = (len(ready) == 0)
+        while wait_flag:
+            if debug:
+                print("In wait_for_process")
+            add_ready(processes, ready, time)
+            if len(ready) == 0:
+                run_wait(ready, wait, time)
+                time += 1
 
-    if debug:
-        print("Done with wait_for_process")
-    return
+            # if there is now something in the ready list
+            if ready:
+                wait_flag = False
+
+        if debug:
+            print("Done with wait_for_process")
+        return
 
 
 def add_ready(processes, ready, time):
@@ -1496,9 +1705,9 @@ def add_ready(processes, ready, time):
         processes: is a list of all the processes in the simulation,
             whether they arrived or not, they are in this list.
 
-        ready: this is a list of processes with current arrival time.
-            Meaning, if the arrival time of a process is less than
-            the current time, it should be in the ready list.
+        ready: this is a list (or RBTree) of processes with current arrival
+            time, or min_vruntime, Meaning, if the arrival time of a process
+            is less than the current time, it should be in the ready list.
             Therefore, this list holds only processes that have
             arrived at the ready list.
 
@@ -1511,7 +1720,7 @@ def add_ready(processes, ready, time):
     # sort the processes list
     processes.sort(key=lambda x: x.arrival_time)
 
-    # If there are Proceeses left,
+    # If there are Processes left,
     # while the front of the processes list has arrived
     arrival_flag = True
     while arrival_flag:
@@ -1528,12 +1737,12 @@ def run_wait(ready, wait, time):
     them are done waiting add to ready queue
 
     Parameters:
-        ready: this is a list of processes with current arrival time.
-                    Meaning, if the arrival time of a process is less than
-                    the current time, it should be in the ready list.
-                    Therefore, this list holds only processes that have
-                    arrived at the ready list. It also requires that the
-                    processes does not have I/0 time that needs to be waiting
+        ready: this is a list (or RBTree) of processes with current arrival
+                time. Meaning, if the arrival time of a process is less than
+                the current time, it should be in the ready list.
+                Therefore, this list holds only processes that have
+                arrived at the ready list. It also requires that the
+                processes does not have I/0 time that needs to be waiting
 
         waiting: this is a list of all the processes that are waiting for I/O input
 
