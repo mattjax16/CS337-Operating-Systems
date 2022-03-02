@@ -334,7 +334,7 @@ class RBTree:
 
                 # Case 2: the sibling is black and its children are black.
                 if not sib.l_child.is_red and not sib.r_child.is_red:
-                    sib.color.is_red = True
+                    sib.is_red = True
                     fix_node = fix_node.parent
 
                 # Cases 3 and 4: the sibling is black and one of
@@ -479,6 +479,16 @@ class RBTree:
 
         :return: (int) min vruntime
         '''
+        min_vrun = self.min_vruntime
+
+        # Delete the min v runtime
+        self.delete(min_vrun.key)
+
+        #set the new min run time
+        self.min_vruntime = self.minimum(self.root)
+
+
+        return min_vrun
 
 
     def rotate_left(self, node):
@@ -815,7 +825,8 @@ class RBTree:
                     showticklabels=False,
                     )
 
-        fig.update_layout(title=f'RB Tree (Height: {self.get_height(self.root)}',
+        fig.update_layout(title=f'RB Tree (Height: '
+                                f'{self.get_height(self.root)})',
                           annotations=self.make_annotations(labels,
                                                        M, positions),
                           font_size=12,
@@ -937,9 +948,9 @@ def main():
     test_tree.print_tree()
 
     # test_tree.display_tree()
-
-    test_tree.delete(3)
-
+    test_tree.display_tree()
+    # test_tree.delete(3)
+    test_tree.remove_min_vruntime()
     test_tree.display_tree()
 
     '''Testing get level'''
