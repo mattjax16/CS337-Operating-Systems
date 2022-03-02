@@ -180,8 +180,8 @@ class RBTree:
         if insert_node < self.min_vruntime or self.min_vruntime is self.nil:
             self.min_vruntime = insert_node
 
-        # Set y to the nil node and node to the root
-        y = self.nil
+        # Set paren to the nil node and node to the root
+        paren = self.nil
         node = self.root
 
         # if insert_node is not node increment non_nil_node_amt
@@ -190,26 +190,31 @@ class RBTree:
 
         # while the root is not nil traverse the tree
         # and compare the values of the nodes
+        runs = 0
         while node != self.nil:
-            y = node
+            runs += 1
+            paren = node
 
-            # Now compare the key of the insertion insert_node and node we are at
-            if insert_node.key < node.key:
+            # Now compare the key of the insertion insert_node and node we
+            # are at
+            if insert_node < node:
                 node = node.l_child
-            else:
+            elif insert_node > node:
                 node = node.r_child
+            else:
+                return
 
-        # set the parent after postion found
-        insert_node.parent = y
+        # set the parent after position found
+        insert_node.parent = paren
 
-        # Set root based on y
-        if y == self.nil:
+        # Set root based on paren
+        if paren == self.nil:
             self.root = insert_node
         else:
-            if insert_node.key < y.key:
-                y.l_child = insert_node
+            if insert_node.key < paren.key:
+                paren.l_child = insert_node
             else:
-                y.r_child = insert_node
+                paren.r_child = insert_node
 
         # Set insert_node left and right child and color
         insert_node.l_child = self.nil
