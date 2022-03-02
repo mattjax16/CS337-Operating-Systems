@@ -92,9 +92,11 @@ def CFS_scheduler(
     # Wait for the processes to be in ready queue or wait queue
     wait_for_process(processes, ready, time, wait)
 
-    # popping the start of the process
-    ready.sort(key=lambda x: x.priority, reverse=True)
-    process = ready.pop(0)
+    # Calculate the dynamic_quantum
+    dynamic_quantum = target_latency * ready.non_nil_node_amt
+
+    # Get the process with the min_vruntime from the tree
+    process = ready.remove_min_vruntime()[1]
 
     # indicate the process has been worked on
     process.process_worked_on()
@@ -104,7 +106,7 @@ def CFS_scheduler(
 
     # Work on the chosen process until there is one with higher priority
     # or until the process is done
-    for w_time in range(process.current_CPU_time):
+    for q_time in range(dynamic_quantum):
 
         # add 1 to time
         time += 1
@@ -127,6 +129,10 @@ def CFS_scheduler(
 
             # set the completion time of the process
             process.completion_time = time
+
+            # Calculate the procs min_vruntime
+            process.min_vruntime = process.current_CPU_time() * \
+                                        process.weight
 
             Scheduled_Processes.append(process)
 
@@ -157,6 +163,10 @@ def CFS_scheduler(
             # set end time to time
             end_time = time
 
+            # Calculate the procs min_vruntime
+            process.min_vruntime = process.current_CPU_time() * \
+                                   process.weight
+
             # If process isn't done and needs I/O append it to ready list
             wait.append(process)
 
@@ -175,29 +185,36 @@ def CFS_scheduler(
 
             return time
 
-        # Checking if the process is still the highest PRiority
-        # add processes that arrived now to ready queue
-        add_ready(processes, ready, time)
-        # popping the start of the process
-        ready.sort(key=lambda x: x.priority, reverse=True)
-        if ready and ready[0].priority > process.priority:
-            # If process isn't done append it to ready list
-            ready.append(process)
 
-            # set end time to time
-            end_time = time
+    # If the process isn,t done or I/O by
+    # the time the dynamic quantum is done
 
-            # add processID, start, end to CPU
-            CPU.append(dict(id=process.id,
+    # Calculate the procs min_vruntime
+    process.min_vruntime = process.current_CPU_time() * \
+                            process.weight
+
+    # add processes that arrived now to ready queue
+    add_ready(processes, ready, time)
+
+    if ready.non_nil_node_amt > 0 and ready.min_vruntime < process.min_vruntime:
+
+        # If process isn't done insert it to ready list
+        ready.insert(process.min_vruntime,process)
+
+        # set end time to time
+        end_time = time
+
+        # add processID, start, end to CPU
+        CPU.append(dict(id=process.id,
                             start=start_time,
                             finish=end_time,
                             priority=process.priority))
 
-            if debug:
+        if debug:
                 print(
                     f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
 
-            return time
+        return time
 
 
 '''
