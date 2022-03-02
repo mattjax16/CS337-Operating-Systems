@@ -110,7 +110,7 @@ def RR_scheduler(
         # run the waiting list
         run_wait(ready, wait, time)
 
-        if process.times_worked_on == 1:
+        if process.times_worked_on == 1 and q_time == 0:
             process.response_time = time - process.arrival_time
 
         # if the process is done add it to Scheduled_Processes and terminate
@@ -245,7 +245,7 @@ def SRT_scheduler(
 
     # Work on the chosen process until IO
     # or until the process is done
-    for w_time in range(process.current_CPU_time):
+    for q_time in range(process.current_CPU_time):
 
         # add 1 to time
         time += 1
@@ -256,7 +256,7 @@ def SRT_scheduler(
         # run the waiting list
         run_wait(ready, wait, time)
 
-        if process.times_worked_on == 1:
+        if process.times_worked_on == 1 and q_time == 0:
             process.response_time = time - process.arrival_time
 
         # if the process is done add it to Scheduled_Processes and terminate
@@ -394,7 +394,7 @@ def Preemptive_Priority_scheduler(
 
     # Work on the chosen process until there is one with higher priority
     # or until the process is done
-    for w_time in range(process.current_CPU_time):
+    for q_time in range(process.current_CPU_time):
 
         # add 1 to time
         time += 1
@@ -405,7 +405,7 @@ def Preemptive_Priority_scheduler(
         # run the waiting list
         run_wait(ready, wait, time)
 
-        if process.times_worked_on == 1:
+        if process.times_worked_on == 1 and q_time == 0:
             process.response_time = time - process.arrival_time
 
         # if the process is done add it to Scheduled_Processes and terminate
@@ -548,7 +548,7 @@ def Preemptive_Response_scheduler(
 
     # Work on the chosen process until there is one with higher priority
     # or until the process is done
-    for w_time in range(process.current_CPU_time):
+    for q_time in range(process.current_CPU_time):
 
         # add 1 to time
         time += 1
@@ -559,7 +559,7 @@ def Preemptive_Response_scheduler(
         # run the waiting list
         run_wait(ready, wait, time)
 
-        if process.times_worked_on == 1:
+        if process.times_worked_on == 1 and q_time == 0:
             process.response_time = time - process.arrival_time
 
         # if the process is done add it to Scheduled_Processes and terminate
@@ -750,7 +750,7 @@ def MLFQ_scheduler(
             # add processes that arrived now to ready queue
             add_ready(processes, ready, time)
 
-            if process.times_worked_on == 1:
+            if process.times_worked_on == 1 and q_time == 0:
                 process.response_time = time - process.arrival_time
 
             # if the process is done add it to Scheduled_Processes and terminate
@@ -844,7 +844,7 @@ def MLFQ_scheduler(
             # add processes that arrived now to ready queue
             add_ready(processes, ready, time)
 
-            if process.times_worked_on == 1:
+            if process.times_worked_on == 1 and q_time == 0:
                 process.response_time = time - process.arrival_time
 
             # if the process is done add it to Scheduled_Processes and terminate
@@ -924,7 +924,7 @@ def MLFQ_scheduler(
 
         # Work on the chosen process until IO
         # or until the process is done
-        for w_time in range(process.current_CPU_time):
+        for q_time in range(process.current_CPU_time):
 
             # add 1 to time
             time += 1
@@ -938,7 +938,7 @@ def MLFQ_scheduler(
             # add processes that arrived now to ready queue
             add_ready(processes, ready, time)
 
-            if process.times_worked_on == 1:
+            if process.times_worked_on == 1 and q_time == 0:
                 process.response_time = time - process.arrival_time
 
             # if the process is done add it to Scheduled_Processes and terminate
@@ -1055,7 +1055,7 @@ def FCFS_scheduler(
     start_time = time
 
     # while process is not finished
-    while(process.burst_time > 0):
+    while (process.burst_time > 0):
         # decrement process burst time by one
         process.burst_time += -1
 
@@ -1323,7 +1323,7 @@ def Priority_Turnaround_scheduler(processes, ready, CPU, Scheduled_Processes,
 
     for proc in ready:
         proc.priority = (time - proc.arrival_time) + \
-            max_burst_time - proc.burst_time
+                        max_burst_time - proc.burst_time
 
     # pick process with highest priority and remove it from ready
     ready.sort(key=lambda x: x.priority)

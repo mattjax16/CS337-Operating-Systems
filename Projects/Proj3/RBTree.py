@@ -921,8 +921,8 @@ class RBTree:
             return "empty tree"
         return (
             f"tree_height={str(self.get_height(self.root))}, Num Nodes = "
-            f"{self.non_nil_node_amt}, Min_Vruntime = {self.min_vruntime.key}\n"
-            f"{type(self)},\n root={self.root} "
+            f"{self.non_nil_node_amt}, Min_Vruntime = {self.min_vruntime.key}"
+            f"{type(self)}, root={self.root} "
         )
 
 

@@ -117,7 +117,7 @@ def CFS_scheduler(
         # run the waiting list
         run_wait(ready, wait, time)
 
-        if process.times_worked_on == 1:
+        if process.times_worked_on == 1 and q_time == 0:
             process.response_time = time - process.arrival_time
 
         # if the process is done add it to Scheduled_Processes and terminate
@@ -186,7 +186,7 @@ def CFS_scheduler(
             return time
 
 
-    # If the process isn,t done or I/O by
+    # If the process isn,'t done or I/O by
     # the time the dynamic quantum is done
 
     # Calculate the procs min_vruntime
@@ -196,27 +196,45 @@ def CFS_scheduler(
     # add processes that arrived now to ready queue
     add_ready(processes, ready, time)
 
-    if ready.non_nil_node_amt > 0 and ready.min_vruntime.key < \
-            process.min_vruntime:
+    # If process isn't done insert it to ready list
+    ready.insert(process.min_vruntime, process)
 
-        # If process isn't done insert it to ready list
-        ready.insert(process.min_vruntime,process)
+    # set end time to time
+    end_time = time
 
-        # set end time to time
-        end_time = time
+    # add processID, start, end to CPU
+    CPU.append(dict(id=process.id,
+                    start=start_time,
+                    finish=end_time,
+                    priority=process.priority))
 
-        # add processID, start, end to CPU
-        CPU.append(dict(id=process.id,
-                            start=start_time,
-                            finish=end_time,
-                            priority=process.priority))
+    if debug:
+        print(
+            f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
 
-        if debug:
-                print(
-                    f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
+    return time
 
-        return time
-
+    # if ready.non_nil_node_amt > 0 and ready.min_vruntime.key < \
+    #         process.min_vruntime:
+    #
+    #     # If process isn't done insert it to ready list
+    #     ready.insert(process.min_vruntime,process)
+    #
+    #     # set end time to time
+    #     end_time = time
+    #
+    #     # add processID, start, end to CPU
+    #     CPU.append(dict(id=process.id,
+    #                         start=start_time,
+    #                         finish=end_time,
+    #                         priority=process.priority))
+    #
+    #     if debug:
+    #             print(
+    #                 f"Process ID: {process.id} , Start Time: {start_time} , End Time: {end_time}")
+    #
+    #     return time
+    #
 
 '''
 ################################################################
@@ -316,7 +334,7 @@ def RR_scheduler(
         # run the waiting list
         run_wait(ready, wait, time)
 
-        if process.times_worked_on == 1:
+        if process.times_worked_on == 1 and q_time == 0:
             process.response_time = time - process.arrival_time
 
         # if the process is done add it to Scheduled_Processes and terminate
@@ -451,7 +469,7 @@ def SRT_scheduler(
 
     # Work on the chosen process until IO
     # or until the process is done
-    for w_time in range(process.current_CPU_time):
+    for q_time in range(process.current_CPU_time):
 
         # add 1 to time
         time += 1
@@ -462,7 +480,7 @@ def SRT_scheduler(
         # run the waiting list
         run_wait(ready, wait, time)
 
-        if process.times_worked_on == 1:
+        if process.times_worked_on == 1 and q_time == 0:
             process.response_time = time - process.arrival_time
 
         # if the process is done add it to Scheduled_Processes and terminate
@@ -600,7 +618,7 @@ def Preemptive_Priority_scheduler(
 
     # Work on the chosen process until there is one with higher priority
     # or until the process is done
-    for w_time in range(process.current_CPU_time):
+    for q_time in range(process.current_CPU_time):
 
         # add 1 to time
         time += 1
@@ -611,7 +629,7 @@ def Preemptive_Priority_scheduler(
         # run the waiting list
         run_wait(ready, wait, time)
 
-        if process.times_worked_on == 1:
+        if process.times_worked_on == 1 and q_time == 0:
             process.response_time = time - process.arrival_time
 
         # if the process is done add it to Scheduled_Processes and terminate
@@ -754,7 +772,7 @@ def Preemptive_Response_scheduler(
 
     # Work on the chosen process until there is one with higher priority
     # or until the process is done
-    for w_time in range(process.current_CPU_time):
+    for q_time in range(process.current_CPU_time):
 
         # add 1 to time
         time += 1
@@ -765,7 +783,7 @@ def Preemptive_Response_scheduler(
         # run the waiting list
         run_wait(ready, wait, time)
 
-        if process.times_worked_on == 1:
+        if process.times_worked_on == 1 and q_time == 0:
             process.response_time = time - process.arrival_time
 
         # if the process is done add it to Scheduled_Processes and terminate
@@ -956,7 +974,7 @@ def MLFQ_scheduler(
             # add processes that arrived now to ready queue
             add_ready(processes, ready, time)
 
-            if process.times_worked_on == 1:
+            if process.times_worked_on == 1 and q_time == 0:
                 process.response_time = time - process.arrival_time
 
             # if the process is done add it to Scheduled_Processes and terminate
@@ -1050,7 +1068,7 @@ def MLFQ_scheduler(
             # add processes that arrived now to ready queue
             add_ready(processes, ready, time)
 
-            if process.times_worked_on == 1:
+            if process.times_worked_on == 1 and q_time == 0:
                 process.response_time = time - process.arrival_time
 
             # if the process is done add it to Scheduled_Processes and terminate
@@ -1130,7 +1148,7 @@ def MLFQ_scheduler(
 
         # Work on the chosen process until IO
         # or until the process is done
-        for w_time in range(process.current_CPU_time):
+        for q_time in range(process.current_CPU_time):
 
             # add 1 to time
             time += 1
@@ -1144,7 +1162,7 @@ def MLFQ_scheduler(
             # add processes that arrived now to ready queue
             add_ready(processes, ready, time)
 
-            if process.times_worked_on == 1:
+            if process.times_worked_on == 1 and q_time == 0:
                 process.response_time = time - process.arrival_time
 
             # if the process is done add it to Scheduled_Processes and terminate
