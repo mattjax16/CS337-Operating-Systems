@@ -13,6 +13,7 @@ and statistics are calculated.
 import pandas as pd
 import scheduler
 from process import Process
+from RBTree import RBTree
 from datetime import datetime as dt
 import numpy as np
 import random
@@ -30,6 +31,7 @@ def kernal(
         processes=None,
         quantum=2,
         quantum2=7,
+        target_latency: float = 5,
         debug=True,
         CPU_To_Csv=False,
         Processes_to_csv=False,
@@ -45,6 +47,9 @@ def kernal(
                     run for before it its put back to the waiting state (or finishes)
                     and the next process is started.
     :param quantum2: (int) the quantum for the second RR queue in the MLFQ alg
+    :param target_latency:(flaot) defines the maximum response time for a
+            process in the system. used to calculate the dynamic quantum
+            which determines fairness
     :param debug: (Boolean) If true output messages will be printed from the selected_scheduler function
     :param CPU_To_Csv: (Boolean) if true results of CPU will be written to a csv
     :param Processes_to_csv: (Boolean) if true results of Scheduled_Processes will be written to a csv
@@ -62,7 +67,11 @@ def kernal(
 
     Scheduled_Processes = []  # A list to hold the scheduled process for the CPU
 
-    ready = []  # A list to hold the process scheduled ready to be scheduled
+    # If the scheduler is CFs
+    if selected_scheduler == scheduler.CFS_scheduler:
+        ready = RBTree()
+    else:
+        ready = []  # A list to hold the process scheduled ready to be scheduled
 
     wait = []  # A list to hold all processes with I/0 work (waiting for input)
 
@@ -78,17 +87,23 @@ def kernal(
                      Process(3, [2, 3, 4], 1, 36),
                      Process(4, [5, 2, 7], 7, 20)]
 
-    # adding the proccesses to the ready list
+    # adding the processes to the ready list
     # increment time until there is one
-    while len(ready) == 0:
-        scheduler.add_ready(processes, ready, time)
-        if len(ready) == 0:
-            time += 1
+    if isinstance(ready, RBTree):
+        while ready.non_nil_node_amt == 0:
+            scheduler.add_ready(processes, ready, time)
+            if ready.non_nil_node_amt == 0:
+                time += 1
+    else:
+        while len(ready) == 0:
+            scheduler.add_ready(processes, ready, time)
+            if len(ready) == 0:
+                time += 1
 
     # running scheduler for all processes in ready
-    while processes or ready or wait:
 
-        if selected_scheduler == scheduler.RR_scheduler:
+    if isinstance(ready, RBTree):
+        while processes or ready.non_nil_node_amt > 0 or wait:
             time = selected_scheduler(
                 processes=processes,
                 ready=ready,
@@ -96,40 +111,54 @@ def kernal(
                 CPU=CPU,
                 Scheduled_Processes=Scheduled_Processes,
                 time=time,
-                quantum=quantum,
-                debug=debug)
-        elif selected_scheduler == scheduler.MLFQ_scheduler:
-            time = selected_scheduler(
-                processes=processes,
-                ready=ready,
-                wait=wait,
-                CPU=CPU,
-                Scheduled_Processes=Scheduled_Processes,
-                time=time,
-                quantum1=quantum,
-                quantum2=quantum2,
                 debug=debug)
 
-        elif selected_scheduler == scheduler.SRT_scheduler or \
-                selected_scheduler == scheduler.Preemptive_Priority_scheduler\
-                or selected_scheduler == \
-                scheduler.Preemptive_Response_scheduler:
-            time = selected_scheduler(
-                processes=processes,
-                ready=ready,
-                wait=wait,
-                CPU=CPU,
-                Scheduled_Processes=Scheduled_Processes,
-                time=time,
-                debug=debug)
-        else:
-            time = selected_scheduler(
-                processes,
-                ready,
-                CPU,
-                Scheduled_Processes,
-                time,
-                debug=debug)
+    #If it is not RBTree (ie not CFS)
+    else:
+        while processes or ready or wait:
+
+            if selected_scheduler == scheduler.RR_scheduler:
+                time = selected_scheduler(
+                    processes=processes,
+                    ready=ready,
+                    wait=wait,
+                    CPU=CPU,
+                    Scheduled_Processes=Scheduled_Processes,
+                    time=time,
+                    quantum=quantum,
+                    debug=debug)
+            elif selected_scheduler == scheduler.MLFQ_scheduler:
+                time = selected_scheduler(
+                    processes=processes,
+                    ready=ready,
+                    wait=wait,
+                    CPU=CPU,
+                    Scheduled_Processes=Scheduled_Processes,
+                    time=time,
+                    quantum1=quantum,
+                    quantum2=quantum2,
+                    debug=debug)
+
+            elif selected_scheduler == scheduler.SRT_scheduler or \
+                    selected_scheduler == scheduler.Preemptive_Priority_scheduler\
+                    or selected_scheduler == \
+                    scheduler.Preemptive_Response_scheduler:
+                time = selected_scheduler(
+                    processes=processes,
+                    ready=ready,
+                    wait=wait,
+                    CPU=CPU,
+                    Scheduled_Processes=Scheduled_Processes,
+                    time=time,
+                    debug=debug)
+            else:
+                time = selected_scheduler(
+                    processes,
+                    ready,
+                    CPU,
+                    Scheduled_Processes,
+                    time,
+                    debug=debug)
 
     # Once all the processes in the Processes have been scheduled
     # calculate their wait time and turn around time
@@ -155,6 +184,8 @@ def kernal(
             sched = "FCFS"
         elif selected_scheduler == scheduler.SJF_scheduler:
             sched = "SJF"
+        elif selected_scheduler == scheduler.CFS_scheduler:
+            sched = "CFS"
         elif selected_scheduler == scheduler.Priority_scheduler:
             sched = "Priority"
         elif selected_scheduler == scheduler.Priority_Aging_scheduler:

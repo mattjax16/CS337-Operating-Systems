@@ -82,7 +82,7 @@ def CFS_scheduler(
 
             target_latency:(flaot) defines the maximum response time for a
             process in the system. used to calculate the dynamic quantum
-            which determines fairnedd
+            which determines fairness
 
             debug:(bool) this is a boolean with the default value of True. It
             controls a print statement that shows process ID, start time,

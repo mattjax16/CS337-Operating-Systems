@@ -8,11 +8,12 @@ Matthew Bass
 A Red Black Tree in python (used here for Completely fair scheduling)
 '''
 
-from igraph import Graph, EdgeSeq
+from igraph import Graph
 import plotly.graph_objects as go
 import sys
 from dataclasses import dataclass, field
 from typing import Any
+
 
 
 @dataclass(order=True)
