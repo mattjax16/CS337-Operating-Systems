@@ -110,9 +110,12 @@ class RBTree:
         :param val:
         :return:
         '''
+
+        val = RBNode(val)
+
         node = self.root
         while node != self.nil:
-            if node.key == val:
+            if node == val:
                 break
 
             if node <= val:
@@ -306,33 +309,33 @@ class RBTree:
 
         return
 
-    def delete_fix(self, node):
+    def delete_fix(self, fix_node):
         '''
         Helper method for delete to fix RB tree properties
         :param self:
-        :param node:
+        :param fix_node:
         :return:
         '''
-        # while the node is not root or red
-        while node != self.root and not node.is_red:
+        # while the fix_node is not root or red
+        while fix_node != self.root and not fix_node.is_red:
 
-            # if the node is the left child
-            if node == node.parent.left:
+            # if the fix_node is the left child
+            if fix_node == fix_node.parent.l_child:
 
                 # Get the sibling
-                sib = node.parent.r_child
+                sib = fix_node.parent.r_child
 
                 # Case 1: the sibling is red.
                 if sib.is_red:
                     sib.is_red = False
-                    node.parent.is_red = True
-                    self.rotate_left(node.parent)
-                    sib = node.parent.r_child
+                    fix_node.parent.is_red = True
+                    self.rotate_left(fix_node.parent)
+                    sib = fix_node.parent.r_child
 
                 # Case 2: the sibling is black and its children are black.
-                if not sib.left.is_red and not sib.r_child.is_red:
+                if not sib.l_child.is_red and not sib.r_child.is_red:
                     sib.color.is_red = True
-                    node = node.parent
+                    fix_node = fix_node.parent
 
                 # Cases 3 and 4: the sibling is black and one of
                 # its child is red and the other is black.
@@ -340,59 +343,59 @@ class RBTree:
 
                     # Case 3: the sibling is black and its left child is red.
                     if not sib.r_child.is_red:
-                        sib.left.is_red = False
+                        sib.l_child.is_red = False
                         sib.is_red = True
                         self.rotate_right(sib)
-                        sib = node.parent.r_child
+                        sib = fix_node.parent.r_child
 
                     # Case 4: the sibling is black and its right child is red.
-                    sib.is_red = node.parent.is_red
-                    node.parent.is_red = False
+                    sib.is_red = fix_node.parent.is_red
+                    fix_node.parent.is_red = False
                     sib.r_child.is_red = False
-                    self.rotate_left(node.parent)
+                    self.rotate_left(fix_node.parent)
 
                     # move to the root to terminate the loop.
-                    node = self.root
+                    fix_node = self.root
 
-                # If the node is the right child
+                # If the fix_node is the right child
             else:
                 # Get the sibling
-                sib = node.parent.left
+                sib = fix_node.parent.l_child
 
                 # Case 1: the sibling is red.
                 if sib.is_red:
                     sib.is_red = False
-                    node.parent.is_red = True
-                    self.rotate_right(node.parent)
-                    sib = node.parent.left
+                    fix_node.parent.is_red = True
+                    self.rotate_right(fix_node.parent)
+                    sib = fix_node.parent.l_child
 
                 # Case 2: the sibling is black and its children are black.
                 if not sib.r_child.is_red and not sib.r_child.is_red:
                     sib.is_red = True
-                    node = node.parent
+                    fix_node = fix_node.parent
 
                 # Cases 3 and 4: the sibling is black and one of
                 # its child is red and the other is black.
                 else:
 
                     # Case 3: the sibling is black and its left child is red.
-                    if not sib.left.is_red:
+                    if not sib.l_child.is_red:
                         sib.r_child.is_red = False
                         sib.is_red = True
                         self.rotate_left(sib)
-                        sib = node.parent.left
+                        sib = fix_node.parent.l_child
 
                     # Case 4: the sibling is black and its right child is red.
-                    sib.is_red = node.parent.is_red
-                    node.parent.is_red = False
-                    sib.left.is_red = False
-                    self.rotate_right(node.parent)
+                    sib.is_red = fix_node.parent.is_red
+                    fix_node.parent.is_red = False
+                    sib.l_child.is_red = False
+                    self.rotate_right(fix_node.parent)
 
                     # move to the root to terminate the loop.
-                    node = self.root
+                    fix_node = self.root
 
-        # Make the node being fixed black
-        node.is_red = False
+        # Make the fix_node being fixed black
+        fix_node.is_red = False
 
         return
 
@@ -409,6 +412,9 @@ class RBTree:
         if delete_node == self.nil:
             print("Cannot find key in the tree")
             return
+
+        #Remove the delete node from the nodes list
+        self.nodes_list.remove(delete_node)
 
         rem_node = delete_node
         original_color = rem_node.is_red
@@ -439,8 +445,9 @@ class RBTree:
             self.transplant_nodes(delete_node, rem_node)
             rem_node.l_child = delete_node.l_child
             rem_node.l_child.parent = rem_node
-            rem_node.color = delete_node.color
-        if original_color == 0:
+            rem_node.is_red = delete_node.is_red
+
+        if original_color == False:
             self.delete_fix(replacing_node)
 
     def transplant_nodes(self, delete_node: RBNode, replacing_node: RBNode):
@@ -454,11 +461,14 @@ class RBTree:
         '''
         if delete_node.parent == None:
             self.root = replacing_node
-        elif delete_node == delete_node.parent.left:
-            delete_node.parent.left = replacing_node
+        elif delete_node == delete_node.parent.l_child:
+            delete_node.parent.l_child = replacing_node
         else:
-            delete_node.parent.right = replacing_node
+            delete_node.parent.r_child = replacing_node
+
         replacing_node.parent = delete_node.parent
+
+        return
 
 
     def remove_min_vruntime(self) -> int:
@@ -805,7 +815,7 @@ class RBTree:
                     showticklabels=False,
                     )
 
-        fig.update_layout(title='RB Tree',
+        fig.update_layout(title=f'RB Tree (Height: {self.get_height(self.root)}',
                           annotations=self.make_annotations(labels,
                                                        M, positions),
                           font_size=12,
@@ -925,6 +935,10 @@ def main():
 
 
     test_tree.print_tree()
+
+    # test_tree.display_tree()
+
+    test_tree.delete(3)
 
     test_tree.display_tree()
 
