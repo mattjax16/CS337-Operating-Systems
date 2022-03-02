@@ -11,11 +11,11 @@ import numpy as np
 from igraph import Graph, EdgeSeq
 import plotly.graph_objects as go
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 
-@dataclass()
+@dataclass(order=True)
 class RBNode:
     '''
     This is a node that makes up the RB tree
@@ -26,11 +26,12 @@ class RBNode:
     :param r_child: (RBNode) Reference to right child node
     :param is_red: (bool) if the Node is Red (if false node is black)
     '''
-    key: Any
-    parent: "RBNode" = None
-    l_child: "RBNode" = None
-    r_child: "RBNode" = None
-    is_red: bool = False
+    key: Any = field(compare=True)
+    parent: "RBNode" = field(default = None, compare=False)
+    l_child: "RBNode" = field(default = None, compare=False)
+    r_child: "RBNode" = field(default = None, compare=False)
+    is_red: bool = field(default = False, compare=False)
+
 
 
 
@@ -52,6 +53,7 @@ class RBTree:
         self.__root = self.nil
         self.__min_vruntime = self.root
 
+        self.nodes_list = []
 
         return
 
@@ -75,6 +77,10 @@ class RBTree:
     @property
     def non_nil_node_amt(self):
         return self.__non_nil_node_amt
+
+    @property
+    def tree_height(self):
+        return self.get_height(self.root)
 
     #setters
 
@@ -114,12 +120,14 @@ class RBTree:
         #make the val a node
         val = RBNode(val)
 
+        self.nodes_list.append(val)
+
         # Set y to the nil node and x to the root
         y = self.nil
         x = self.root
 
-        #if x is not node increment non_nil_node_amt
-        if x != self.nil:
+        #if val is not node increment non_nil_node_amt
+        if val != self.nil:
             self.non_nil_node_amt += 1
 
         # while the root is not nill traverse the tree
@@ -251,7 +259,6 @@ class RBTree:
 
         return
 
-
     def rotate_left(self, node):
         '''
         Rotates the node specified in the tree to the left.
@@ -330,16 +337,64 @@ class RBTree:
 
         return
 
-
-    def __repr__(self):
+    def get_level(self, node: RBNode) -> int:
         '''
-        Printing function for RB_tree
-        :return:
+        A function to find the depth (level) for any node
+        in the RB Tree ()
+
+
+        :param node: (RBNode) the node in the tree whos depth you want to find
+        :return: (int) height of the node
         '''
 
-        return self.print_tree()
+        # Set depth to 0
+        depth = 0
+
+        # set the initial check node to node
+        check_node = node
+
+        #kepp moving up levels until root is reached
+        while check_node.parent != self.nil:
+            depth += 1
+            check_node = check_node.parent
+
+        return depth
 
 
+
+    def get_height(self, node: RBNode) -> int:
+        '''
+        A function to find the height for any node(subtree)
+        in the RB Tree ()
+
+
+        :param node: (RBNode) the node in the tree whos height you want to find
+        :return: (int) height of the node
+        '''
+
+        # If the node is not nil
+        if node != self.nil:
+
+            # If both the left and right children are nodes take the max
+            # height from both subtrees
+            if node.l_child != self.nil and node.r_child != self.nil:
+                return (max(self.get_height(node.l_child),
+                            self.get_height(node.r_child)) + 1)
+
+            # else if the left child is a node
+            elif node.l_child != self.nil:
+                return self.get_height(node=node.l_child) + 1
+
+            # else if the right child is a node
+            elif node.r_child != self.nil:
+                return self.get_height(node=node.r_child) + 1
+
+            # else return 1 if only one node
+            else:
+                return 1
+
+        # else return 0 if null
+        return 0
 
     def display_tree(self):
         '''
@@ -347,7 +402,233 @@ class RBTree:
         :return:
         '''
 
+        # get max nodes for all levels and
+        # make a dictionary of all the nodes on each level
+        max_nodes = 0
+        levels = {}
+        for num in range(self.get_height(self.root)):
 
+            #add tp calculation of the max node
+            max_nodes += 2**(num)
+
+            #create a level at that depth
+            levels[f"{num}"] = []
+
+            #loop through all the nodes in the node list and add ones
+            # at that depth to the level
+            for node in self.nodes_list:
+                depth_of_node = self.get_level(node)
+                if self.get_level(node) == num:
+                    levels[f"{num}"].append(node)
+
+
+
+        # make a tree that can hold all levels of nodes
+        gTree = Graph.Tree(max_nodes,
+                           children = 2)
+        # make the tree layout
+        positions = {k: {"node": None,
+                        "pos": gTree.layout("rt")[k],
+                        "level":int(gTree.layout("rt")[k][1])}  for k in range(
+            max_nodes)}
+
+
+
+        # loop through all the nodes in every level
+        # and add them to positions
+        for level in levels:
+            for node in levels[level]:
+
+                #get the nodes already placed
+                nodes_placed = [p['node'] for p in positions.values() if p[
+                    'node'] is not None ]
+
+                #get positions at levels that are available
+                aval_pos = []
+                for pos in positions:
+                    val = positions[pos]
+                    if val["level"] == int(level) and val["node"] is None:
+                        aval_pos.append(pos)
+
+                # see if the parent for the node has been placed
+                # should only be true for the root
+                if node.parent not in nodes_placed:
+
+                    #ifparent doesnt exist place node in avalible level position
+                    positions[aval_pos[0]]["node"] = node
+
+                # Else if the parent does exist
+                else:
+
+                    #getting the parent node
+                    parent = [(key,value) for key,value in positions.items()
+                              if value['node'] == node.parent ][0]
+
+                    #get the keys that match the level
+                    parent_level_keys = [key for key,value in positions.items()
+                              if value['level'] == parent[1]["level"]]
+
+                    #get the next level keys
+                    next_level_keys = [key for key, value in positions.items()
+                                         if int(value['level']) == int(
+                            parent[1]["level"])+1]
+
+
+                    parent_pos = parent_level_keys.index(parent[0]) + 1
+
+
+                    # now chose the key for the node based on if it is
+                    # the right or left child of the parent
+                    if node == node.parent.r_child:
+                        node_tree_pos = next_level_keys[2 * parent_pos -1]
+                    elif node == node.parent.l_child:
+                        node_tree_pos = next_level_keys[2 * (parent_pos-1)]
+
+                    positions[node_tree_pos]["node"] = node
+
+
+
+        #clean the postions list to only values only with nodes
+        positions = dict([(key,value) for key,value in positions.items()
+                              if value['node'] is not None ])
+
+
+
+        # Set up vars for graphing
+
+        #Get the max level
+        M = self.get_height(self.root)-1
+
+
+        # Get the edges and clean them
+        E = [e.tuple for e in gTree.es]
+        E = list(filter(lambda x: x[0] in positions.keys() and \
+                                   x[1] in positions.keys(), E))
+
+        #set up edges for graphing
+        Xe = []
+        Ye = []
+        for edge in E:
+            Xe += [positions[edge[0]]["pos"][0], positions[edge[1]]["pos"][0],
+                   None]
+            Ye += [2 * M - positions[edge[0]]["level"], 2 * M - positions[edge[
+                1]]["level"],
+                   None]
+
+
+        # making the cordinates for the nodes
+        # split into red and y group
+        r_positions = dict([(key,value) for key,value in positions.items()
+                              if value['node'].is_red ])
+        b_positions = dict([(key, value) for key, value in positions.items()
+                              if not value['node'].is_red])
+
+        r_Xn = [r_positions[k]["pos"][0] for k in r_positions.keys()]
+        r_Yn = [2 * M - r_positions[k]["pos"][1] for k in r_positions.keys()]
+
+        b_Xn = [b_positions[k]["pos"][0] for k in b_positions.keys()]
+        b_Yn = [2 * M - b_positions[k]["pos"][1] for k in
+                    b_positions.keys()]
+
+
+
+        #make the labels for the plot
+        b_labels = [str(val["node"].key) for val in b_positions.values()]
+        r_labels = [str(val["node"].key) for val in r_positions.values()]
+        labels = [str(val["node"].key) for val in positions.values()]
+
+
+        # Make the plot
+        fig = go.Figure()
+
+        #plot edges
+        fig.add_trace(go.Scatter(x=Xe,
+                                 y=Ye,
+                                 mode='lines',
+                                 line=dict(color='rgb(210,210,210)', width=1),
+                                 hoverinfo='none'
+                                 ))
+
+        #plot black nodes
+        fig.add_trace(go.Scatter(x=b_Xn,
+                                 y=b_Yn,
+                                 mode='markers',
+                                 name='black',
+                                 marker=dict(symbol='circle-dot',
+                                             size=18,
+                                             color='black',  # '#DB4551',
+                                             line=dict(color='rgb(50,50,50)',
+                                                       width=1)
+                                             ),
+                                 text=b_labels,
+                                 hoverinfo='text',
+                                 opacity=0.8
+                                 ))
+        # plot red nodes
+        fig.add_trace(go.Scatter(x=r_Xn,
+                                 y=r_Yn,
+                                 mode='markers',
+                                 name='red',
+                                 marker=dict(symbol='circle-dot',
+                                             size=18,
+                                             color='red',  # '#DB4551',
+                                             line=dict(color='rgb(50,50,50)',
+                                                       width=1)
+                                             ),
+                                 text=r_labels,
+                                 hoverinfo='text',
+                                 opacity=0.8
+                                 ))
+        axis = dict(showline=False,
+                    # hide axis line, grid, ticklabels and  title
+                    zeroline=False,
+                    showgrid=False,
+                    showticklabels=False,
+                    )
+
+        fig.update_layout(title='RB Tree',
+                          annotations=self.make_annotations(labels,
+                                                       M, positions),
+                          font_size=12,
+                          showlegend=False,
+                          xaxis=axis,
+                          yaxis=axis,
+                          margin=dict(l=40, r=40, b=85, t=100),
+                          hovermode='closest',
+                          plot_bgcolor='rgb(248,248,248)'
+                          )
+        fig.show()
+
+        print(1)
+        return
+
+    def make_annotations(self, labels, M, positions, font_size=10,
+                         font_color='rgb(250,250,250)'):
+        '''
+        A helper function for display tree to make annotations
+
+        :param labels: labels to be added
+        :param M: (int) The max level
+        :param positions: the positions list
+        :param font_size:  (int) the font size
+        :param font_color:(rgb) color of the text
+        :return:
+        '''
+
+        if len(labels) != len(positions.keys()):
+            raise ValueError('The lists pos and labels must have the same len')
+        annotations = []
+        for k, val in enumerate(positions.keys()):
+            annotations.append(
+                dict(
+                    text=labels[k],
+                    # or replace labels with a different list for the text within the circle
+                    x=positions[val]['pos'][0], y=2 * M - positions[val]["level"],
+                    xref='x1', yref='y1',
+                    font=dict(color=font_color, size=font_size),
+                    showarrow=False)
+            )
+        return annotations
 
     def print_tree(self):
         '''
@@ -359,8 +640,7 @@ class RBTree:
         # G = Graph.Tree(nr_vertices, 2)  # 2 stands for children number
         # lay = G.layout('rt')
 
-
-
+        sys.stdout.write("ROOT\n")
         return self.print_tree_helper(self.root, "", True)
 
     def print_tree_helper(self, node, indent, last):
@@ -386,6 +666,18 @@ class RBTree:
             self.print_tree_helper(node.r_child, indent, True)
         return
 
+    def __repr__(self) -> str:
+        """Provie the tree representation to visualize its layout."""
+        if (self.root is None) or (self.root == self.nil):
+            return "empty tree"
+        return (
+            f"tree_height={str(self.get_height(self.root))}, Num Nodes = "
+            f"{self.non_nil_node_amt},\n"
+            f"{type(self)},\n root={self.root} "
+        )
+
+
+
 
 
 
@@ -393,21 +685,45 @@ class RBTree:
 def main():
     test_tree = RBTree()
 
-    test_nil_node = RBNode(0)
 
-    # test_tree.insert(val=1)
-    # test_tree.insert(val = 2)
-    # test_tree.insert(2)
-    # test_tree.insert(3)
-    # test_tree.insert(4)
-    # test_tree.insert(7)
-    # test_tree.insert(6)
-    # test_tree.insert(8)
-    # test_tree.insert(9)
-    # test_tree.insert(10)
+    test_tree.insert(val=1)
+
+    test_tree.insert(val = 2)
+
+    test_tree.insert(3)
+
+    test_tree.insert(4)
+
+    test_tree.insert(5)
+    test_tree.insert(6)
+    test_tree.insert(7)
+    test_tree.insert(8)
+    test_tree.insert(9)
+    test_tree.insert(10)
+
+
+
+
+
+    test_tree.print_tree()
+
+    test_tree.display_tree()
+
+    '''Testing get level'''
+    # print(test_tree.get_level(test_tree.root))
+    # print(test_tree.get_level(test_tree.nodes_list[5]))
+    # print(test_tree.get_level(test_tree.nodes_list[0]))
+    # print(test_tree.get_level(test_tree.nodes_list[8]))
+    # print(test_tree.get_level(test_tree.nodes_list[9]))
+
+    # test_nil_node = RBNode(0)
+    # test_nil1_node = RBNode(0)
+    # test_2_node = RBNode(2)
+    # test_3_node = RBNode(3)
     #
-    # test_tree.print_tree()
-
+    # print(test_nil_node == test_nil1_node)
+    # print(test_2_node == test_3_node)
+    # print(test_2_node < test_3_node)
     return
 
 if __name__ == "__main__":
