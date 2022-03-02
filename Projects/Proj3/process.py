@@ -7,7 +7,7 @@ Matthew Bass
 
 This is a file to create a Process class
 '''
-import numpy as np
+
 
 
 class Process:
