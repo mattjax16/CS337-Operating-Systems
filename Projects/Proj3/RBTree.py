@@ -27,14 +27,10 @@ class RBNode:
     :param is_red: (bool) if the Node is Red (if false node is black)
     '''
     key: Any = field(compare=True)
-    parent: "RBNode" = field(default = None, compare=False)
-    l_child: "RBNode" = field(default = None, compare=False)
-    r_child: "RBNode" = field(default = None, compare=False)
-    is_red: bool = field(default = False, compare=False)
-
-
-
-
+    parent: "RBNode" = field(default=None, compare=False)
+    l_child: "RBNode" = field(default=None, compare=False)
+    r_child: "RBNode" = field(default=None, compare=False)
+    is_red: bool = field(default=False, compare=False)
 
 
 class RBTree:
@@ -61,6 +57,7 @@ class RBTree:
     @property
     def nil(self):
         return self.__nil
+
     @nil.setter
     def nil(self, val):
         self.__nil = val
@@ -82,30 +79,76 @@ class RBTree:
     def tree_height(self):
         return self.get_height(self.root)
 
-    #setters
+    # setters
 
     @root.setter
     def root(self, val):
         self.__root = val
         return
 
-
     @min_vruntime.setter
     def min_vruntime(self, val):
         self.__min_vruntime = val
         return
-
-
 
     @non_nil_node_amt.setter
     def non_nil_node_amt(self, val):
         self.__non_nil_node_amt = val
         return
 
+    '''
+    General functions for RBtree
+    '''
+
+    '''
+    Searching and comparisons
+    '''
+
+    def search(self, val):
+        '''
+        Searches for the value in the RB Tree and returns till if not there
+        :param val:
+        :return:
+        '''
+        node = self.root
+        while node != self.nil:
+            if node.key == val:
+                break
+
+            if node <= val:
+                node = node.r_child
+            else:
+                node = node.l_child
+
+        if node == self.nil:
+            print("Cannot find key in the tree")
+
+        return node
+
+    def minimum(self, node):
+        '''
+        Gets minimum node of the nodes subtree
+        :param node:
+        :return:
+        '''
+        while node.l_child != self.nil:
+            node = node.l_child
+        return node
+
+    def maximum(self, node):
+        '''
+        Gets maximum node of the nodes subtree
+        :param node:
+        :return:
+        '''
+        while node.r_child != self.nil:
+            node = node.r_child
+        return node
 
 
-
-
+    '''
+    Inserting and Deleting
+    '''
 
     def insert(self, val):
         '''
@@ -117,31 +160,37 @@ class RBTree:
 
 
 
-        #make the val a node
+        # make the val a node
         val = RBNode(val)
+
 
         self.nodes_list.append(val)
 
-        # Set y to the nil node and x to the root
-        y = self.nil
-        x = self.root
+        # see if the node value is greater than the min v runtime
+        # and if it is update the min v runtime
+        if val < self.min_vruntime or self.min_vruntime is self.nil:
+            self.min_vruntime = val
 
-        #if val is not node increment non_nil_node_amt
+        # Set y to the nil node and node to the root
+        y = self.nil
+        node = self.root
+
+        # if val is not node increment non_nil_node_amt
         if val != self.nil:
             self.non_nil_node_amt += 1
 
         # while the root is not nill traverse the tree
         # and compare the values of the nodes
-        while x != self.nil:
-            y = x
+        while node != self.nil:
+            y = node
 
             # Now compare the key of the insertion val and node we are at
-            if val.key < x.key:
-                x = x.l_child
+            if val.key < node.key:
+                node = node.l_child
             else:
-                x = x.r_child
+                node = node.r_child
 
-        #set the parent after postion found
+        # set the parent after postion found
         val.parent = y
 
         # Set root based on y
@@ -158,10 +207,8 @@ class RBTree:
         val.r_child = self.nil
         val.is_red = True
 
-        #run the value through insert fixup
+        # run the value through insert fixup
         self.fix_insert(val)
-
-
         return
 
     def fix_insert(self, node):
@@ -196,7 +243,7 @@ class RBTree:
 
                 # else if it black
                 else:
-                    #if (triangle)
+                    # if (triangle)
                     if node == node.parent.r_child:
                         # set node to parent
                         node = node.parent
@@ -254,10 +301,175 @@ class RBTree:
             if node == self.root:
                 break
 
-        #color the root black
+        # color the root black
         self.root.is_red = False
 
         return
+
+    def delete_fix(self, node):
+        '''
+        Helper method for delete to fix RB tree properties
+        :param self:
+        :param node:
+        :return:
+        '''
+        # while the node is not root or red
+        while node != self.root and not node.is_red:
+
+            # if the node is the left child
+            if node == node.parent.left:
+
+                # Get the sibling
+                sib = node.parent.r_child
+
+                # Case 1: the sibling is red.
+                if sib.is_red:
+                    sib.is_red = False
+                    node.parent.is_red = True
+                    self.rotate_left(node.parent)
+                    sib = node.parent.r_child
+
+                # Case 2: the sibling is black and its children are black.
+                if not sib.left.is_red and not sib.r_child.is_red:
+                    sib.color.is_red = True
+                    node = node.parent
+
+                # Cases 3 and 4: the sibling is black and one of
+                # its child is red and the other is black.
+                else:
+
+                    # Case 3: the sibling is black and its left child is red.
+                    if not sib.r_child.is_red:
+                        sib.left.is_red = False
+                        sib.is_red = True
+                        self.rotate_right(sib)
+                        sib = node.parent.r_child
+
+                    # Case 4: the sibling is black and its right child is red.
+                    sib.is_red = node.parent.is_red
+                    node.parent.is_red = False
+                    sib.r_child.is_red = False
+                    self.rotate_left(node.parent)
+
+                    # move to the root to terminate the loop.
+                    node = self.root
+
+                # If the node is the right child
+            else:
+                # Get the sibling
+                sib = node.parent.left
+
+                # Case 1: the sibling is red.
+                if sib.is_red:
+                    sib.is_red = False
+                    node.parent.is_red = True
+                    self.rotate_right(node.parent)
+                    sib = node.parent.left
+
+                # Case 2: the sibling is black and its children are black.
+                if not sib.r_child.is_red and not sib.r_child.is_red:
+                    sib.is_red = True
+                    node = node.parent
+
+                # Cases 3 and 4: the sibling is black and one of
+                # its child is red and the other is black.
+                else:
+
+                    # Case 3: the sibling is black and its left child is red.
+                    if not sib.left.is_red:
+                        sib.r_child.is_red = False
+                        sib.is_red = True
+                        self.rotate_left(sib)
+                        sib = node.parent.left
+
+                    # Case 4: the sibling is black and its right child is red.
+                    sib.is_red = node.parent.is_red
+                    node.parent.is_red = False
+                    sib.left.is_red = False
+                    self.rotate_right(node.parent)
+
+                    # move to the root to terminate the loop.
+                    node = self.root
+
+        # Make the node being fixed black
+        node.is_red = False
+
+        return
+
+    def delete(self, val):
+        '''
+
+
+        :param val:
+        :return:
+        '''
+
+        delete_node = self.search(val)
+
+        if delete_node == self.nil:
+            print("Cannot find key in the tree")
+            return
+
+        rem_node = delete_node
+        original_color = rem_node.is_red
+
+        # Case 1: no children or Case 2a: only one right child
+        if delete_node.l_child == self.nil:
+            replacing_node = delete_node.r_child
+            self.transplant_nodes(delete_node, delete_node.r_child)
+
+        # Case 2b: only one left child
+        elif (delete_node.r_child == self.nil):
+            replacing_node = delete_node.l_child
+            self.transplant_nodes(delete_node, delete_node.l_child)
+
+
+        # Case 3: two children
+        else:
+            rem_node = self.minimum(delete_node.r_child)
+            original_color = rem_node.color
+            replacing_node = rem_node.r_child
+            if rem_node.parent == delete_node:
+                replacing_node.parent = rem_node
+            else:
+                self.transplant_nodes(rem_node, rem_node.r_child)
+                rem_node.r_child = delete_node.r_child
+                rem_node.r_child.parent = rem_node
+
+            self.transplant_nodes(delete_node, rem_node)
+            rem_node.l_child = delete_node.l_child
+            rem_node.l_child.parent = rem_node
+            rem_node.color = delete_node.color
+        if original_color == 0:
+            self.delete_fix(replacing_node)
+
+    def transplant_nodes(self, delete_node: RBNode, replacing_node: RBNode):
+        '''
+        This is a function to transplant the replacing node with the node to
+        be deleted
+
+        :param delete_node:
+        :param replacing_node:
+        :return:
+        '''
+        if delete_node.parent == None:
+            self.root = replacing_node
+        elif delete_node == delete_node.parent.left:
+            delete_node.parent.left = replacing_node
+        else:
+            delete_node.parent.right = replacing_node
+        replacing_node.parent = delete_node.parent
+
+
+    def remove_min_vruntime(self) -> int:
+        '''
+         method that removes the node with the smallest vruntime in the tree
+         and updates min_vruntime in constant time. The method should
+         maintain all the properties of a RB-Tree.
+
+        :return: (int) min vruntime
+        '''
+
 
     def rotate_left(self, node):
         '''
@@ -337,6 +549,10 @@ class RBTree:
 
         return
 
+    '''
+    Node info functions for RBtree
+    '''
+
     def get_level(self, node: RBNode) -> int:
         '''
         A function to find the depth (level) for any node
@@ -353,14 +569,12 @@ class RBTree:
         # set the initial check node to node
         check_node = node
 
-        #kepp moving up levels until root is reached
+        # kepp moving up levels until root is reached
         while check_node.parent != self.nil:
             depth += 1
             check_node = check_node.parent
 
         return depth
-
-
 
     def get_height(self, node: RBNode) -> int:
         '''
@@ -396,6 +610,11 @@ class RBTree:
         # else return 0 if null
         return 0
 
+
+    '''
+    Display and output functions for RBtree
+    '''
+
     def display_tree(self):
         '''
         This is a function to show a visualization of the tree
@@ -408,13 +627,13 @@ class RBTree:
         levels = {}
         for num in range(self.get_height(self.root)):
 
-            #add tp calculation of the max node
+            # add tp calculation of the max node
             max_nodes += 2**(num)
 
-            #create a level at that depth
+            # create a level at that depth
             levels[f"{num}"] = []
 
-            #loop through all the nodes in the node list and add ones
+            # loop through all the nodes in the node list and add ones
             # at that depth to the level
             for node in self.nodes_list:
                 depth_of_node = self.get_level(node)
@@ -439,11 +658,11 @@ class RBTree:
         for level in levels:
             for node in levels[level]:
 
-                #get the nodes already placed
+                # get the nodes already placed
                 nodes_placed = [p['node'] for p in positions.values() if p[
                     'node'] is not None ]
 
-                #get positions at levels that are available
+                # get positions at levels that are available
                 aval_pos = []
                 for pos in positions:
                     val = positions[pos]
@@ -454,21 +673,21 @@ class RBTree:
                 # should only be true for the root
                 if node.parent not in nodes_placed:
 
-                    #ifparent doesnt exist place node in avalible level position
+                    # ifparent doesnt exist place node in avalible level position
                     positions[aval_pos[0]]["node"] = node
 
                 # Else if the parent does exist
                 else:
 
-                    #getting the parent node
+                    # getting the parent node
                     parent = [(key,value) for key,value in positions.items()
                               if value['node'] == node.parent ][0]
 
-                    #get the keys that match the level
+                    # get the keys that match the level
                     parent_level_keys = [key for key,value in positions.items()
                               if value['level'] == parent[1]["level"]]
 
-                    #get the next level keys
+                    # get the next level keys
                     next_level_keys = [key for key, value in positions.items()
                                          if int(value['level']) == int(
                             parent[1]["level"])+1]
@@ -488,7 +707,7 @@ class RBTree:
 
 
 
-        #clean the postions list to only values only with nodes
+        # clean the postions list to only values only with nodes
         positions = dict([(key,value) for key,value in positions.items()
                               if value['node'] is not None ])
 
@@ -496,7 +715,7 @@ class RBTree:
 
         # Set up vars for graphing
 
-        #Get the max level
+        # Get the max level
         M = self.get_height(self.root)-1
 
 
@@ -505,7 +724,7 @@ class RBTree:
         E = list(filter(lambda x: x[0] in positions.keys() and \
                                    x[1] in positions.keys(), E))
 
-        #set up edges for graphing
+        # set up edges for graphing
         Xe = []
         Ye = []
         for edge in E:
@@ -532,7 +751,7 @@ class RBTree:
 
 
 
-        #make the labels for the plot
+        # make the labels for the plot
         b_labels = [str(val["node"].key) for val in b_positions.values()]
         r_labels = [str(val["node"].key) for val in r_positions.values()]
         labels = [str(val["node"].key) for val in positions.values()]
@@ -541,7 +760,7 @@ class RBTree:
         # Make the plot
         fig = go.Figure()
 
-        #plot edges
+        # plot edges
         fig.add_trace(go.Scatter(x=Xe,
                                  y=Ye,
                                  mode='lines',
@@ -549,7 +768,7 @@ class RBTree:
                                  hoverinfo='none'
                                  ))
 
-        #plot black nodes
+        # plot black nodes
         fig.add_trace(go.Scatter(x=b_Xn,
                                  y=b_Yn,
                                  mode='markers',
@@ -672,7 +891,7 @@ class RBTree:
             return "empty tree"
         return (
             f"tree_height={str(self.get_height(self.root))}, Num Nodes = "
-            f"{self.non_nil_node_amt},\n"
+            f"{self.non_nil_node_amt}, Min_Vruntime = {self.min_vruntime.key}\n"
             f"{type(self)},\n root={self.root} "
         )
 
@@ -681,7 +900,7 @@ class RBTree:
 
 
 
-#main testing for RB tree
+# main testing for RB tree
 def main():
     test_tree = RBTree()
 
