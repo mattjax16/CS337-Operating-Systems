@@ -131,7 +131,7 @@ def CFS_scheduler(
             process.completion_time = time
 
             # Calculate the procs min_vruntime
-            process.min_vruntime = process.current_CPU_time * \
+            process.vruntime = process.current_CPU_time * \
                                         process.weight
 
             Scheduled_Processes.append(process)
@@ -164,7 +164,7 @@ def CFS_scheduler(
             end_time = time
 
             # Calculate the procs min_vruntime
-            process.min_vruntime = process.current_CPU_time() * \
+            process.vruntime = process.current_CPU_time() * \
                                    process.weight
 
             # If process isn't done and needs I/O append it to ready list
@@ -190,14 +190,14 @@ def CFS_scheduler(
     # the time the dynamic quantum is done
 
     # Calculate the procs min_vruntime
-    process.min_vruntime = process.current_CPU_time * \
+    process.vruntime = process.current_CPU_time * \
                             process.weight
 
     # add processes that arrived now to ready queue
     add_ready(processes, ready, time)
 
     # If process isn't done insert it to ready list
-    ready.insert(process.min_vruntime, process)
+    ready.insert(process.vruntime, process)
 
     # set end time to time
     end_time = time
@@ -215,7 +215,7 @@ def CFS_scheduler(
     return time
 
     # if ready.non_nil_node_amt > 0 and ready.min_vruntime.key < \
-    #         process.min_vruntime:
+    #         process.vruntime:
     #
     #     # If process isn't done insert it to ready list
     #     ready.insert(process.min_vruntime,process)
@@ -1775,10 +1775,10 @@ def add_ready(processes, ready, time):
                 arrived_proc.priority = arrived_proc.weight
 
                 # Calculate the procs min_vruntime
-                arrived_proc.min_vruntime = arrived_proc.current_CPU_time * \
+                arrived_proc.vruntime = arrived_proc.current_CPU_time * \
                                             arrived_proc.weight
 
-                ready.insert(arrived_proc.min_vruntime,arrived_proc)
+                ready.insert(arrived_proc.vruntime,arrived_proc)
 
             else:
                 ready.append(arrived_proc)
@@ -1829,10 +1829,10 @@ def run_wait(ready, wait, time):
                 changed_proc.priority = changed_proc.weight
 
                 # Calculate the procs min_vruntime
-                changed_proc.min_vruntime = changed_proc.current_CPU_time() * \
+                changed_proc.vruntime = changed_proc.current_CPU_time() * \
                                             changed_proc.weight
 
-                ready.insert(changed_proc.min_vruntime, changed_proc)
+                ready.insert(changed_proc.vruntime, changed_proc)
 
             else:
                 ready.append(changed_proc)

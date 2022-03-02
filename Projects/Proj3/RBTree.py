@@ -230,7 +230,7 @@ class RBTree:
         '''
 
         # while(node's parent is Red)
-        while node.parent.is_red:
+        while node != self.nil and node.parent.is_red:
 
             # cases change slightly depending on if the uncle is left or right
             if node.parent == node.parent.parent.l_child:
@@ -307,8 +307,6 @@ class RBTree:
                     # rotate grand parent of node
                     self.rotate_left(node.parent.parent)
 
-            if node == self.root:
-                break
 
         # color the root black
         self.root.is_red = False
