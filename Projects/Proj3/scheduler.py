@@ -164,7 +164,7 @@ def CFS_scheduler(
             end_time = time
 
             # Calculate the procs min_vruntime
-            process.vruntime = process.current_CPU_time() * \
+            process.vruntime = process.current_CPU_time * \
                                    process.weight
 
             # If process isn't done and needs I/O append it to ready list
@@ -1829,7 +1829,7 @@ def run_wait(ready, wait, time):
                 changed_proc.priority = changed_proc.weight
 
                 # Calculate the procs min_vruntime
-                changed_proc.vruntime = changed_proc.current_CPU_time() * \
+                changed_proc.vruntime = changed_proc.current_CPU_time * \
                                             changed_proc.weight
 
                 ready.insert(changed_proc.vruntime, changed_proc)

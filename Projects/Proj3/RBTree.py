@@ -139,6 +139,8 @@ class RBTree:
         :param node:
         :return:
         '''
+        if node == self.nil:
+            return self.nil
         while node.l_child != self.nil:
             node = node.l_child
         return node
@@ -168,7 +170,6 @@ class RBTree:
         '''
 
 
-
         # make the val a insert_node
         insert_node = RBNode(key,data)
 
@@ -190,9 +191,9 @@ class RBTree:
 
         # while the root is not nil traverse the tree
         # and compare the values of the nodes
-        runs = 0
+
         while node != self.nil:
-            runs += 1
+
             paren = node
 
             # Now compare the key of the insertion insert_node and node we
@@ -428,6 +429,11 @@ class RBTree:
         # Decrease the non nil node ammount
         self.non_nil_node_amt += -1
 
+        # IF the node is was the root set the root to nil and retutn
+        if delete_node == self.root:
+            self.root = self.nil
+            return
+
         rem_node = delete_node
         original_color = rem_node.is_red
 
@@ -492,16 +498,18 @@ class RBTree:
 
         :return: (int) min vruntime
         '''
-        min_vrun = self.min_vruntime
+        min_vrun_time = self.min_vruntime.key
+        min_vrun_data = self.min_vruntime.data
+
 
         # Delete the min v runtime
-        self.delete(min_vrun.key)
+        self.delete(min_vrun_time)
 
         #set the new min run time
         self.min_vruntime = self.minimum(self.root)
 
 
-        return (min_vrun.key, min_vrun.data)
+        return (min_vrun_data, min_vrun_data)
 
 
     def rotate_left(self, node):
@@ -939,7 +947,7 @@ def main():
 
 
     test_tree.insert(key=1)
-
+    test_tree.remove_min_vruntime()
     test_tree.insert(key = 2)
 
     test_tree.insert(3)

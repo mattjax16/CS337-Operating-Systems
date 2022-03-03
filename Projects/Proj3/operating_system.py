@@ -111,6 +111,7 @@ def kernal(
                 CPU=CPU,
                 Scheduled_Processes=Scheduled_Processes,
                 time=time,
+                target_latency=target_latency,
                 debug=debug)
 
     #If it is not RBTree (ie not CFS)
