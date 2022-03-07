@@ -13,7 +13,7 @@ and statistics are calculated.
 import pandas as pd
 import scheduler
 from process import Process
-from RBTree import RBTree
+from RBTree import RBTree, RBNode
 from datetime import datetime as dt
 import numpy as np
 import random
@@ -741,6 +741,11 @@ def generate_processes(n=10000,
 
 # Main Testing function
 def main():
+
+    # test_node1 = RBNode(15,Process(2,[3],4,5))
+    # test_node2 = RBNode(15, Process(90, [3], 4, 5))
+    #
+    # print(test_node2 == test_node1)
 
     # Run the kernel with CFS and base test processes
     kernal(scheduler.CFS_scheduler,

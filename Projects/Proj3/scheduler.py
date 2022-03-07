@@ -92,8 +92,6 @@ def CFS_scheduler(
     # Wait for the processes to be in ready queue
     wait_for_process(processes, ready, time, wait)
 
-    if debug:
-        ready.display_tree()
 
     # Calculate the dynamic_quantum
     dynamic_quantum = target_latency * ready.size
@@ -101,8 +99,6 @@ def CFS_scheduler(
     # Get the process with the min_vruntime from the tree
     process = ready.remove_min_vruntime()[1]
 
-    if debug:
-        ready.display_tree()
 
     # indicate the process has been worked on
     process.process_worked_on()

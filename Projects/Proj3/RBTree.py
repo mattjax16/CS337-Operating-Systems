@@ -460,10 +460,10 @@ class RBTree:
         # Decrease the non nil node ammount
         self.non_nil_node_amt += -1
 
-        # IF the node is was the root set the root to nil and retutn
-        if delete_node == self.root and delete_node.r_child == self.nil and delete_node.l_child == self.nil:
-            self.root = self.nil
-            return
+        # # IF the node is was the root set the root to nil and retutn
+        # if delete_node == self.root and delete_node.r_child == self.nil and delete_node.l_child == self.nil:
+        #     self.root = self.nil
+        #     return
 
         rem_node = delete_node
         original_color = rem_node.is_red
@@ -509,7 +509,7 @@ class RBTree:
         :param replacing_node:
         :return:
         '''
-        if delete_node.parent is None:
+        if delete_node.parent == self.nil:
             self.root = replacing_node
         elif delete_node == delete_node.parent.l_child:
             delete_node.parent.l_child = replacing_node
