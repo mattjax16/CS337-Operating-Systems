@@ -136,6 +136,9 @@ def CFS_scheduler(
             process.vruntime = process.current_CPU_time * \
                                         process.weight
 
+            # set the processes priority to the vruntime
+            process.priority = process.vruntime
+
             Scheduled_Processes.append(process)
 
             # add processID, start, end to CPU
@@ -169,6 +172,9 @@ def CFS_scheduler(
             process.vruntime = process.current_CPU_time * \
                                    process.weight
 
+            #set the processes priority to the vruntime
+            process.priority = process.vruntime
+
             # If process isn't done and needs I/O append it to ready list
             wait.append(process)
 
@@ -194,6 +200,9 @@ def CFS_scheduler(
     # Calculate the procs min_vruntime
     process.vruntime = process.current_CPU_time * \
                             process.weight
+
+    # set the processes priority to the vruntime
+    process.priority = process.vruntime
 
     # add processes that arrived now to ready queue
     add_ready(processes, ready, time)
@@ -1789,6 +1798,9 @@ def add_ready(processes, ready, time):
                 arrived_proc.vruntime = arrived_proc.current_CPU_time * \
                                             arrived_proc.weight
 
+                # set the processes priority to the vruntime
+                arrived_proc.priority = arrived_proc.vruntime
+
                 ready.insert(arrived_proc.vruntime,arrived_proc)
 
             else:
@@ -1842,6 +1854,9 @@ def run_wait(ready, wait, time):
                 # Calculate the procs min_vruntime
                 changed_proc.vruntime = changed_proc.current_CPU_time * \
                                             changed_proc.weight
+
+                # set the processes priority to the vruntime
+                changed_proc.priority = changed_proc.vruntime
 
                 ready.insert(changed_proc.vruntime, changed_proc)
 

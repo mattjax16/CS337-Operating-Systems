@@ -753,7 +753,7 @@ def main():
 
     # Importing the results from CFS test
     cfs_results_all = pd.read_csv(
-        "data/Combined_Data/All_CFS_results.csv")
+        "data/Combined_Data/All_CFS_test_results.csv")
 
     # Plotting the Results Enhanced
     plotKernalResults(cfs_results_all,
