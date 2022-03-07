@@ -82,6 +82,37 @@ class RBTree:
     def tree_height(self):
         return self.get_height(self.root)
 
+    @property
+    def size(self):
+
+        if self.root == self.nil:
+            return 0
+        else:
+            return self.size_helper(self.root)
+
+    def size_helper(self, node):
+        '''
+        A helper function for get size
+        returns the current size  and children nodes
+
+        :param node:
+        :param current_size:
+        :return:
+        '''
+
+        tree_size = 0
+
+
+        # If the node has a right child
+        if node.r_child != self.nil:
+            tree_size += self.size_helper(node.r_child)
+
+        # If the node has a left child
+        if node.l_child != self.nil:
+            tree_size += self.size_helper(node.l_child)
+
+        return tree_size + 1
+
     # setters
 
     @root.setter
@@ -430,7 +461,7 @@ class RBTree:
         self.non_nil_node_amt += -1
 
         # IF the node is was the root set the root to nil and retutn
-        if delete_node == self.root:
+        if delete_node == self.root and delete_node.r_child == self.nil and delete_node.l_child == self.nil:
             self.root = self.nil
             return
 
@@ -478,7 +509,7 @@ class RBTree:
         :param replacing_node:
         :return:
         '''
-        if delete_node.parent == None:
+        if delete_node.parent is None:
             self.root = replacing_node
         elif delete_node == delete_node.parent.l_child:
             delete_node.parent.l_child = replacing_node
@@ -610,7 +641,7 @@ class RBTree:
         # set the initial check node to node
         check_node = node
 
-        # kepp moving up levels until root is reached
+        # keep moving up levels until root is reached
         while check_node.parent != self.nil:
             depth += 1
             check_node = check_node.parent
@@ -947,19 +978,29 @@ def main():
 
 
     test_tree.insert(key=1)
+    print(test_tree.size)
     test_tree.remove_min_vruntime()
     test_tree.insert(key = 2)
+    print(test_tree.size)
 
     test_tree.insert(3)
+    print(test_tree.size)
 
     test_tree.insert(4)
+    print(test_tree.size)
 
     test_tree.insert(5)
+    print(test_tree.size)
     test_tree.insert(6)
+    print(test_tree.size)
     test_tree.insert(7)
+    print(test_tree.size)
     test_tree.insert(8)
+    print(test_tree.size)
     test_tree.insert(9)
+    print(test_tree.size)
     test_tree.insert(10)
+    print(test_tree.size)
 
 
 

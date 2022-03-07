@@ -290,6 +290,29 @@ class Process:
                f"Vr_T = {self.vruntime},P = {self.priority}]"
 
 
+    '''
+    COMPARATORS BASED ON ID
+    '''
+
+    def __eq__(self, other):
+        return self.id == other.id
+
+    def __ne__(self, other):
+        return self.id != other.id
+
+    def __lt__(self, other):
+        return self.id < other.id
+
+    def __le__(self, other):
+        return self.id <= other.id
+
+    def __gt__(self, other):
+        return self.id > other.id
+
+    def __ge__(self, other):
+        return self.id >= other.id
+
+
 # Main Testing function for Process Class
 def main():
     test_proccess_1 = Process(id=1, duty=[4, 1, 3], arrival_time=3,

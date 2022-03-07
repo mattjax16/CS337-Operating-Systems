@@ -89,14 +89,20 @@ def CFS_scheduler(
             and end time at each context switch. It is useful for debugging.
     '''
 
-    # Wait for the processes to be in ready queue or wait queue
+    # Wait for the processes to be in ready queue
     wait_for_process(processes, ready, time, wait)
 
+    if debug:
+        ready.display_tree()
+
     # Calculate the dynamic_quantum
-    dynamic_quantum = target_latency * ready.non_nil_node_amt
+    dynamic_quantum = target_latency * ready.size
 
     # Get the process with the min_vruntime from the tree
     process = ready.remove_min_vruntime()[1]
+
+    if debug:
+        ready.display_tree()
 
     # indicate the process has been worked on
     process.process_worked_on()
@@ -1683,7 +1689,14 @@ def Priority_Aging_scheduler(processes, ready, CPU, Scheduled_Processes,
     return time
 
 
-def wait_for_process(processes, ready, time, wait=[], debug=False):
+
+"""
+Functions to help Schedulers
+"""
+
+
+
+def wait_for_process(processes, ready, time, wait=[], debug=True):
     '''
     Waits for a processes to be in the ready queue. If the ready queue has
     nothing add the processes to the ready list
@@ -1698,20 +1711,22 @@ def wait_for_process(processes, ready, time, wait=[], debug=False):
     '''
     # If ready is an RB TREE
     if isinstance(ready, RBTree):
-        wait_flag = (ready.non_nil_node_amt == 0)
+        if debug:
+            print(f"tree non nil amt = {ready.size}")
+        wait_flag = (ready.size == 0)
         while wait_flag:
             if debug:
                 print("In wait_for_process")
             add_ready(processes, ready, time)
-            if ready.non_nil_node_amt == 0:
+            if ready.size == 0:
                 run_wait(ready, wait, time)
                 time += 1
 
             # if there is now something in the ready list
-            if ready:
+            if ready.size != 0:
                 wait_flag = False
         if debug:
-            print("Done with wait_for_process")
+            print("Done with wait_for_process TREE")
         return
 
     # Else if ready is a list
@@ -1730,7 +1745,7 @@ def wait_for_process(processes, ready, time, wait=[], debug=False):
                 wait_flag = False
 
         if debug:
-            print("Done with wait_for_process")
+            print("Done with wait_for_process LIST")
         return
 
 
@@ -1825,8 +1840,8 @@ def run_wait(ready, wait, time):
             # If ready is a RBTree
             if isinstance(ready, RBTree):
 
-                # make the procs prioriety the weight
-                changed_proc.priority = changed_proc.weight
+                # make the procs priority the weight
+                # changed_proc.priority = changed_proc.weight
 
                 # Calculate the procs min_vruntime
                 changed_proc.vruntime = changed_proc.current_CPU_time * \
