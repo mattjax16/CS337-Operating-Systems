@@ -85,33 +85,24 @@ class RBTree:
     @property
     def size(self):
 
-        if self.root == self.nil:
-            return 0
-        else:
-            return self.size_helper(self.root)
+        return self.non_nil_node_amt
+        # if self.root == self.nil:
+        #     return 0
+        # nodes = []
+        # nodes.append(self.root)
+        # count = 1
+        # while (len(nodes) != 0):
+        #     print("getting size")
+        #     root = nodes.pop(0)
+        #     if (root.l_child):
+        #         nodes.append(root.l_child)
+        #         count += 1
+        #     if (root.r_child):
+        #         nodes.append(root.r_child)
+        #         count += 1
+        # return count
 
-    def size_helper(self, node):
-        '''
-        A helper function for get size
-        returns the current size  and children nodes
 
-        :param node:
-        :param current_size:
-        :return:
-        '''
-
-        tree_size = 0
-
-
-        # If the node has a right child
-        if node.r_child != self.nil:
-            tree_size += self.size_helper(node.r_child)
-
-        # If the node has a left child
-        if node.l_child != self.nil:
-            tree_size += self.size_helper(node.l_child)
-
-        return tree_size + 1
 
     # setters
 
@@ -191,7 +182,8 @@ class RBTree:
     Inserting and Deleting
     '''
 
-    def insert(self, key : Any, data : Any = None):
+    def insert(self, key : Any, data : Any = None,
+               debug : bool = True):
         '''
         Insersts a RBNode in the RB tree in the correct position based on the val
 
@@ -209,7 +201,7 @@ class RBTree:
 
         # see if the node value is greater than the min v runtime
         # and if it is update the min v runtime
-        if insert_node < self.min_vruntime or self.min_vruntime is self.nil:
+        if insert_node < self.min_vruntime or self.min_vruntime == self.nil:
             self.min_vruntime = insert_node
 
         # Set paren to the nil node and node to the root
@@ -224,6 +216,9 @@ class RBTree:
         # and compare the values of the nodes
 
         while node != self.nil:
+
+            if debug:
+                print(f"Is in insert to inset {key}")
 
             paren = node
 
@@ -282,7 +277,7 @@ class RBTree:
                     node.parent.is_red = False
 
                     # color grandparent red
-                    node.parent.parent = True
+                    node.parent.parent.is_red = True
 
                     # set node to grandparent
                     node = node.parent.parent
@@ -454,6 +449,11 @@ class RBTree:
             print("Cannot find key in the tree")
             return
 
+
+
+        if delete_node not in self.nodes_list:
+            print("Error")
+
         #Remove the delete node from the nodes list
         self.nodes_list.remove(delete_node)
 
@@ -482,7 +482,7 @@ class RBTree:
         # Case 3: two children
         else:
             rem_node = self.minimum(delete_node.r_child)
-            original_color = rem_node.color
+            original_color = rem_node.is_red
             replacing_node = rem_node.r_child
             if rem_node.parent == delete_node:
                 replacing_node.parent = rem_node
@@ -625,7 +625,7 @@ class RBTree:
     Node info functions for RBtree
     '''
 
-    def get_level(self, node: RBNode) -> int:
+    def get_level(self, node: RBNode, debug: bool = True) -> int:
         '''
         A function to find the depth (level) for any node
         in the RB Tree ()
@@ -644,6 +644,8 @@ class RBTree:
         # keep moving up levels until root is reached
         while check_node.parent != self.nil:
             depth += 1
+            if debug:
+                print("Still Traversing Depth")
             check_node = check_node.parent
 
         return depth

@@ -104,6 +104,8 @@ def kernal(
 
     if isinstance(ready, RBTree):
         while processes or ready.non_nil_node_amt > 0 or wait:
+            if debug:
+                print("Still running CFS")
             time = selected_scheduler(
                 processes=processes,
                 ready=ready,
@@ -742,22 +744,38 @@ def generate_processes(n=10000,
 # Main Testing function
 def main():
 
+    sim_procs1 = generate_processes(n=1000, seed=1)
+
+    # Run the kernel with CFS and processes
+    kernal(scheduler.CFS_scheduler, processes=sim_procs1,
+                            file_proc_name="sim", debug=True)
+
+    # Importing the CPU results from CFS
+    cfs_sim_results = pd.read_csv("data/Combined_Data/" +
+                                  "All_CFS_sim_results.csv")
+
+    # printing the results
+    printKernalResultStats(cfs_sim_results, title="Completely "
+                                                                   "Fair "
+                                                                   "Scheduling "
+                                                                   "Sim")
+
     # test_node1 = RBNode(15,Process(2,[3],4,5))
     # test_node2 = RBNode(15, Process(90, [3], 4, 5))
     #
     # print(test_node2 == test_node1)
 
     # Run the kernel with CFS and base test processes
-    kernal(scheduler.CFS_scheduler,
-           file_proc_name="test")
-
-    # Importing the results from CFS test
-    cfs_results_all = pd.read_csv(
-        "data/Combined_Data/All_CFS_test_results.csv")
-
-    # Plotting the Results Enhanced
-    plotKernalResults(cfs_results_all,
-                      "Completely Fair Scheduling Test Results Timeline")
+    # kernal(scheduler.CFS_scheduler,
+    #        file_proc_name="test")
+    #
+    # # Importing the results from CFS test
+    # cfs_results_all = pd.read_csv(
+    #     "data/Combined_Data/All_CFS_test_results.csv")
+    #
+    # # Plotting the Results Enhanced
+    # plotKernalResults(cfs_results_all,
+    #                   "Completely Fair Scheduling Test Results Timeline")
 
     # # Run the kernel with RR and base test processes
     # kernal(scheduler.Preemptive_Response_scheduler,

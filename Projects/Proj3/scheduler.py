@@ -110,6 +110,9 @@ def CFS_scheduler(
     # or until the process is done
     for q_time in range(dynamic_quantum):
 
+        if debug:
+            print(f"Running dynamic range of {dynamic_quantum} at {q_time}")
+
         # add 1 to time
         time += 1
 
@@ -206,6 +209,9 @@ def CFS_scheduler(
 
     # add processes that arrived now to ready queue
     add_ready(processes, ready, time)
+
+    if debug:
+        print("Added ready after work")
 
     # If process isn't done insert it to ready list
     ready.insert(process.vruntime, process)
@@ -1716,8 +1722,8 @@ def wait_for_process(processes, ready, time, wait=[], debug=True):
     '''
     # If ready is an RB TREE
     if isinstance(ready, RBTree):
-        if debug:
-            print(f"tree non nil amt = {ready.size}")
+        # if debug:
+        #     print(f"tree non nil amt = {ready.size}")
         wait_flag = (ready.size == 0)
         while wait_flag:
             if debug:
@@ -1754,7 +1760,7 @@ def wait_for_process(processes, ready, time, wait=[], debug=True):
         return
 
 
-def add_ready(processes, ready, time):
+def add_ready(processes, ready, time, debug = True):
     '''
     Adds Processes to ready that have arrived based on the time
     Parameters:
@@ -1783,8 +1789,11 @@ def add_ready(processes, ready, time):
     arrival_flag = True
     while arrival_flag:
 
+        if debug:
+            print("Still adding processes that have arrived")
+
         # IF there are processes and still ones that need to arrive
-        if (processes and (processes[0].arrival_time <= time)):
+        if processes and (processes[0].arrival_time <= time):
 
             arrived_proc = processes.pop(0)
 
