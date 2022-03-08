@@ -214,7 +214,7 @@ def CFS_scheduler(
         print("Added ready after work")
 
     # If process isn't done insert it to ready list
-    ready.insert(process.vruntime, process)
+    ready.insert_process(process)
 
     # set end time to time
     end_time = time
@@ -1810,7 +1810,7 @@ def add_ready(processes, ready, time, debug = True):
                 # set the processes priority to the vruntime
                 arrived_proc.priority = arrived_proc.vruntime
 
-                ready.insert(arrived_proc.vruntime,arrived_proc)
+                ready.insert_process(arrived_proc)
 
             else:
                 ready.append(arrived_proc)
@@ -1867,7 +1867,7 @@ def run_wait(ready, wait, time):
                 # set the processes priority to the vruntime
                 changed_proc.priority = changed_proc.vruntime
 
-                ready.insert(changed_proc.vruntime, changed_proc)
+                ready.insert_process(changed_proc)
 
             else:
                 ready.append(changed_proc)

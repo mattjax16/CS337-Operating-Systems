@@ -13,6 +13,7 @@ import plotly.graph_objects as go
 import sys
 from dataclasses import dataclass, field
 from typing import Any
+from process import Process
 
 
 
@@ -149,21 +150,21 @@ class RBTree:
     Searching and comparisons
     '''
 
-    def search(self, val):
+    def search(self, key) -> RBNode:
         '''
         Searches for the value in the RB Tree and returns till if not there
-        :param val:
+        :param key: Key to be searched
         :return:
         '''
 
-        val = RBNode(val)
+        key = RBNode(key)
 
         node = self.root
         while node != self.nil:
-            if node == val:
+            if node == key:
                 break
 
-            if node <= val:
+            if node <= key:
                 node = node.r_child
             else:
                 node = node.l_child
@@ -362,6 +363,32 @@ class RBTree:
         self.root.is_red = False
 
         return
+
+    def insert_process(self, proc : Process):
+        '''
+        Function to insert a Process into the RBtree
+        :param proc:
+        :return:
+        '''
+
+        # Search for node based on virtual runtime
+        node = self.search(proc.vruntime)
+
+        # If the node exists already append the process to the list of the
+        # nodes data
+        if node != self.nil:
+
+            # Add node to data list and sort list by arrival time.
+            node.data.append(proc)
+            node.data.sort(key=lambda x: x.arrival_time)
+
+        # If it is not in the tree add a node with the process in a list
+        else:
+            self.insert(proc.vruntime,[proc])
+
+        return
+
+
 
     def delete_fix(self, fix_node):
         '''
