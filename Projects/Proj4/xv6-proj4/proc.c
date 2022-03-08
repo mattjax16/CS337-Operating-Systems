@@ -556,11 +556,11 @@ ps()
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
 
     if (p->state == SLEEPING)
-      cprintf("%s \t %d \t SLEEPING \t priority \n", p->name, p->pid);
+      cprintf("%s \t %d \t SLEEPING \t %d \n", p->name, p->pid, p->priority);
     else if (p->state == RUNNING)
-      cprintf("%s \t %d \t RUNNING \t priority \n", p->name, p->pid);
+      cprintf("%s \t %d \t RUNNING \t %d \n", p->name, p->pid, p->priority);
     else if (p->state == RUNNABLE)
-      cprintf("%s \t %d \t RUNNABLE \t priority \n", p->name, p->pid);
+      cprintf("%s \t %d \t RUNNABLE \t %d \n", p->name, p->pid, p->priority);
 
   }
   release(&ptable.lock);
@@ -579,10 +579,11 @@ chpr(int pid, int priority)
   
 
 	// Update process priority to priority
-  // if process priority is equal to pid
+  // if process priority is equal to pid and break
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
     if(p->pid == pid){
       p->priority = priority;
+      break;
     }
   }
 
