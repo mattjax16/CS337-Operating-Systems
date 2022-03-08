@@ -89,3 +89,11 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+// Proj 4 System Process Status
+int
+sys_ps(void)
+{
+  return ps();
+}
+

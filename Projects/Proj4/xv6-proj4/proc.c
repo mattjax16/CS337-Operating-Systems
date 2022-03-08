@@ -532,3 +532,33 @@ procdump(void)
     cprintf("\n");
   }
 }
+
+// Proj 4 Process Status
+// prints the processes status
+int 
+ps()
+{
+  struct proc *p;
+
+  //enable interrupts on processor
+  sti();
+  //loop over process table
+  acquire(&ptable.lock);
+
+  cprintf("name \t pid \t state \t priority\n");
+
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+
+    if (p->state == SLEEPING)
+      cprintf("%s \t %d \t SLEEPING \t priority \n", p->name, p->pid);
+    else if (p->state == RUNNING)
+      cprintf("%s \t %d \t RUNNING \t priority \n", p->name, p->pid);
+    else if (p->state == RUNNABLE)
+      cprintf("%s \t %d \t RUNNABLE \t priority \n", p->name, p->pid);
+
+  }
+  release(&ptable.lock);
+
+  return 0;
+}
+
