@@ -743,22 +743,49 @@ def generate_processes(n=10000,
 
 # Main Testing function
 def main():
+    # Make the test tree 2
+    test_tree2 = RBTree()
 
-    sim_procs1 = generate_processes(n=1000, seed=1)
+    # making tesst processes
+    test_tree2_procs = [Process(1, [3, 1, 3], 4, 5),
+                        Process(2, [3, 1, 3], 4, 5),
+                        Process(3, [3, 1, 3], 4, 5),
+                        Process(4, [3, 1, 3], 4, 5),
+                        Process(5, [3, 1, 3], 4, 5),
+                        Process(6, [3, 1, 3], 4, 5),
+                        Process(7, [3, 1, 3], 4, 5),
+                        Process(8, [3, 1, 3], 4, 5)]
 
-    # Run the kernel with CFS and processes
-    kernal(scheduler.CFS_scheduler, processes=sim_procs1,
-                            file_proc_name="sim", debug=True)
+    test_tree2_procs[0].vruntime = 25
+    test_tree2_procs[1].vruntime = 10
+    test_tree2_procs[2].vruntime = 2
+    test_tree2_procs[3].vruntime = 25
+    test_tree2_procs[4].vruntime = 30
+    test_tree2_procs[5].vruntime = 25
+    test_tree2_procs[6].vruntime = 2
+    test_tree2_procs[7].vruntime = 1
 
-    # Importing the CPU results from CFS
-    cfs_sim_results = pd.read_csv("data/Combined_Data/" +
-                                  "All_CFS_sim_results.csv")
+    # insert all the processes
+    for proc in test_tree2_procs:
+        test_tree2.insert_process(proc)
 
-    # printing the results
-    printKernalResultStats(cfs_sim_results, title="Completely "
-                                                                   "Fair "
-                                                                   "Scheduling "
-                                                                   "Sim")
+    test_tree2.print_tree()
+
+    # sim_procs1 = generate_processes(n=1000, seed=1)
+    #
+    # # Run the kernel with CFS and processes
+    # kernal(scheduler.CFS_scheduler, processes=sim_procs1,
+    #                         file_proc_name="sim", debug=True)
+    #
+    # # Importing the CPU results from CFS
+    # cfs_sim_results = pd.read_csv("data/Combined_Data/" +
+    #                               "All_CFS_sim_results.csv")
+    #
+    # # printing the results
+    # printKernalResultStats(cfs_sim_results, title="Completely "
+    #                                                                "Fair "
+    #                                                                "Scheduling "
+    #                                                                "Sim")
 
     # test_node1 = RBNode(15,Process(2,[3],4,5))
     # test_node2 = RBNode(15, Process(90, [3], 4, 5))

@@ -150,10 +150,11 @@ class RBTree:
     Searching and comparisons
     '''
 
-    def search(self, key) -> RBNode:
+    def search(self, key, debug = False) -> RBNode:
         '''
         Searches for the value in the RB Tree and returns till if not there
         :param key: Key to be searched
+        :param debug: if true will print when key isnt found
         :return:
         '''
 
@@ -169,7 +170,7 @@ class RBTree:
             else:
                 node = node.l_child
 
-        if node == self.nil:
+        if node == self.nil and debug:
             print("Cannot find key in the tree")
 
         return node
@@ -202,7 +203,7 @@ class RBTree:
     '''
 
     def insert(self, key : Any, data : Any = None,
-               debug : bool = True):
+               debug : bool = False):
         '''
         Insersts a RBNode in the RB tree in the correct position based on the val
 
@@ -220,7 +221,7 @@ class RBTree:
 
         # see if the node value is greater than the min v runtime
         # and if it is update the min v runtime
-        if insert_node < self.min_vruntime or self.min_vruntime == self.nil:
+        if insert_node <= self.min_vruntime or self.min_vruntime == self.nil:
             self.min_vruntime = insert_node
 
         # Set paren to the nil node and node to the root
@@ -385,7 +386,6 @@ class RBTree:
         # If it is not in the tree add a node with the process in a list
         else:
             self.insert(proc.vruntime,[proc])
-
         return
 
 
@@ -621,6 +621,7 @@ class RBTree:
 
         # Y = Right child of node
         y = node.r_child
+
         # Change right child of node to left child of y
         node.r_child = y.l_child
         if y.l_child != self.nil:
@@ -661,7 +662,7 @@ class RBTree:
         y = node.l_child
 
         # y's right subtree becomes nodes's left subtree
-        y.r_child = node.l_child
+        node.l_child = y.r_child
 
         # right subtree of y gets a new parent
         if y.r_child != self.nil:
