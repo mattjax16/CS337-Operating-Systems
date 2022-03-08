@@ -538,6 +538,7 @@ procdump(void)
 }
 
 // Proj 4 Process Status
+
 // prints the processes status
 int 
 ps()
@@ -564,5 +565,29 @@ ps()
   release(&ptable.lock);
 
   return 0;
+}
+
+// Change the process priorities
+int 
+chpr(int pid, int priority)
+{
+	struct proc *p;
+
+	// acquire the lock to the ptable
+  acquire(&ptable.lock);
+  
+
+	// Update process priority to priority
+  // if process priority is equal to pid
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    if(p->pid == pid){
+      p->priority = priority;
+    }
+  }
+
+	// release ptable lock
+  release(&ptable.lock);
+
+	return pid;
 }
 
