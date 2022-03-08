@@ -578,8 +578,6 @@ class RBTree:
         min_vrun_data = self.min_vruntime.data
 
 
-        # Delete the min v runtime
-        self.delete(min_vrun_time)
 
         # if the data of the min vruntime is a list of process
         if isinstance(min_vrun_data, List):
@@ -587,22 +585,23 @@ class RBTree:
 
             min_vrun_proc = min_vrun_data.pop(0)
 
-            # If the process list isnt empty add rest of data and key
-            # back to the tree
+            # If the process list isnt empty just return the process
             if min_vrun_data:
-                self.insert(min_vrun_time,min_vrun_data)
 
                 # return the key and process
                 return (min_vrun_time, min_vrun_proc)
 
             # If the min_vruntime node is empty
             else:
+                # Delete the min v runtime
+                self.delete(min_vrun_time)
+
                 # set the new min run time
                 self.min_vruntime = self.minimum(self.root)
                 return (min_vrun_time, min_vrun_proc)
 
-
-
+        # Delete the min v runtime
+        self.delete(min_vrun_time)
 
         #set the new min run time
         self.min_vruntime = self.minimum(self.root)
@@ -763,6 +762,9 @@ class RBTree:
         This is a function to show a visualization of the tree
         :return:
         '''
+
+        #TODO:
+        # 1. Fix complicated trees displays
 
         # get max nodes for all levels and
         # make a dictionary of all the nodes on each level
