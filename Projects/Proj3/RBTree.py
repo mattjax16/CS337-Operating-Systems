@@ -12,7 +12,7 @@ from igraph import Graph
 import plotly.graph_objects as go
 import sys
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, List
 from process import Process
 
 
@@ -581,11 +581,34 @@ class RBTree:
         # Delete the min v runtime
         self.delete(min_vrun_time)
 
+        # if the data of the min vruntime is a list of process
+        if isinstance(min_vrun_data, List):
+
+
+            min_vrun_proc = min_vrun_data.pop(0)
+
+            # If the process list isnt empty add rest of data and key
+            # back to the tree
+            if min_vrun_data:
+                self.insert(min_vrun_time,min_vrun_data)
+
+                # return the key and process
+                return (min_vrun_time, min_vrun_proc)
+
+            # If the min_vruntime node is empty
+            else:
+                # set the new min run time
+                self.min_vruntime = self.minimum(self.root)
+                return (min_vrun_time, min_vrun_proc)
+
+
+
+
         #set the new min run time
         self.min_vruntime = self.minimum(self.root)
 
 
-        return (min_vrun_data, min_vrun_data)
+        return (min_vrun_time, min_vrun_data)
 
 
     def rotate_left(self, node):
