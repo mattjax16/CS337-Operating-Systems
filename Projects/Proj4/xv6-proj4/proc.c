@@ -547,6 +547,7 @@ ps()
 
   //enable interrupts on processor
   sti();
+  
   //loop over process table
   acquire(&ptable.lock);
 

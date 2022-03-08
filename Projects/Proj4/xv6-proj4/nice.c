@@ -5,8 +5,7 @@ nice.c
 Matthew Bass
 03/07/2022
 
-A program that uses fork to create multiple CPU-bound processes.  
-This will help us test our scheduler and system calls.
+A function used to change the priority of a given process.
 */
 
 #include "types.h"
