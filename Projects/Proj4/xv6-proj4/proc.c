@@ -112,6 +112,10 @@ found:
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
 
+
+  // Assigning the process with a default priority of 10
+  p->priority = 10;
+
   return p;
 }
 
