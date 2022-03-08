@@ -43,9 +43,14 @@ class Process:
         self.__io_waiting_times = []
         self.__vruntime = 0
         self.__weight = 5
+        self.__proc_type = "undecided"
         return
 
     # Defining getters
+    @property
+    def proc_type(self):
+        return self.__proc_type
+
     @property
     def vruntime(self):
         return self.__vruntime
@@ -165,6 +170,11 @@ class Process:
 
 
     # Defining setters
+    @proc_type.setter
+    def proc_type(self, val):
+        self.__proc_type == val
+        return
+
     @vruntime.setter
     def vruntime(self, val):
         self.__vruntime = val

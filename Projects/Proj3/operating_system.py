@@ -104,8 +104,8 @@ def kernal(
 
     if isinstance(ready, RBTree):
         while processes or ready.non_nil_node_amt > 0 or wait:
-            if debug:
-                print("Still running CFS")
+            # if debug:
+            #     print("Still running CFS")
             time = selected_scheduler(
                 processes=processes,
                 ready=ready,
@@ -238,7 +238,8 @@ def kernal(
                              "priority": x.priority,
                              "wait time": x.wait_time,
                              "turnaround time": x.turnaround_time,
-                             "times worked on": x.times_worked_on
+                             "times worked on": x.times_worked_on,
+                             "type": x.proc_type
                              } for x in Scheduled_Processes]
 
             # Writing the CSV file

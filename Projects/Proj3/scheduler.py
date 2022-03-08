@@ -110,8 +110,8 @@ def CFS_scheduler(
     # or until the process is done
     for q_time in range(dynamic_quantum):
 
-        if debug:
-            print(f"Running dynamic range of {dynamic_quantum} at {q_time}")
+        # if debug:
+        #     print(f"Running dynamic range of {dynamic_quantum} at {q_time}")
 
         # add 1 to time
         time += 1
