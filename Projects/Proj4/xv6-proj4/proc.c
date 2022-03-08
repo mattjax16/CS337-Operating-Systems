@@ -1,3 +1,4 @@
+
 #include "types.h"
 #include "defs.h"
 #include "param.h"
@@ -6,6 +7,8 @@
 #include "x86.h"
 #include "proc.h"
 #include "spinlock.h"
+
+
 
 struct {
   struct spinlock lock;
@@ -326,11 +329,23 @@ wait(void)
 void
 scheduler(void)
 {
-  struct proc *p;
+  
+  
+// cprintf("Hi from schuedler %d", 1);
+
+  // Initilizing pointers for initial process
+  // and procesx to compare priority with
+  struct proc *p, *p_comp;
+  
+  // Initilize pointer to cpu and make its proc = 0
   struct cpu *c = mycpu();
   c->proc = 0;
   
   for(;;){
+    
+    // Initilizing high priority proc pointer
+    struct proc *p_high;
+    
     // Enable interrupts on this processor.
     sti();
 
@@ -343,6 +358,17 @@ scheduler(void)
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
+      p_high=p;
+      
+      // Select the process with highes priority
+      for(p_comp = ptable.proc; p_comp < &ptable.proc[NPROC]; p_comp++){
+        if(p_comp->state != RUNNABLE){
+          continue;}
+        if(p_high->priority > p_comp->priority){   // larger value = lower priority
+          p_high = p_comp;}
+      }
+      p = p_high;
+      
       c->proc = p;
       switchuvm(p);
       p->state = RUNNING;

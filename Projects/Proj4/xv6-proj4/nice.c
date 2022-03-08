@@ -30,5 +30,7 @@ int main(int argc, char *argv[]) {
   	exit();
   }
   chpr(pid, priority);
+
+  ps();
   exit();
 }

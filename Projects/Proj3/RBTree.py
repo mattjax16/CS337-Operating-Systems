@@ -102,6 +102,24 @@ class RBTree:
         #         count += 1
         # return count
 
+    # @property
+    # def size_other(self):
+    #     if self.root == self.nil:
+    #         return 0
+    #     nodes = []
+    #     nodes.append(self.root)
+    #     count = 1
+    #     while (len(nodes) != 0):
+    #         print("getting size")
+    #         root = nodes.pop(0)
+    #         if (root.l_child):
+    #             nodes.append(root.l_child)
+    #             count += 1
+    #         if (root.r_child):
+    #             nodes.append(root.r_child)
+    #             count += 1
+    #     return count
+
 
 
     # setters
@@ -644,8 +662,8 @@ class RBTree:
         # keep moving up levels until root is reached
         while check_node.parent != self.nil:
             depth += 1
-            if debug:
-                print("Still Traversing Depth")
+            # if debug:
+            #     print("Still Traversing Depth")
             check_node = check_node.parent
 
         return depth
