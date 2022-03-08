@@ -32,7 +32,7 @@ def kernal(
         quantum=2,
         quantum2=7,
         target_latency: float = 5,
-        debug=True,
+        debug=False,
         CPU_To_Csv=False,
         Processes_to_csv=False,
         save_with_date=False,

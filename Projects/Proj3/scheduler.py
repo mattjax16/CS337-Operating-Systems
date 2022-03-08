@@ -26,7 +26,7 @@ def CFS_scheduler(
         Scheduled_Processes: Dict,
         time: int,
         target_latency: float = 5,
-        debug: bool = True):
+        debug: bool = False):
     ''' Completly Fair Scheduler
 
         The scheduler takes a RB-Tree of ready
@@ -1707,7 +1707,7 @@ Functions to help Schedulers
 
 
 
-def wait_for_process(processes, ready, time, wait=[], debug=True):
+def wait_for_process(processes, ready, time, wait=[], debug=False):
     '''
     Waits for a processes to be in the ready queue. If the ready queue has
     nothing add the processes to the ready list
@@ -1760,7 +1760,7 @@ def wait_for_process(processes, ready, time, wait=[], debug=True):
         return
 
 
-def add_ready(processes, ready, time, debug = True):
+def add_ready(processes, ready, time, debug = False):
     '''
     Adds Processes to ready that have arrived based on the time
     Parameters:
