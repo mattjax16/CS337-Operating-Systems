@@ -432,7 +432,7 @@ def printKernalResultStats(kernal_results, title=None):
         f"CPU Time {kernal_results['total CPU time'].mean():.2f}\n" +
         f"I/O Time {kernal_results['total I/O time'].mean():.2f}\n"
         f"Throughput " +
-        f"{(kernal_results.shape[0]/kernal_results.filter(like='start').values.max()) :.4f}" +
+        f"{(kernal_results.shape[0]/(kernal_results.filter(like='start').values.max() - kernal_results['attival time'].min())) :.4f}" +
         f" proc/sec\n")
     return
 
@@ -467,9 +467,9 @@ def printKernalResultStatsProcTypes(kernal_results, title=None):
             f"Turn-Around Time {type_results['wait time'].mean():.2f}\n\t" +
             f"Response Time {type_results['response time'].mean():.2f}\n\t" +
             f"CPU Time {type_results['total CPU time'].mean():.2f}\n\t" +
-            f"I/O Time {kernal_results['total I/O time'].mean():.2f}\n\t"
+            f"I/O Time {type_results['total I/O time'].mean():.2f}\n\t"
             f"Throughput " +
-            f"{(type_results.shape[0]/type_results.filter(like='start').values.max()) :.4f}" +
+            f"{(type_results.shape[0]/(type_results.filter(like='finish').values.max() - type_results['attival time'].min())) :.4f}" +
             f" proc/sec\n")
     return
 
