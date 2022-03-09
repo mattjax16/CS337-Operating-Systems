@@ -95,6 +95,25 @@ The goal here was add the priority attribute to the processes which we can see w
 
 Again to implement this was very simple as I just followed the code provided in the [project notes](https://github.com/mattjax16/CS337-Operating-Systems/blob/925bae9d1ede96112102ce7e467705be00c7f6e8/Projects/Proj4/Project%204_%20%20Priority-based%20Scheduling%20in%20Xv6.pdf)
 
+
+
+<br>
+
+---
+
+### Adding the Nice System call:
+
+Here we are ready to add the `nice` system call!  The `nice` system call is responsible for changing the priority of a process while it is running using its process ID.
+
+To implement this was very simple as I just followed the code provided in the [project notes](https://github.com/mattjax16/CS337-Operating-Systems/blob/925bae9d1ede96112102ce7e467705be00c7f6e8/Projects/Proj4/Project%204_%20%20Priority-based%20Scheduling%20in%20Xv6.pdf)
+
+Below is a photo of the nice system working in Xv6 (we can see ):
+
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/2ef2c014bc6f321cef38339bc2519b9a793535cf/Projects/Proj4/Pics/nice_working.png" alt="Nice Working" />
+
+
+
+
 <br>
 
 ---
