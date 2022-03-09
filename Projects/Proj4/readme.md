@@ -107,7 +107,7 @@ Here we are ready to add the `nice` system call!  The `nice` system call is resp
 
 To implement this was very simple as I just followed the code provided in the [project notes](https://github.com/mattjax16/CS337-Operating-Systems/blob/925bae9d1ede96112102ce7e467705be00c7f6e8/Projects/Proj4/Project%204_%20%20Priority-based%20Scheduling%20in%20Xv6.pdf)
 
-Below is a photo of the nice system working in Xv6 (we can see ):
+Below is a photo of the nice system working in Xv6 (we can see the original priority of the foo child process, pid 4, was 2 and now after the nice call it is 20):
 
 <img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/2ef2c014bc6f321cef38339bc2519b9a793535cf/Projects/Proj4/Pics/nice_working.png" alt="Nice Working" />
 
