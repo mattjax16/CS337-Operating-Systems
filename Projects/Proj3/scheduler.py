@@ -90,7 +90,7 @@ def CFS_scheduler(
     '''
 
     # Wait for the processes to be in ready queue
-    wait_for_process(processes, ready, time, wait)
+    time = wait_for_process(processes, ready, time, wait)
 
 
     # Calculate the dynamic_quantum
@@ -311,7 +311,7 @@ def RR_scheduler(
         '''
 
     # Wait for the processes to be in ready queue or wait queue
-    wait_for_process(processes, ready, time, wait)
+    time = wait_for_process(processes, ready, time, wait)
 
     # If all processes in the ready queue have been run set rr_num to 0
     all_ran = True
@@ -470,7 +470,7 @@ def SRT_scheduler(
         '''
 
     # Wait for the processes to be in ready queue or wait queue
-    wait_for_process(processes, ready, time, wait)
+    time = wait_for_process(processes, ready, time, wait)
 
     # popping the start of the process
     ready.sort(key=lambda x: x.current_CPU_time)
@@ -619,7 +619,7 @@ def Preemptive_Priority_scheduler(
         '''
 
     # Wait for the processes to be in ready queue or wait queue
-    wait_for_process(processes, ready, time, wait)
+    time = (processes, ready, time, wait)
 
     # popping the start of the process
     ready.sort(key=lambda x: x.priority, reverse=True)
@@ -773,7 +773,7 @@ def Preemptive_Response_scheduler(
         '''
 
     # Wait for the processes to be in ready queue or wait queue
-    wait_for_process(processes, ready, time, wait)
+    time = wait_for_process(processes, ready, time, wait)
 
     # popping the start of the process
     ready.sort(key=lambda x: (x.times_worked_on, x.arrival_time))
@@ -956,7 +956,7 @@ def MLFQ_scheduler(
         '''
 
     # Wait for the processes to be in ready queue or wait queue
-    wait_for_process(processes, ready, time, wait)
+    time = wait_for_process(processes, ready, time, wait)
 
     # popping the start of the process
     ready.sort(key=lambda x: (x.queue, x.times_worked_on, x.arrival_time))
@@ -1284,7 +1284,7 @@ def FCFS_scheduler(
     '''
 
     # wait for the processes to be in ready queue
-    wait_for_process(processes, ready, time)
+    time = wait_for_process(processes, ready, time)
 
     # pick process with lowest arrival time and remove it from ready (sorting
     # list)
@@ -1360,7 +1360,7 @@ def SJF_scheduler(processes, ready, CPU, Scheduled_Processes, time,
     '''
 
     # wait for the processes to be in ready queue
-    wait_for_process(processes, ready, time)
+    time = wait_for_process(processes, ready, time)
 
     # pick process with shortest burt time and remove it from ready (
     # sorting list)
@@ -1461,7 +1461,7 @@ def Priority_scheduler(
     '''
 
     # wait for the processes to be in ready queue
-    wait_for_process(processes, ready, time)
+    time = wait_for_process(processes, ready, time)
 
     # pick process with highest priority and remove it from ready
     ready.sort(key=lambda x: x.priority)
@@ -1549,7 +1549,7 @@ def Priority_Turnaround_scheduler(processes, ready, CPU, Scheduled_Processes,
     '''
 
     # wait for the processes to be in ready queue
-    wait_for_process(processes, ready, time)
+    time = wait_for_process(processes, ready, time)
 
     # Calculate turnaround time for all Processes in the ready Queue
     # output with the lowest turnaround is chosen first
@@ -1651,7 +1651,7 @@ def Priority_Aging_scheduler(processes, ready, CPU, Scheduled_Processes,
     # Calculate turnaround time for all Processes in the ready Queue
     # output with the lowest turnaround is chosen first
 
-    wait_for_process(processes, ready, time)
+    time = wait_for_process(processes, ready, time)
 
     # get the max priority of all processes
     all_procs = ready.copy() + processes.copy() + Scheduled_Processes.copy()
@@ -1736,7 +1736,7 @@ def wait_for_process(processes, ready, time, wait=[], debug=False):
                 wait_flag = False
         if debug:
             print("Done with wait_for_process TREE")
-        return
+        return time
 
     # Else if ready is a list
     else:
@@ -1755,7 +1755,7 @@ def wait_for_process(processes, ready, time, wait=[], debug=False):
 
         if debug:
             print("Done with wait_for_process LIST")
-        return
+        return time
 
 
 def add_ready(processes, ready, time, debug = False):
