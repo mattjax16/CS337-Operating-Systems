@@ -68,8 +68,32 @@ Below is a photo of the ps function working in Xv6:
 
 
 
+<br>
+
+---
+
+### Write the Multiprocessing file foo.c:
+
+The goal here was to create a program that uses fork to create multiple CPU-bound processes (called `foo`).  This will help us test our scheduler and system calls.  The code for foo.c is provided
+
+To implement this was very simple as I just followed the code provided in the [project notes](https://github.com/mattjax16/CS337-Operating-Systems/blob/925bae9d1ede96112102ce7e467705be00c7f6e8/Projects/Proj4/Project%204_%20%20Priority-based%20Scheduling%20in%20Xv6.pdf)
+
+Below is a photo of the foo function working in Xv6 (we can see it does show up and a forked process with a parent and child process):
+
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/2ef2c014bc6f321cef38339bc2519b9a793535cf/Projects/Proj4/Pics/foo_working.png" alt="Foo Working" />
 
 
+
+
+<br>
+
+---
+
+### Adding Priority to Xv6 Processes :
+
+The goal here was add the priority attribute to the processes which we can see was added in the photos above. 
+
+Again to implement this was very simple as I just followed the code provided in the [project notes](https://github.com/mattjax16/CS337-Operating-Systems/blob/925bae9d1ede96112102ce7e467705be00c7f6e8/Projects/Proj4/Project%204_%20%20Priority-based%20Scheduling%20in%20Xv6.pdf)
 
 <br>
 
