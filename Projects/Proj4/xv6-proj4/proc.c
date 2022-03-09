@@ -329,10 +329,6 @@ wait(void)
 void
 scheduler(void)
 {
-  
-  
-// cprintf("Hi from schuedler %d", 1);
-
   // Initilizing pointers for initial process
   // and procesx to compare priority with
   struct proc *p, *p_comp;

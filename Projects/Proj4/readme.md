@@ -112,6 +112,23 @@ Below is a photo of the nice system working in Xv6 (we can see the original prio
 <img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/2ef2c014bc6f321cef38339bc2519b9a793535cf/Projects/Proj4/Pics/nice_working.png" alt="Nice Working" />
 
 
+<br>
+
+---
+
+### Updating the scheduler:
+
+Priority based Round-Robin CPU Scheduling algorithm is based on the integration of round-robin and priority scheduling algorithm. It retains the advantage of round robin in reducing starvation and also integrates the advantage of priority scheduling. Existing round robin CPU scheduling algorithm cannot be implemented in real time operating system due to their high context switch rates, large waiting time, large response time, large turnaround time and less throughput. The proposed algorithm improves all the drawbacks of round robin scheduling algorithm.
+
+
+For implementing this, I made the required changes in scheduler function in `proc.c` file. See below:
+
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/2ef2c014bc6f321cef38339bc2519b9a793535cf/Projects/Proj4/Pics/nice_working.png" alt="Nice Working" />
+
+Below is a photo of the nice system working in Xv6 (we can see the original priority of the foo child process, pid 4, was 2 and now after the nice call it is 20):
+
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/2ef2c014bc6f321cef38339bc2519b9a793535cf/Projects/Proj4/Pics/nice_working.png" alt="Nice Working" />
+
 
 
 <br>
