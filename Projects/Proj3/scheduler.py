@@ -210,8 +210,6 @@ def CFS_scheduler(
     # add processes that arrived now to ready queue
     add_ready(processes, ready, time)
 
-    if debug:
-        print("Added ready after work")
 
     # If process isn't done insert it to ready list
     ready.insert_process(process)

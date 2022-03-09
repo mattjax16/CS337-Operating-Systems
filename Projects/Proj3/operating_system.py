@@ -336,7 +336,8 @@ def kernal(
                              "response time": x.response_time,
                              "total CPU time": x.total_CPU_time,
                              "total I/O time": x.total_IO_time,
-                             "times worked on": x.times_worked_on
+                             "times worked on": x.times_worked_on,
+                             "type": x.proc_type
                              } for x in Scheduled_Processes]
 
             # making dataframe
@@ -423,7 +424,7 @@ def printKernalResultStats(kernal_results, title=None):
         title = ""
 
     print(
-        f"Average {title} Stats:\n-------\n"
+        f"Average {title} Stats (All Processes):\n-------\n"
         f"Wait Time "
         f"{kernal_results['turnaround time'].mean():.2f}\n" +
         f"Turn-Around Time {kernal_results['wait time'].mean():.2f}\n" +
@@ -435,9 +436,46 @@ def printKernalResultStats(kernal_results, title=None):
         f" proc/sec\n")
     return
 
+
+# defining a function to print the kernal result stats based on Process tpyex
+def printKernalResultStatsProcTypes(kernal_results, title=None):
+    '''
+
+    :param kernal_results: (dataframe) the combined results from the kernal
+    simulation
+    :return:
+    '''
+
+
+    # Get all the unique process types
+    proc_types = kernal_results['type'].unique()
+
+
+    if not title:
+        title = ""
+
+    # Print the header
+    print(f"\nAverage {title} Stats (By Process Type):\n-------")
+
+    for p_type in proc_types:
+
+        type_results = kernal_results[kernal_results["type"] == p_type]
+        print(f"{p_type.upper()} Process type ({type_results.shape[0]} "
+              f"Processes):" +
+            f"\n\tWait Time "
+            f"{type_results['turnaround time'].mean():.2f}\n\t" +
+            f"Turn-Around Time {type_results['wait time'].mean():.2f}\n\t" +
+            f"Response Time {type_results['response time'].mean():.2f}\n\t" +
+            f"CPU Time {type_results['total CPU time'].mean():.2f}\n\t" +
+            f"I/O Time {kernal_results['total I/O time'].mean():.2f}\n\t"
+            f"Throughput " +
+            f"{(type_results.shape[0]/type_results.filter(like='start').values.max()) :.4f}" +
+            f" proc/sec\n")
+    return
+
+
+
 # defining a function to plot Scheduled_Processes data along with CPU data
-
-
 def plotKernalResults(
         kernal_results,
         plot_wait_times=True,
@@ -721,6 +759,14 @@ def generate_processes(n=10000,
                 if index % 2 == 1:
                     choice_duty.append(random.randint(cpu_bound_range[1][0],
                                                       cpu_bound_range[1][1]))
+
+                # Create the new Process
+                new_proc = Process(idx, choice_duty,
+                                  random.randint(1, max_arrival_time),
+                                  random.randint(1, max_priority))
+                new_proc.proc_type = "CPU"
+
+        # If I/O Bound
         else:
             choice_duty = []
             for index in range(duty_amt):
@@ -731,10 +777,13 @@ def generate_processes(n=10000,
                     choice_duty.append(random.randint(io_bound_range[1][0],
                                                       io_bound_range[1][1]))
 
-        # Create the new Process
-        new_proc = Process(idx, choice_duty,
-                           random.randint(1, max_arrival_time),
-                           random.randint(1, max_priority))
+            # Create the new Process
+            new_proc = Process(idx, choice_duty,
+                               random.randint(1, max_arrival_time),
+                               random.randint(1, max_priority))
+
+            new_proc.proc_type = "I/O"
+
 
         generated_processes.append(new_proc)
 
@@ -745,48 +794,48 @@ def generate_processes(n=10000,
 # Main Testing function
 def main():
     # Make the test tree 2
-    test_tree2 = RBTree()
-
-    # making tesst processes
-    test_tree2_procs = [Process(1, [3, 1, 3], 4, 5),
-                        Process(2, [3, 1, 3], 4, 5),
-                        Process(3, [3, 1, 3], 4, 5),
-                        Process(4, [3, 1, 3], 4, 5),
-                        Process(5, [3, 1, 3], 4, 5),
-                        Process(6, [3, 1, 3], 4, 5),
-                        Process(7, [3, 1, 3], 4, 5),
-                        Process(8, [3, 1, 3], 4, 5)]
-
-    test_tree2_procs[0].vruntime = 25
-    test_tree2_procs[1].vruntime = 10
-    test_tree2_procs[2].vruntime = 2
-    test_tree2_procs[3].vruntime = 25
-    test_tree2_procs[4].vruntime = 30
-    test_tree2_procs[5].vruntime = 25
-    test_tree2_procs[6].vruntime = 2
-    test_tree2_procs[7].vruntime = 1
-
-    # insert all the processes
-    for proc in test_tree2_procs:
-        test_tree2.insert_process(proc)
-
-    test_tree2.print_tree()
-
-    # sim_procs1 = generate_processes(n=1000, seed=1)
+    # test_tree2 = RBTree()
     #
-    # # Run the kernel with CFS and processes
-    # kernal(scheduler.CFS_scheduler, processes=sim_procs1,
-    #                         file_proc_name="sim", debug=True)
+    # # making tesst processes
+    # test_tree2_procs = [Process(1, [3, 1, 3], 4, 5),
+    #                     Process(2, [3, 1, 3], 4, 5),
+    #                     Process(3, [3, 1, 3], 4, 5),
+    #                     Process(4, [3, 1, 3], 4, 5),
+    #                     Process(5, [3, 1, 3], 4, 5),
+    #                     Process(6, [3, 1, 3], 4, 5),
+    #                     Process(7, [3, 1, 3], 4, 5),
+    #                     Process(8, [3, 1, 3], 4, 5)]
     #
-    # # Importing the CPU results from CFS
-    # cfs_sim_results = pd.read_csv("data/Combined_Data/" +
-    #                               "All_CFS_sim_results.csv")
+    # test_tree2_procs[0].vruntime = 25
+    # test_tree2_procs[1].vruntime = 10
+    # test_tree2_procs[2].vruntime = 2
+    # test_tree2_procs[3].vruntime = 25
+    # test_tree2_procs[4].vruntime = 30
+    # test_tree2_procs[5].vruntime = 25
+    # test_tree2_procs[6].vruntime = 2
+    # test_tree2_procs[7].vruntime = 1
     #
-    # # printing the results
-    # printKernalResultStats(cfs_sim_results, title="Completely "
-    #                                                                "Fair "
-    #                                                                "Scheduling "
-    #                                                                "Sim")
+    # # insert all the processes
+    # for proc in test_tree2_procs:
+    #     test_tree2.insert_process(proc)
+    #
+    # test_tree2.print_tree()
+
+    sim_procs1 = generate_processes(n=1000, seed=1)
+
+    # Run the kernel with CFS and processes
+    kernal(scheduler.CFS_scheduler, processes=sim_procs1,
+                            file_proc_name="sim", debug=False)
+
+    # Importing the CPU results from CFS
+    cfs_sim_results = pd.read_csv("data/Combined_Data/" +
+                                  "All_CFS_sim_results.csv")
+
+    # printing the results
+    printKernalResultStatsProcTypes(cfs_sim_results, title="Completely "
+                                                                   "Fair "
+                                                                   "Scheduling "
+                                                                   "Sim")
 
     # test_node1 = RBNode(15,Process(2,[3],4,5))
     # test_node2 = RBNode(15, Process(90, [3], 4, 5))
