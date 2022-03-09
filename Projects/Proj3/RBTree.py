@@ -17,7 +17,6 @@ from process import Process
 import random
 
 
-
 @dataclass(order=True)
 class RBNode:
     '''
@@ -35,7 +34,6 @@ class RBNode:
     parent: "RBNode" = field(default=None, compare=False, repr=False)
     l_child: "RBNode" = field(default=None, compare=False, repr=False)
     r_child: "RBNode" = field(default=None, compare=False, repr=False)
-
 
 
 class RBTree:
@@ -122,8 +120,6 @@ class RBTree:
     #             count += 1
     #     return count
 
-
-
     # setters
 
     @root.setter
@@ -141,8 +137,6 @@ class RBTree:
         self.__non_nil_node_amt = val
         return
 
-
-
     '''
     General functions for RBtree
     '''
@@ -151,7 +145,7 @@ class RBTree:
     Searching and comparisons
     '''
 
-    def search(self, key, debug = False) -> RBNode:
+    def search(self, key, debug=False) -> RBNode:
         '''
         Searches for the value in the RB Tree and returns till if not there
         :param key: Key to be searched
@@ -198,13 +192,12 @@ class RBTree:
             node = node.r_child
         return node
 
-
     '''
     Inserting and Deleting
     '''
 
-    def insert(self, key : Any, data : Any = None,
-               debug : bool = False):
+    def insert(self, key: Any, data: Any = None,
+               debug: bool = False):
         '''
         Insersts a RBNode in the RB tree in the correct position based on the val
 
@@ -213,10 +206,8 @@ class RBTree:
         :return:
         '''
 
-
         # make the val a insert_node
-        insert_node = RBNode(key,data)
-
+        insert_node = RBNode(key, data)
 
         self.nodes_list.append(insert_node)
 
@@ -313,7 +304,6 @@ class RBTree:
                         # rotate to parent
                         self.rotate_left(node)
 
-
                     # color parent of node black
                     node.parent.is_red = False
 
@@ -322,7 +312,6 @@ class RBTree:
 
                     # rotate grand parent of node
                     self.rotate_right(node.parent.parent)
-
 
             else:
 
@@ -360,13 +349,12 @@ class RBTree:
                     # rotate grand parent of node
                     self.rotate_left(node.parent.parent)
 
-
         # color the root black
         self.root.is_red = False
 
         return
 
-    def insert_process(self, proc : Process):
+    def insert_process(self, proc: Process):
         '''
         Function to insert a Process into the RBtree
         :param proc:
@@ -386,10 +374,8 @@ class RBTree:
 
         # If it is not in the tree add a node with the process in a list
         else:
-            self.insert(proc.vruntime,[proc])
+            self.insert(proc.vruntime, [proc])
         return
-
-
 
     def delete_fix(self, fix_node):
         '''
@@ -495,12 +481,10 @@ class RBTree:
             print("Cannot find key in the tree")
             return
 
-
-
         if delete_node not in self.nodes_list:
             print("Error")
 
-        #Remove the delete node from the nodes list
+        # Remove the delete node from the nodes list
         self.nodes_list.remove(delete_node)
 
         # Decrease the non nil node ammount
@@ -524,7 +508,6 @@ class RBTree:
             replacing_node = delete_node.l_child
             self.transplant_nodes(delete_node, delete_node.l_child)
 
-
         # Case 3: two children
         else:
             rem_node = self.minimum(delete_node.r_child)
@@ -542,7 +525,7 @@ class RBTree:
             rem_node.l_child.parent = rem_node
             rem_node.is_red = delete_node.is_red
 
-        if original_color == False:
+        if not original_color:
             if replacing_node != self.nil:
                 self.delete_fix(replacing_node)
 
@@ -566,8 +549,7 @@ class RBTree:
 
         return
 
-
-    def remove_min_vruntime(self) -> (int,Any):
+    def remove_min_vruntime(self) -> (int, Any):
         '''
          method that removes the node with the smallest vruntime in the tree
          and updates min_vruntime in constant time. The method should
@@ -578,11 +560,8 @@ class RBTree:
         min_vrun_time = self.min_vruntime.key
         min_vrun_data = self.min_vruntime.data
 
-
-
         # if the data of the min vruntime is a list of process
         if isinstance(min_vrun_data, List):
-
 
             min_vrun_proc = min_vrun_data.pop(0)
 
@@ -604,12 +583,10 @@ class RBTree:
         # Delete the min v runtime
         self.delete(min_vrun_time)
 
-        #set the new min run time
+        # set the new min run time
         self.min_vruntime = self.minimum(self.root)
 
-
         return (min_vrun_time, min_vrun_data)
-
 
     def rotate_left(self, node):
         '''
@@ -753,7 +730,6 @@ class RBTree:
         # else return 0 if null
         return 0
 
-
     '''
     Display and output functions for RBtree
     '''
@@ -764,7 +740,7 @@ class RBTree:
         :return:
         '''
 
-        #TODO:
+        # TODO:
         # 1. Fix complicated trees displays
 
         # get max nodes for all levels and
@@ -786,18 +762,14 @@ class RBTree:
                 if self.get_level(node) == num:
                     levels[f"{num}"].append(node)
 
-
-
         # make a tree that can hold all levels of nodes
         gTree = Graph.Tree(max_nodes,
-                           children = 2)
+                           children=2)
         # make the tree layout
         positions = {k: {"node": None,
-                        "pos": gTree.layout("rt")[k],
-                        "level":int(gTree.layout("rt")[k][1])}  for k in range(
+                         "pos": gTree.layout("rt")[k],
+                         "level": int(gTree.layout("rt")[k][1])} for k in range(
             max_nodes)}
-
-
 
         # loop through all the nodes in every level
         # and add them to positions
@@ -806,7 +778,7 @@ class RBTree:
 
                 # get the nodes already placed
                 nodes_placed = [p['node'] for p in positions.values() if p[
-                    'node'] is not None ]
+                    'node'] is not None]
 
                 # get positions at levels that are available
                 aval_pos = []
@@ -827,13 +799,11 @@ class RBTree:
                 else:
 
                     # getting the parent node
-                    possible_parents = [(key,value) for key,value in
-                                   positions.items()
-                              if value['node'] == node.parent ]
+                    possible_parents = [(key, value) for key, value in
+                                        positions.items()
+                                        if value['node'] == node.parent]
 
-
-
-                    if len(possible_parents)>1:
+                    if len(possible_parents) > 1:
                         for pos_paren in possible_parents:
                             pos_node = pos_paren[1]["node"]
                             if node.parent.data == pos_node.data and \
@@ -844,17 +814,16 @@ class RBTree:
                         parent = possible_parents[0]
 
                     # get the keys that match the level
-                    parent_level_keys = [key for key,value in positions.items()
-                              if value['level'] == parent[1]["level"]]
+                    parent_level_keys = [
+                        key for key,
+                        value in positions.items() if value['level'] == parent[1]["level"]]
 
                     # get the next level keys
                     next_level_keys = [key for key, value in positions.items()
-                                         if int(value['level']) == int(
-                            parent[1]["level"])+1]
-
+                                       if int(value['level']) == int(
+                        parent[1]["level"]) + 1]
 
                     parent_pos = parent_level_keys.index(parent[0]) + 1
-
 
                     # now chose the key for the node based on if it is
                     # the right or left child of the parent
@@ -862,35 +831,30 @@ class RBTree:
                             node.parent.r_child.data and node.is_red == \
                             node.parent.r_child.is_red:
 
-                        next_lvl_idx = 2 * parent_pos -1
+                        next_lvl_idx = 2 * parent_pos - 1
                         node_tree_pos = next_level_keys[next_lvl_idx]
 
                     elif node == node.parent.l_child and node.data ==  \
                             node.parent.l_child.data and node.is_red == \
                             node.parent.l_child.is_red:
-                        next_lvl_idx = 2 * (parent_pos-1)
+                        next_lvl_idx = 2 * (parent_pos - 1)
                         node_tree_pos = next_level_keys[next_lvl_idx]
 
                     positions[node_tree_pos]["node"] = node
 
-
-
         # clean the postions list to only values only with nodes
-        positions = dict([(key,value) for key,value in positions.items()
-                              if value['node'] is not None ])
-
-
+        positions = dict([(key, value) for key, value in positions.items()
+                          if value['node'] is not None])
 
         # Set up vars for graphing
 
         # Get the max level
-        M = self.tree_height-1
-
+        M = self.tree_height - 1
 
         # Get the edges and clean them
         E = [e.tuple for e in gTree.es]
-        E = list(filter(lambda x: x[0] in positions.keys() and \
-                                   x[1] in positions.keys(), E))
+        E = list(filter(lambda x: x[0] in positions.keys() and
+                        x[1] in positions.keys(), E))
 
         # set up edges for graphing
         Xe = []
@@ -900,30 +864,26 @@ class RBTree:
                    None]
             Ye += [2 * M - positions[edge[0]]["level"], 2 * M - positions[edge[
                 1]]["level"],
-                   None]
-
+                None]
 
         # making the cordinates for the nodes
         # split into red and y group
-        r_positions = dict([(key,value) for key,value in positions.items()
-                              if value['node'].is_red ])
+        r_positions = dict([(key, value) for key, value in positions.items()
+                            if value['node'].is_red])
         b_positions = dict([(key, value) for key, value in positions.items()
-                              if not value['node'].is_red])
+                            if not value['node'].is_red])
 
         r_Xn = [r_positions[k]["pos"][0] for k in r_positions.keys()]
         r_Yn = [2 * M - r_positions[k]["pos"][1] for k in r_positions.keys()]
 
         b_Xn = [b_positions[k]["pos"][0] for k in b_positions.keys()]
         b_Yn = [2 * M - b_positions[k]["pos"][1] for k in
-                    b_positions.keys()]
-
-
+                b_positions.keys()]
 
         # make the labels for the plot
         b_labels = [str(val["node"].key) for val in b_positions.values()]
         r_labels = [str(val["node"].key) for val in r_positions.values()]
         labels = [str(val["node"].key) for val in positions.values()]
-
 
         # Make the plot
         fig = go.Figure()
@@ -976,7 +936,7 @@ class RBTree:
         fig.update_layout(title=f'RB Tree (Height: '
                                 f'{self.get_height(self.root)})',
                           annotations=self.make_annotations(labels,
-                                                       M, positions),
+                                                            M, positions),
                           font_size=12,
                           showlegend=False,
                           xaxis=axis,
@@ -1009,8 +969,10 @@ class RBTree:
             annotations.append(
                 dict(
                     text=labels[k],
-                    # or replace labels with a different list for the text within the circle
-                    x=positions[val]['pos'][0], y=2 * M - positions[val]["level"],
+                    # or replace labels with a different list for the text
+                    # within the circle
+                    x=positions[val]['pos'][0], y=2 * \
+                    M - positions[val]["level"],
                     xref='x1', yref='y1',
                     font=dict(color=font_color, size=font_size),
                     showarrow=False)
@@ -1064,17 +1026,13 @@ class RBTree:
         )
 
 
-
-
-
-
 # main testing for RB tree
 def main():
     test_tree2 = RBTree()
 
     test_tree2_vals = [1, 2, 3, 4] * 5
     for val in test_tree2_vals:
-        test_tree2.insert(val, random.randint(0,100000))
+        test_tree2.insert(val, random.randint(0, 100000))
 
     test_tree2.display_tree()
 
@@ -1109,9 +1067,6 @@ def main():
     # print(test_tree.size)
     #
 
-
-
-
     # test_tree.print_tree()
     #
     # # test_tree.display_tree()
@@ -1136,6 +1091,7 @@ def main():
     # print(test_2_node == test_3_node)
     # print(test_2_node < test_3_node)
     return
+
 
 if __name__ == "__main__":
     main()

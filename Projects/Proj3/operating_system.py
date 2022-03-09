@@ -116,7 +116,7 @@ def kernal(
                 target_latency=target_latency,
                 debug=debug)
 
-    #If it is not RBTree (ie not CFS)
+    # If it is not RBTree (ie not CFS)
     else:
         while processes or ready or wait:
 
@@ -446,10 +446,8 @@ def printKernalResultStatsProcTypes(kernal_results, title=None):
     :return:
     '''
 
-
     # Get all the unique process types
     proc_types = kernal_results['type'].unique()
-
 
     if not title:
         title = ""
@@ -460,8 +458,9 @@ def printKernalResultStatsProcTypes(kernal_results, title=None):
     for p_type in proc_types:
 
         type_results = kernal_results[kernal_results["type"] == p_type]
-        print(f"{p_type.upper()} Process type ({type_results.shape[0]} "
-              f"Processes):" +
+        print(
+            f"{p_type.upper()} Process type ({type_results.shape[0]} "
+            f"Processes):" +
             f"\n\tWait Time "
             f"{type_results['turnaround time'].mean():.2f}\n\t" +
             f"Turn-Around Time {type_results['wait time'].mean():.2f}\n\t" +
@@ -472,7 +471,6 @@ def printKernalResultStatsProcTypes(kernal_results, title=None):
             f"{(type_results.shape[0]/(type_results.filter(like='finish').values.max() - type_results['arrival time'].min())) :.4f}" +
             f" proc/sec\n")
     return
-
 
 
 # defining a function to plot Scheduled_Processes data along with CPU data
@@ -762,8 +760,8 @@ def generate_processes(n=10000,
 
                 # Create the new Process
                 new_proc = Process(idx, choice_duty,
-                                  random.randint(1, max_arrival_time),
-                                  random.randint(1, max_priority))
+                                   random.randint(1, max_arrival_time),
+                                   random.randint(1, max_priority))
                 new_proc.proc_type = "CPU"
 
         # If I/O Bound
@@ -783,7 +781,6 @@ def generate_processes(n=10000,
                                random.randint(1, max_priority))
 
             new_proc.proc_type = "I/O"
-
 
         generated_processes.append(new_proc)
 
@@ -825,7 +822,7 @@ def main():
 
     # Run the kernel with CFS and processes
     kernal(scheduler.CFS_scheduler, processes=sim_procs1,
-                            file_proc_name="sim", debug=False)
+           file_proc_name="sim", debug=False)
 
     # Importing the CPU results from CFS
     cfs_sim_results = pd.read_csv("data/Combined_Data/" +
@@ -833,9 +830,9 @@ def main():
 
     # printing the results
     printKernalResultStatsProcTypes(cfs_sim_results, title="Completely "
-                                                                   "Fair "
-                                                                   "Scheduling "
-                                                                   "Sim")
+                                    "Fair "
+                                    "Scheduling "
+                                    "Sim")
 
     # test_node1 = RBNode(15,Process(2,[3],4,5))
     # test_node2 = RBNode(15, Process(90, [3], 4, 5))

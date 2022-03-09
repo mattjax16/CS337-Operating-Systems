@@ -9,7 +9,6 @@ This is a file to create a Process class
 '''
 
 
-
 class Process:
     # The Process class implements a process for the scheduling sim
     def __init__(self, id, duty, arrival_time, priority):
@@ -167,9 +166,8 @@ class Process:
         else:
             return "I/O"
 
-
-
     # Defining setters
+
     @proc_type.setter
     def proc_type(self, val):
         self.__proc_type = val
@@ -298,9 +296,6 @@ class Process:
         """Provides the process representation its layout."""
         return f"[ID = {self.id}, Ar_T = {self.__arrival_time}," \
                f"Vr_T = {self.vruntime},P = {self.priority}]"
-
-
-
 
 
 # Main Testing function for Process Class

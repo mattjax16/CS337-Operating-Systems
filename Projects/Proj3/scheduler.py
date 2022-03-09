@@ -92,13 +92,11 @@ def CFS_scheduler(
     # Wait for the processes to be in ready queue
     time = wait_for_process(processes, ready, time, wait)
 
-
     # Calculate the dynamic_quantum
     dynamic_quantum = target_latency * ready.size
 
     # Get the process with the min_vruntime from the tree
     process = ready.remove_min_vruntime()[1]
-
 
     # indicate the process has been worked on
     process.process_worked_on()
@@ -137,7 +135,7 @@ def CFS_scheduler(
 
             # Calculate the procs min_vruntime
             process.vruntime = process.current_CPU_time * \
-                                        process.weight
+                process.weight
 
             # set the processes priority to the vruntime
             process.priority = process.vruntime
@@ -173,9 +171,9 @@ def CFS_scheduler(
 
             # Calculate the procs min_vruntime
             process.vruntime = process.current_CPU_time * \
-                                   process.weight
+                process.weight
 
-            #set the processes priority to the vruntime
+            # set the processes priority to the vruntime
             process.priority = process.vruntime
 
             # If process isn't done and needs I/O append it to ready list
@@ -196,20 +194,18 @@ def CFS_scheduler(
 
             return time
 
-
     # If the process isn,'t done or I/O by
     # the time the dynamic quantum is done
 
     # Calculate the procs min_vruntime
     process.vruntime = process.current_CPU_time * \
-                            process.weight
+        process.weight
 
     # set the processes priority to the vruntime
     process.priority = process.vruntime
 
     # add processes that arrived now to ready queue
     add_ready(processes, ready, time)
-
 
     # If process isn't done insert it to ready list
     ready.insert_process(process)
@@ -250,6 +246,7 @@ def CFS_scheduler(
     #
     #     return time
     #
+
 
 '''
 ################################################################
@@ -1562,7 +1559,7 @@ def Priority_Turnaround_scheduler(processes, ready, CPU, Scheduled_Processes,
 
     for proc in ready:
         proc.priority = (time - proc.arrival_time) + \
-                        max_burst_time - proc.burst_time
+            max_burst_time - proc.burst_time
 
     # pick process with highest priority and remove it from ready
     ready.sort(key=lambda x: x.priority)
@@ -1698,11 +1695,9 @@ def Priority_Aging_scheduler(processes, ready, CPU, Scheduled_Processes,
     return time
 
 
-
 """
 Functions to help Schedulers
 """
-
 
 
 def wait_for_process(processes, ready, time, wait=[], debug=False):
@@ -1758,7 +1753,7 @@ def wait_for_process(processes, ready, time, wait=[], debug=False):
         return time
 
 
-def add_ready(processes, ready, time, debug = False):
+def add_ready(processes, ready, time, debug=False):
     '''
     Adds Processes to ready that have arrived based on the time
     Parameters:
@@ -1803,7 +1798,7 @@ def add_ready(processes, ready, time, debug = False):
 
                 # Calculate the procs min_vruntime
                 arrived_proc.vruntime = arrived_proc.current_CPU_time * \
-                                            arrived_proc.weight
+                    arrived_proc.weight
 
                 # set the processes priority to the vruntime
                 arrived_proc.priority = arrived_proc.vruntime
@@ -1860,7 +1855,7 @@ def run_wait(ready, wait, time):
 
                 # Calculate the procs min_vruntime
                 changed_proc.vruntime = changed_proc.current_CPU_time * \
-                                            changed_proc.weight
+                    changed_proc.weight
 
                 # set the processes priority to the vruntime
                 changed_proc.priority = changed_proc.vruntime
@@ -1869,4 +1864,3 @@ def run_wait(ready, wait, time):
 
             else:
                 ready.append(changed_proc)
-
