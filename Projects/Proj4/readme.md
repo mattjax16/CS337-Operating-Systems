@@ -64,7 +64,7 @@ To implement this was very simple as I just followed the code provided in the [p
 
 Below is a photo of the ps function working in Xv6:
 
-<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/2ef2c014bc6f321cef38339bc2519b9a793535cf/Projects/Proj4/Pics/working_ps.png" alt="PS Workinf" style="height: 200px; width:300px;"/>
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/2ef2c014bc6f321cef38339bc2519b9a793535cf/Projects/Proj4/Pics/working_ps.png" alt="Process Status Working" />
 
 
 
