@@ -14,6 +14,7 @@ import sys
 from dataclasses import dataclass, field
 from typing import Any, List
 from process import Process
+import random
 
 
 
@@ -770,7 +771,7 @@ class RBTree:
         # make a dictionary of all the nodes on each level
         max_nodes = 0
         levels = {}
-        for num in range(self.get_height(self.root)):
+        for num in range(self.tree_height):
 
             # add tp calculation of the max node
             max_nodes += 2**(num)
@@ -818,15 +819,29 @@ class RBTree:
                 # should only be true for the root
                 if node.parent not in nodes_placed:
 
-                    # ifparent doesnt exist place node in avalible level position
+                    # if parent doesnt exist place node in avalible level
+                    # position
                     positions[aval_pos[0]]["node"] = node
 
                 # Else if the parent does exist
                 else:
 
                     # getting the parent node
-                    parent = [(key,value) for key,value in positions.items()
-                              if value['node'] == node.parent ][0]
+                    possible_parents = [(key,value) for key,value in
+                                   positions.items()
+                              if value['node'] == node.parent ]
+
+
+
+                    if len(possible_parents)>1:
+                        for pos_paren in possible_parents:
+                            pos_node = pos_paren[1]["node"]
+                            if node.parent.data == pos_node.data and \
+                                    node.parent.is_red == pos_node.is_red:
+                                parent = pos_paren
+                                break
+                    else:
+                        parent = possible_parents[0]
 
                     # get the keys that match the level
                     parent_level_keys = [key for key,value in positions.items()
@@ -843,10 +858,18 @@ class RBTree:
 
                     # now chose the key for the node based on if it is
                     # the right or left child of the parent
-                    if node == node.parent.r_child:
-                        node_tree_pos = next_level_keys[2 * parent_pos -1]
-                    elif node == node.parent.l_child:
-                        node_tree_pos = next_level_keys[2 * (parent_pos-1)]
+                    if node == node.parent.r_child and node.data ==  \
+                            node.parent.r_child.data and node.is_red == \
+                            node.parent.r_child.is_red:
+
+                        next_lvl_idx = 2 * parent_pos -1
+                        node_tree_pos = next_level_keys[next_lvl_idx]
+
+                    elif node == node.parent.l_child and node.data ==  \
+                            node.parent.l_child.data and node.is_red == \
+                            node.parent.l_child.is_red:
+                        next_lvl_idx = 2 * (parent_pos-1)
+                        node_tree_pos = next_level_keys[next_lvl_idx]
 
                     positions[node_tree_pos]["node"] = node
 
@@ -861,7 +884,7 @@ class RBTree:
         # Set up vars for graphing
 
         # Get the max level
-        M = self.get_height(self.root)-1
+        M = self.tree_height-1
 
 
         # Get the edges and clean them
@@ -1047,45 +1070,55 @@ class RBTree:
 
 # main testing for RB tree
 def main():
-    test_tree = RBTree()
+    test_tree2 = RBTree()
+
+    test_tree2_vals = [1, 2, 3, 4] * 5
+    for val in test_tree2_vals:
+        test_tree2.insert(val, random.randint(0,100000))
+
+    test_tree2.display_tree()
+
+    test_tree2.print_tree()
+
+    # test_tree = RBTree()
+    #
+    #
+    # test_tree.insert(key=1)
+    # print(test_tree.size)
+    # test_tree.remove_min_vruntime()
+    # test_tree.insert(key = 2)
+    # print(test_tree.size)
+    #
+    # test_tree.insert(3)
+    # print(test_tree.size)
+    #
+    # test_tree.insert(4)
+    # print(test_tree.size)
+    #
+    # test_tree.insert(5)
+    # print(test_tree.size)
+    # test_tree.insert(6)
+    # print(test_tree.size)
+    # test_tree.insert(7)
+    # print(test_tree.size)
+    # test_tree.insert(8)
+    # print(test_tree.size)
+    # test_tree.insert(9)
+    # print(test_tree.size)
+    # test_tree.insert(10)
+    # print(test_tree.size)
+    #
 
 
-    test_tree.insert(key=1)
-    print(test_tree.size)
-    test_tree.remove_min_vruntime()
-    test_tree.insert(key = 2)
-    print(test_tree.size)
-
-    test_tree.insert(3)
-    print(test_tree.size)
-
-    test_tree.insert(4)
-    print(test_tree.size)
-
-    test_tree.insert(5)
-    print(test_tree.size)
-    test_tree.insert(6)
-    print(test_tree.size)
-    test_tree.insert(7)
-    print(test_tree.size)
-    test_tree.insert(8)
-    print(test_tree.size)
-    test_tree.insert(9)
-    print(test_tree.size)
-    test_tree.insert(10)
-    print(test_tree.size)
 
 
-
-
-
-    test_tree.print_tree()
-
+    # test_tree.print_tree()
+    #
+    # # test_tree.display_tree()
     # test_tree.display_tree()
-    test_tree.display_tree()
-    # test_tree.delete(3)
-    test_tree.remove_min_vruntime()
-    test_tree.display_tree()
+    # # test_tree.delete(3)
+    # test_tree.remove_min_vruntime()
+    # test_tree.display_tree()
 
     '''Testing get level'''
     # print(test_tree.get_level(test_tree.root))
