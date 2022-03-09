@@ -31,6 +31,6 @@ int main(int argc, char *argv[]) {
   }
   chpr(pid, priority);
 
-  // ps();
+  ps(); // This is since the schuedler doesnt work
   exit();
 }
