@@ -432,7 +432,7 @@ def printKernalResultStats(kernal_results, title=None):
         f"CPU Time {kernal_results['total CPU time'].mean():.2f}\n" +
         f"I/O Time {kernal_results['total I/O time'].mean():.2f}\n"
         f"Throughput " +
-        f"{(kernal_results.shape[0]/(kernal_results.filter(like='start').values.max() - kernal_results['attival time'].min())) :.4f}" +
+        f"{(kernal_results.shape[0]/(kernal_results.filter(like='finish').values.max() - kernal_results['attival time'].min())) :.4f}" +
         f" proc/sec\n")
     return
 
