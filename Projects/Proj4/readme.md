@@ -64,7 +64,7 @@ To implement this was very simple as I just followed the code provided in the [p
 
 Below is a photo of the ps function working in Xv6:
 
-![](Pics/working_ps.png.png)
+![Process Status Working](./Pics/working_ps.png.png)
 
 
 
