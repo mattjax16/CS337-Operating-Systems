@@ -194,8 +194,8 @@ UPROGS=\
 	_useradd\
 	_password\
 
-fs.img: mkfs README $(UPROGS)
-	./mkfs fs.img README $(UPROGS)
+fs.img: mkfs README shadow nusers $(UPROGS)
+	./mkfs fs.img README shadow nusers $(UPROGS)
 
 -include *.d
 
