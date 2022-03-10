@@ -194,8 +194,9 @@ UPROGS=\
 	_useradd\
 	_password\
 
-fs.img: mkfs README shadow nusers $(UPROGS)
-	./mkfs fs.img README shadow nusers $(UPROGS)
+# Main make function to make the img for the operating system
+fs.img: mkfs README usersInfo numUsers $(UPROGS)
+	./mkfs fs.img README usersInfo numUsers $(UPROGS)
 
 -include *.d
 

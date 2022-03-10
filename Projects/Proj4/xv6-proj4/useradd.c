@@ -28,8 +28,9 @@ int main(int argc, char *argv[]){
   char userFileBufer[2];
 
   l = c = 0;
-  int fd;
-  fd = open("/shadow", O_RDWR);
+
+  // Open the users info
+  int userInfo = open("/usersInfo", O_RDWR);
   int usersCount = 0;
   char * newUsername = argv[1];
   char * tempPassword = argv[2];
@@ -38,7 +39,9 @@ int main(int argc, char *argv[]){
     printf(1,"Usage: Specify user and password, Ex.: useradd user password\n");
     exit();
   }
-  while((n = read(fd, buf, sizeof(buf))) > 0){
+  
+  // Look through the userInfo to see if the user name already exists
+  while((n = read(userInfo, buf, sizeof(buf))) > 0){
     for(i=0; i<n; i++) {
       if(l == 0){ 
         if(i != 0){
@@ -62,28 +65,33 @@ int main(int argc, char *argv[]){
     
     usersCount++;
   }
-
+  
+  // Setting up the home directory for the user
   strcpy(newHomeDirectory + strlen(newHomeDirectory), newUsername);
   mkdir(newHomeDirectory);
-  read(fd, buf, sizeof(buf));
-  write(fd, newUsername,strlen(newUsername));
-  write(fd, ":",1);
-  write(fd, tempPassword, strlen(tempPassword));
-  write(fd, ":",1);
+  read(userInfo, buf, sizeof(buf));
+  write(userInfo, newUsername,strlen(newUsername));
+  write(userInfo, ":",1);
+  write(userInfo, tempPassword, strlen(tempPassword));
+  write(userInfo, ":",1);
   
-  int userNumber = open("/nusers", O_RDWR);
+  // increment the number of users
+  int userNumber = open("/numUsers", O_RDWR);
   read(userNumber, userFileBufer, sizeof(userFileBufer));
-  write(fd, userFileBufer, sizeof(userFileBufer)-1);
+  write(userInfo, userFileBufer, sizeof(userFileBufer)-1);
   close(userNumber);
   
-  write(fd, ":",1);  
-  write(fd, newHomeDirectory, strlen(newHomeDirectory));  
-  write(fd, "\n", 1);
+  // Write the new home directory to usersInfo
+  write(userInfo, ":",1);
+  write(userInfo, newHomeDirectory, strlen(newHomeDirectory));
+  write(userInfo, "\n", 1);
   userFileBufer[0]= userFileBufer[0]+1;
-  userNumber = open("/nusers", O_RDWR);
+  
+  //Re write the numUsers with the file buffer
+  userNumber = open("/numUsers", O_RDWR);
   write(userNumber, userFileBufer, sizeof(userFileBufer));
 
-  close(fd);
+  close(userInfo);
   
   exit();
 }

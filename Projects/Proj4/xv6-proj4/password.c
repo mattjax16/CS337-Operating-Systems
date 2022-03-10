@@ -18,19 +18,19 @@ A function to help the user set the password
  * @brief This is the main running function for changing the password of the user
  * 
  * @param username the username the password goes with
- * @param npass the new password
+ * @param new_pass the new password
  * @return int 
  */
-int makeTempFile(char * username, char * npass){
+int makeTempFile(char * username, char * new_pass){
   char buf[1024], buftemp [1024], newuser[1024];
   int i;
   
   //Open the users info file
-  int fd = open("/shadow", O_RDONLY);
+  int userInfo = open("/usersInfo", O_RDONLY);
 
-  //Create a user file to chage the password
-  int tempFile = open("/shadow_temp", O_CREATE | O_RDWR);
-  read(fd, buf, sizeof(buf));
+  //Create a user file to chagee the password
+  int tempFile = open("/userInfo_temp", O_CREATE | O_RDWR);
+  read(userInfo, buf, sizeof(buf));
 
   int pos = 0;
   int postemp = 0;
@@ -55,7 +55,7 @@ int makeTempFile(char * username, char * npass){
         
         //Copy over the username and password
         strcpy(newuser,buftemp);
-        strcpy(newuser+strlen(newuser),npass);
+        strcpy(newuser+strlen(newuser),new_pass);
         postemp=strlen(newuser);
         while(buf[pos]!=':'){
           pos++;
@@ -114,23 +114,23 @@ int makeTempFile(char * username, char * npass){
   
   // if the user is found
   if(found){    
-    close(fd);
+    close(userInfo);
     close(tempFile);
-    unlink("/shadow");
-    fd = open("/shadow", O_CREATE | O_RDWR);
-    tempFile = open("/shadow_temp", O_CREATE | O_RDWR);
+    unlink("/usersInfo");
+    userInfo = open("/usersInfo", O_CREATE | O_RDWR);
+    tempFile = open("/userInfo_temp", O_CREATE | O_RDWR);
     read(tempFile, buftemp, sizeof(buftemp));    
-    write(fd, buftemp, strlen(buftemp));
+    write(userInfo, buftemp, strlen(buftemp));
   }
   close(tempFile);
-  unlink("/shadow_temp");
+  unlink("/userInfo_temp");
   exit();
   return 0;
 }
 
 int main(int argc, char *argv[]){
   if (argc <= 2){
-    printf(1,"Usage: passwd username new_password\n");
+    printf(1,"Usage: password username new_password\n");
     exit();
   }
   else{
