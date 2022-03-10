@@ -142,6 +142,7 @@ Below is a photo of the schuedling algorithm "working" (It is not currently work
 - [Dr. Al Madi Xv6 notes](https://github.com/mattjax16/CS337-Operating-Systems/blob/925bae9d1ede96112102ce7e467705be00c7f6e8/Notes/9-%20Writing%20Xv6%20System%20Calls.pdf)
 - [Project Notes](https://github.com/mattjax16/CS337-Operating-Systems/blob/925bae9d1ede96112102ce7e467705be00c7f6e8/Projects/Proj4/Project%204_%20%20Priority-based%20Scheduling%20in%20Xv6.pdf)
 - [UVA XV6 Overview](https://www.cs.virginia.edu/~cr4bd/4414/S2021/xv6.html)
+- [UCI Xv6 Notes](https://www.ics.uci.edu/~aburtsev/238P/index.html)
 
 
 ### Layout:

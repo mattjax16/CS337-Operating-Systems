@@ -190,6 +190,9 @@ UPROGS=\
 	_ps\
 	_foo\
 	_nice\
+	_login\
+	_useradd\
+	_password\
 
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
