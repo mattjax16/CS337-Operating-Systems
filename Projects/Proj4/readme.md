@@ -109,7 +109,8 @@ To implement this was very simple as I just followed the code provided in the [p
 
 Below is a photo of the nice system working in Xv6 (we can see the original priority of the foo child process, pid 4, was 2 and now after the nice call it is 20):
 
-<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/2ef2c014bc6f321cef38339bc2519b9a793535cf/Projects/Proj4/Pics/nice_working.png" alt="Nice Working" />
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/2ef2c014bc6f321cef38339bc2519b9a793535cf/Projects/Proj4/Pics/nice_working.png" alt="Nice Working"
+style="height: 300px; width: 900px;" />
 
 
 <br>
@@ -123,11 +124,11 @@ Priority based Round-Robin CPU Scheduling algorithm is based on the integration 
 
 For implementing this, I made the required changes in scheduler function in `proc.c` file. See below:
 
-<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/228257a5f65793cca32d7ccd977bed74ed3e7fa7/Projects/Proj4/Pics/rr_sched_code.png" alt="rr_sched_code" style="height: 900px; width: 600px;"/>
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/228257a5f65793cca32d7ccd977bed74ed3e7fa7/Projects/Proj4/Pics/rr_sched_code.png" alt="rr_sched_code" style="height: 900px; width: 900px;"/>
 
 Below is a photo of the schuedling algorithm "working" (It is not currently working because of a strange bug that neither I nor Dr. Al Madi have been able to understand why is happening so i added a `ps` call at the end of nice to show that the process priority has infact changed)
 
-<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/228257a5f65793cca32d7ccd977bed74ed3e7fa7/Projects/Proj4/Pics/sched_running.png" alt="sch running" style="height: 400px; width: 600px;"/>
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/228257a5f65793cca32d7ccd977bed74ed3e7fa7/Projects/Proj4/Pics/sched_running.png" alt="sch running" style="height: 400px; width: 900px;"/>
 
 
 
