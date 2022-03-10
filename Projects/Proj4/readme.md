@@ -142,17 +142,36 @@ For my extension I wanted to implement a login system for Xv6 that had a person 
 
 To start out I had to desighn how I wanted my login and users system to work. Then genral overview is that I wanted the person to have to enter a correct username and password to login as well as be able to change the password of a user and create a new user. Each user will have their own file space for all their files and programs with the file path `/home/username`. To accomplish this I had to create a function to login, create a functione to change the password, and create a function to add users.
 
-I decided that the number of users the operation system has would be kept in a file named 'numUsers' which would just hold and int of the number of users. 
 
-<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/228257a5f65793cca32d7ccd977bed74ed3e7fa7/Projects/Proj4/Pics/sched_running.png" alt="sch running" style="height: 400px; width: 900px;"/>
+###### How the data will be stored:
+
+I decided that the number of users the operation system has would be kept in a file named [numUsers](https://github.com/mattjax16/CS337-Operating-Systems/blob/69660b9a801478db0894781514ad7cf0788c2afb/Projects/Proj4/xv6-proj4/numUsers) which would just hold and int of the number of users. 
+
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/69660b9a801478db0894781514ad7cf0788c2afb/Projects/Proj4/Pics/numUsers.png" alt="numUsers" style="height: 150; width: 700px;"/>
 
 
-The info on the users such as their username, password, user id, and home filepath (in that order) would be kept in a file called `usersInfo` with each users info on a seprate line and seperated by **:** 
+The info on the users such as their username, password, user id, and home filepath (in that order) would be kept in a file called [usersInfo](https://github.com/mattjax16/CS337-Operating-Systems/blob/69660b9a801478db0894781514ad7cf0788c2afb/Projects/Proj4/xv6-proj4/usersInfo) with each users info on a seprate line and seperated by **:**  (passwords arent encypted which is not secure at all)
 
 
-<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/228257a5f65793cca32d7ccd977bed74ed3e7fa7/Projects/Proj4/Pics/sched_running.png" alt="sch running" style="height: 400px; width: 900px;"/>
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/69660b9a801478db0894781514ad7cf0788c2afb/Projects/Proj4/Pics/userInfo.png" alt="usersInfo" style="height: 150; width: 700px;"/>
 
 Here we can see I created 2 default users. The first has a username of user, a password of password, its user id is 0, and its home file path is `/home/user`. The second has a username of admin, a password of pass1, its user id is 1, and its home file path is `/home/admin`.
+
+
+
+###### Logging In
+
+To log in I first created the file [login.c](https://github.com/mattjax16/CS337-Operating-Systems/blob/69660b9a801478db0894781514ad7cf0788c2afb/Projects/Proj4/xv6-proj4/login.c) which has the login function whuch is ran instead of the shell command on initiliazation of the operationg system. This function does as one would assume and has the user enter a valid username and password combination before the shell can be accessed.  
+
+In writing login I also wrote a helper function to check if the password and username are correct or not which can be seen in the code below. (Comments explain what is going on in code)
+
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/228257a5f65793cca32d7ccd977bed74ed3e7fa7/Projects/Proj4/Pics/rr_sched_code.png" alt="checkPass" style="height: 900px; width: 900px;"/>
+
+The main driver function of login uses `checkpassword()` to see if the entered username and password are valid and if they are it runs the shell (similar to how it is originally done in `init.c`) All the code and comments explaing the main function can be seen below
+
+
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/228257a5f65793cca32d7ccd977bed74ed3e7fa7/Projects/Proj4/Pics/rr_sched_code.png" alt="loginMain" style="height: 900px; width: 900px;"/>
+
 
 
 
