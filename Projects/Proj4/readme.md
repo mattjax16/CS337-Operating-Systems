@@ -165,19 +165,19 @@ To log in I first created the file [login.c](https://github.com/mattjax16/CS337-
 
 In writing login I also wrote a helper function to check if the password and username are correct or not which can be seen in the code below. (Comments explain what is going on in code)
 
-<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/6bec43a02c74b74f709d83de6ad119010083ca6c/Projects/Proj4/Pics/checkPass.png" alt="checkPass" />
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/6bec43a02c74b74f709d83de6ad119010083ca6c/Projects/Proj4/Pics/checkPass.png" alt="checkPass" style="height: 700px; width: 500px;"/>
 
 The main driver function of login uses `checkpassword()` to see if the entered username and password are valid and if they are it runs the shell (similar to how it is originally done in `init.c`) All the code and comments explaing the main function can be seen below
 
 
-<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/6bec43a02c74b74f709d83de6ad119010083ca6c/Projects/Proj4/Pics/mainLogin.png" alt="loginMain"/>
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/6bec43a02c74b74f709d83de6ad119010083ca6c/Projects/Proj4/Pics/mainLogin.png" alt="loginMain" style="height: 700px; width: 500px;"/>
 
 
 **Testing**
 Below we can see that logging in works for the user as well as password and username checking.
 
 
-<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/69660b9a801478db0894781514ad7cf0788c2afb/Projects/Proj4/Pics/admin_login.png" alt="admin login" style="height: 400; width: 700px;"/>
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/b7998a156eab87efcc3e1a6e0bc756b9d28e5a3a/Projects/Proj4/Pics/admin_login.png" alt="admin login" style="height: 400; width: 700px;"/>
 
 
 
@@ -192,11 +192,11 @@ We can all agree that pass1 is not a strong password so I am going to test chage
 
 Below I am changing the password.
 
-<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/69660b9a801478db0894781514ad7cf0788c2afb/Projects/Proj4/Pics/change_admin_pass.png" alt="change_admin_pass" style="height: 400; width: 700px;"/>
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/b7998a156eab87efcc3e1a6e0bc756b9d28e5a3a/Projects/Proj4/Pics/change_admin_pass.png" alt="change_admin_pass" style="height: 400; width: 700px;"/>
 
 And as we can see below logining in works with the new password.
 
-<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/69660b9a801478db0894781514ad7cf0788c2afb/Projects/Proj4/Pics/new_admin_pass.png" alt="new_admin_pass" style="height: 400; width: 700px;"/>
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/b7998a156eab87efcc3e1a6e0bc756b9d28e5a3a/Projects/Proj4/Pics/new_admin_pass.png" alt="new_admin_pass" style="height: 400; width: 700px;"/>
 
 
 
