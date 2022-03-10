@@ -112,6 +112,7 @@ Below is a photo of the nice system working in Xv6 (we can see the original prio
 <img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/2ef2c014bc6f321cef38339bc2519b9a793535cf/Projects/Proj4/Pics/nice_working.png" alt="Nice Working"
 style="height: 300px; width: 900px;" />
 
+From here we can see that the schuedler is "working" and that it freezes when foo which is runnable has its priority changed to 1 which gives it the highest priority out of all process and is ran.
 
 <br>
 

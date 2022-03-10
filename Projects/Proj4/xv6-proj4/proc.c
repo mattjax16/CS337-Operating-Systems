@@ -365,6 +365,7 @@ scheduler(void)
       }
       p = p_high;
       
+
       c->proc = p;
       switchuvm(p);
       p->state = RUNNING;
@@ -376,6 +377,7 @@ scheduler(void)
       // It should have changed its p->state before coming back.
       c->proc = 0;
     }
+    
     release(&ptable.lock);
 
   }
