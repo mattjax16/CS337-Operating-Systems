@@ -123,7 +123,7 @@ Priority based Round-Robin CPU Scheduling algorithm is based on the integration 
 
 For implementing this, I made the required changes in scheduler function in `proc.c` file. See below:
 
-<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/228257a5f65793cca32d7ccd977bed74ed3e7fa7/Projects/Proj4/Pics/rr_sched_code.png" alt="rr_sched_code" />
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/228257a5f65793cca32d7ccd977bed74ed3e7fa7/Projects/Proj4/Pics/rr_sched_code.png" alt="rr_sched_code" style="height: 900px; width: 400px;"/>
 
 Below is a photo of the schuedling algorithm "working" (It is not currently working because of a strange bug that neither I nor Dr. Al Madi have been able to understand why is happening so i added a `ps` call at the end of nice to show that the process priority has infact changed)
 
