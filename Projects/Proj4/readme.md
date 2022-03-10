@@ -140,12 +140,12 @@ Below is a photo of the schuedling algorithm "working" (It is not currently work
 
 For my extension I wanted to implement a login system for Xv6 that had a person enter a username and correct passwor before they can use the shell. I thought this would be quite an easy extension to implement but it tuned out to be a lot more work than I thought.
 
-To start out I had to desighn how I wanted my login and users system to work. Then genral overview is that I wanted the person to have to enter a correct username and password to login as well as be able to change the password of a user and create a new user. Each user will have their own file space for all their files and programs with the file path `/home/username`. To accomplish this I had to create a function to login, create a functione to change the password, and create a function to add users.
+To start out I had to design how I wanted my login and users system to work. Then genral overview is that I wanted the person to have to enter a correct username and password to login as well as be able to change the password of a user. Each user will have their own file space for all their files and programs with the file path `/home/username`. To accomplish this I had to create a function to login, create a functione to change the password, and create a function to add users.
 
 
 ###### How the data will be stored:
 
-I decided that the number of users the operation system has would be kept in a file named [numUsers](https://github.com/mattjax16/CS337-Operating-Systems/blob/69660b9a801478db0894781514ad7cf0788c2afb/Projects/Proj4/xv6-proj4/numUsers) which would just hold and int of the number of users. 
+I decided that the number of users the operating system has would be kept in a file named [numUsers](https://github.com/mattjax16/CS337-Operating-Systems/blob/69660b9a801478db0894781514ad7cf0788c2afb/Projects/Proj4/xv6-proj4/numUsers) which would just hold and int of the number of users. 
 
 <img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/69660b9a801478db0894781514ad7cf0788c2afb/Projects/Proj4/Pics/numUsers.png" alt="numUsers" style="height: 150; width: 700px;"/>
 
@@ -155,7 +155,7 @@ The info on the users such as their username, password, user id, and home filepa
 
 <img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/69660b9a801478db0894781514ad7cf0788c2afb/Projects/Proj4/Pics/usersInfo.png" alt="usersInfo" style="height: 150; width: 700px;"/>
 
-Here we can see I created adefault users that has a username of admin, a password of pass1, its user id is 0, and its home file path is `/home/admin`. 
+Here we can see I created a default user that has a username of admin, a password of pass1, its user id is 0, and its home file path is `/home/admin`. 
 
 
 
@@ -197,26 +197,6 @@ Below I am changing the password.
 And as we can see below logining in works with the new password.
 
 <img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/69660b9a801478db0894781514ad7cf0788c2afb/Projects/Proj4/Pics/new_admin_pass.png" alt="new_admin_pass" style="height: 400; width: 700px;"/>
-
-
-
-
-###### Adding new users:
-
-To make it so that new users could be added I wrote the file [userAdd.c](https://github.com/mattjax16/CS337-Operating-Systems/blob/6bec43a02c74b74f709d83de6ad119010083ca6c/Projects/Proj4/xv6-proj4/userAdd.c)
-
-Again the code with comments explaing how it works can be seen by following the link to the file. I am not going to put a photo of the code here because the function is just to large.
-
-**Testing**
-
-For testing I am going to try and add a user with the username john and a password of busstop.
-
-
-
-
-
-
-
 
 
 
