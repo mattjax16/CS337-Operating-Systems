@@ -165,12 +165,12 @@ To log in I first created the file [login.c](https://github.com/mattjax16/CS337-
 
 In writing login I also wrote a helper function to check if the password and username are correct or not which can be seen in the code below. (Comments explain what is going on in code)
 
-<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/6bec43a02c74b74f709d83de6ad119010083ca6c/Projects/Proj4/Pics/checkPass.png" alt="checkPass" style="height: 900px; width: 900px;"/>
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/6bec43a02c74b74f709d83de6ad119010083ca6c/Projects/Proj4/Pics/checkPass.png" alt="checkPass" />
 
 The main driver function of login uses `checkpassword()` to see if the entered username and password are valid and if they are it runs the shell (similar to how it is originally done in `init.c`) All the code and comments explaing the main function can be seen below
 
 
-<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/6bec43a02c74b74f709d83de6ad119010083ca6c/Projects/Proj4/Pics/mainLogin.png" alt="loginMain" style="height: 900px; width: 900px;"/>
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/6bec43a02c74b74f709d83de6ad119010083ca6c/Projects/Proj4/Pics/mainLogin.png" alt="loginMain"/>
 
 
 **Testing**
