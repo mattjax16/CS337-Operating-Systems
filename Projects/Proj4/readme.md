@@ -132,6 +132,32 @@ Below is a photo of the schuedling algorithm "working" (It is not currently work
 <img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/228257a5f65793cca32d7ccd977bed74ed3e7fa7/Projects/Proj4/Pics/sched_running.png" alt="sch running" style="height: 400px; width: 900px;"/>
 
 
+<br>
+
+---
+
+### Adding a login system (Extension):
+
+For my extension I wanted to implement a login system for Xv6 that had a person enter a username and correct passwor before they can use the shell. I thought this would be quite an easy extension to implement but it tuned out to be a lot more work than I thought.
+
+To start out I had to desighn how I wanted my login and users system to work. Then genral overview is that I wanted the person to have to enter a correct username and password to login as well as be able to change the password of a user and create a new user. Each user will have their own file space for all their files and programs with the file path `/home/username`. To accomplish this I had to create a function to login, create a functione to change the password, and create a function to add users.
+
+I decided that the number of users the operation system has would be kept in a file named 'numUsers' which would just hold and int of the number of users. 
+
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/228257a5f65793cca32d7ccd977bed74ed3e7fa7/Projects/Proj4/Pics/sched_running.png" alt="sch running" style="height: 400px; width: 900px;"/>
+
+
+The info on the users such as their username, password, user id, and home filepath (in that order) would be kept in a file called `usersInfo` with each users info on a seprate line and seperated by **:** 
+
+
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/228257a5f65793cca32d7ccd977bed74ed3e7fa7/Projects/Proj4/Pics/sched_running.png" alt="sch running" style="height: 400px; width: 900px;"/>
+
+Here we can see I created 2 default users. The first has a username of user, a password of password, its user id is 0, and its home file path is `/home/user`. The second has a username of admin, a password of pass1, its user id is 1, and its home file path is `/home/admin`.
+
+
+
+
+
 
 <br>
 

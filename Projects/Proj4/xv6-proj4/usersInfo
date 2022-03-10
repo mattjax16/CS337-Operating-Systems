@@ -1,1 +1,2 @@
-admin:password:pass1:/home/admin
+user:password:0:/home/user
+admin:pass1:1:/home/admin
