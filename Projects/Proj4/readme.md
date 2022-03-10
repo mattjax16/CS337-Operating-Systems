@@ -153,24 +153,66 @@ I decided that the number of users the operation system has would be kept in a f
 The info on the users such as their username, password, user id, and home filepath (in that order) would be kept in a file called [usersInfo](https://github.com/mattjax16/CS337-Operating-Systems/blob/69660b9a801478db0894781514ad7cf0788c2afb/Projects/Proj4/xv6-proj4/usersInfo) with each users info on a seprate line and seperated by **:**  (passwords arent encypted which is not secure at all)
 
 
-<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/69660b9a801478db0894781514ad7cf0788c2afb/Projects/Proj4/Pics/userInfo.png" alt="usersInfo" style="height: 150; width: 700px;"/>
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/69660b9a801478db0894781514ad7cf0788c2afb/Projects/Proj4/Pics/usersInfo.png" alt="usersInfo" style="height: 150; width: 700px;"/>
 
-Here we can see I created 2 default users. The first has a username of user, a password of password, its user id is 0, and its home file path is `/home/user`. The second has a username of admin, a password of pass1, its user id is 1, and its home file path is `/home/admin`.
+Here we can see I created adefault users that has a username of admin, a password of pass1, its user id is 0, and its home file path is `/home/admin`. 
 
 
 
-###### Logging In
+###### Logging In:
 
 To log in I first created the file [login.c](https://github.com/mattjax16/CS337-Operating-Systems/blob/69660b9a801478db0894781514ad7cf0788c2afb/Projects/Proj4/xv6-proj4/login.c) which has the login function whuch is ran instead of the shell command on initiliazation of the operationg system. This function does as one would assume and has the user enter a valid username and password combination before the shell can be accessed.  
 
 In writing login I also wrote a helper function to check if the password and username are correct or not which can be seen in the code below. (Comments explain what is going on in code)
 
-<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/228257a5f65793cca32d7ccd977bed74ed3e7fa7/Projects/Proj4/Pics/rr_sched_code.png" alt="checkPass" style="height: 900px; width: 900px;"/>
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/6bec43a02c74b74f709d83de6ad119010083ca6c/Projects/Proj4/Pics/checkPass.png" alt="checkPass" style="height: 900px; width: 900px;"/>
 
 The main driver function of login uses `checkpassword()` to see if the entered username and password are valid and if they are it runs the shell (similar to how it is originally done in `init.c`) All the code and comments explaing the main function can be seen below
 
 
-<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/228257a5f65793cca32d7ccd977bed74ed3e7fa7/Projects/Proj4/Pics/rr_sched_code.png" alt="loginMain" style="height: 900px; width: 900px;"/>
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/6bec43a02c74b74f709d83de6ad119010083ca6c/Projects/Proj4/Pics/mainLogin.png" alt="loginMain" style="height: 900px; width: 900px;"/>
+
+
+**Testing**
+Below we can see that logging in works for the user as well as password and username checking.
+
+
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/69660b9a801478db0894781514ad7cf0788c2afb/Projects/Proj4/Pics/admin_login.png" alt="admin login" style="height: 400; width: 700px;"/>
+
+
+
+###### Changing the password:
+
+To make it so the user could change the password I wrote the file [changePassword.c](https://github.com/mattjax16/CS337-Operating-Systems/blob/6bec43a02c74b74f709d83de6ad119010083ca6c/Projects/Proj4/xv6-proj4/changePassword.c)
+
+The code with comments explaing how it workd can be seen by following the link to the file. I am not going to put a photo of the code here because the function is just to large.
+
+**Testing**
+We can all agree that pass1 is not a strong password so I am going to test chage password by changing the password to pass2, a much more secure password of course.
+
+Below I am changing the password.
+
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/69660b9a801478db0894781514ad7cf0788c2afb/Projects/Proj4/Pics/change_admin_pass.png" alt="change_admin_pass" style="height: 400; width: 700px;"/>
+
+And as we can see below logining in works with the new password.
+
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/69660b9a801478db0894781514ad7cf0788c2afb/Projects/Proj4/Pics/new_admin_pass.png" alt="new_admin_pass" style="height: 400; width: 700px;"/>
+
+
+
+
+###### Adding new users:
+
+To make it so that new users could be added I wrote the file [userAdd.c](https://github.com/mattjax16/CS337-Operating-Systems/blob/6bec43a02c74b74f709d83de6ad119010083ca6c/Projects/Proj4/xv6-proj4/userAdd.c)
+
+Again the code with comments explaing how it works can be seen by following the link to the file. I am not going to put a photo of the code here because the function is just to large.
+
+**Testing**
+
+For testing I am going to try and add a user with the username john and a password of busstop.
+
+
+
 
 
 

@@ -75,7 +75,7 @@ int checkpasswd(int userInfo, char *user, char *passwd){
  * @return int 
  */
 int main(void){
-	int pid, wpid, userInfo;
+	int pid, wpid, userI;
 	// Flag indicating need to be logged in
 	int loggedIn = 1;
 	mkdir("/home/");
@@ -89,14 +89,14 @@ int main(void){
 		dup(0);  // stdout
 		dup(0);  // stderr
 		
-		//check user ingo exists
-		if((userInfo = open("/usersInfo", O_RDONLY)) < 0){
+		//check user info exists
+		if((userI = open("/usersInfo", O_RDONLY)) < 0){
 		printf(1, "login: cannot open %s\n", argv[1]);
 			exit();
 		}
 		
 		// If the username and password are valid
-		if(checkpasswd(userInfo,username,password)){
+		if(checkpasswd(userI,username,password)){
 			// Set flag user has been logged in
 			loggedIn = 0;
 			printf(1,"Welcome back %s\n", username);
@@ -115,7 +115,7 @@ int main(void){
 		else{
 			printf(1,"wrong username or password\n");
 		}
-		close(userInfo);
+		close(userI);
 		while((wpid=wait()) >= 0 && wpid != pid)
 		  printf(1, "zombie!\n"); 
 			

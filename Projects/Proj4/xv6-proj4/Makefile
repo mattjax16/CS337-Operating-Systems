@@ -191,8 +191,8 @@ UPROGS=\
 	_foo\
 	_nice\
 	_login\
-	_useradd\
-	_password\
+	_userAdd\
+	_changePassword\
 
 # Main make function to make the img for the operating system
 fs.img: mkfs README usersInfo numUsers $(UPROGS)
