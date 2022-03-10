@@ -153,7 +153,7 @@ I decided that the number of users the operating system has would be kept in a f
 The info on the users such as their username, password, user id, and home filepath (in that order) would be kept in a file called [usersInfo](https://github.com/mattjax16/CS337-Operating-Systems/blob/69660b9a801478db0894781514ad7cf0788c2afb/Projects/Proj4/xv6-proj4/usersInfo) with each users info on a seprate line and seperated by **:**  (passwords arent encypted which is not secure at all)
 
 
-<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/69660b9a801478db0894781514ad7cf0788c2afb/Projects/Proj4/Pics/usersInfo.png" alt="usersInfo" style="height: 150; width: 700px;"/>
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/a192bcc3401798426eb864acd59e0bf1282bfc2e/Projects/Proj4/Pics/usersInfo.png" alt="usersInfo" style="height: 150; width: 700px;"/>
 
 Here we can see I created a default user that has a username of admin, a password of pass1, its user id is 0, and its home file path is `/home/admin`. 
 
