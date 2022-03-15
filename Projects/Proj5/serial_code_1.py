@@ -1,7 +1,7 @@
 '''
 CS337 Spring 2022 - Operating Systems Prof. Al Madi
 Project 5 - Multitasking
-process.py
+serial_code_1.py
 Matthew Bass
 03/13/2022
 
@@ -25,6 +25,7 @@ import re
 import time
 import numpy as np
 from typing import Any, List
+from word_count_objects import MaxHeap,MinHeap,VALID_DATA_TYPES,WordCount
 
 '''
 GLobal variables
