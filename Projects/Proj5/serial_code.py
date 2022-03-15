@@ -328,6 +328,41 @@ def printTopWordsFreqs(file_name: str, sorted_word_data: dict, top_n_words: int 
 
         print(f"\n\t {words_printed + 1}. {word} : {data[0]} : {data[1]}")
 
+def printWordFreqOverYears(word_data: dict, word: str):
+    '''
+    Function to print the word frequency over the years
+    :param word_data: the word data
+    :param word: the word whos frequent you want to print
+    :return:
+    '''
+
+    word = word.lower()
+
+    #see if the word is in the word data at all
+    word_in_year = [word in year_data.keys() for year_data in word_data]
+
+    if True not in word_in_year:
+        print(f"\nERROR {word} is not in any year!")
+        return
+
+    else:
+        # Print the header
+        print(f"\nThe frequency of {word} over the years:")
+
+        for year ,year_data, in_year in zip(word_data.keys(),
+                                            word_data.values(),
+                                            word_in_year):
+
+            # get the year
+            year = re.sub("[^0-9]", "", year)
+
+            # if the word is in the year
+            if in_year:
+                print(f"\n\t{year}. {year_data[1]}")
+            else:
+                print(f"\n\t{year}. {0}")
+
+        return
 
 '''
 Reading in Comments
