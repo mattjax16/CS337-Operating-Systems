@@ -22,6 +22,7 @@ It does the following:
 '''
 import os
 import re
+import time
 import numpy as np
 from typing import Any, List
 
@@ -51,8 +52,24 @@ def checkDataType(data_type : str):
 
 
 '''
-Functions to parse the raw data
+Functions to parse the raw data and clean it
 '''
+
+def cleanData(raw_data : dict) -> dict:
+    '''
+     Function to clean the raw data from each file
+
+    :param raw_data: a dictionary of the raw data
+    :return: cleaned_data: the dictionary of cleaned data
+    '''
+
+    # Loop through all the raw data from each clean it (parse the words)
+    cleaned_data = {}
+    for file_name, data in raw_data.items():
+        # TODO add ability to work with different data_types
+        cleaned_data[file_name] = cleanDataList(data)
+
+    return cleaned_data
 
 def cleanDataList(raw_line_data : list) -> list:
     '''
@@ -87,7 +104,121 @@ def splitLinesList(raw_line_data : list) -> list:
     return raw_words_list
 
 
+'''
+Functions to create word maps and analize
+'''
+def createWordCounts(cleaned_data : dict) -> dict:
+    '''
+    A function to create a word map for for each file
 
+    :param cleaned_data: a dictionary of the cleaned data for each file
+    :return: word_counts: a dictionary of the word count for each file
+    '''
+    # Looped through the cleaned data and create the word counts
+    word_counts = {}
+    for file_name, data in cleaned_data.items():
+        word_counts[file_name] = createWordCountDict(data)
+
+
+    return word_counts
+
+def createWordCountDict(data : list) -> dict:
+    '''
+    Create a word count dict from the data.
+
+    :param data: a list of all the cleaned words
+    :return: word_count: a word count dict of the file
+    '''
+
+    #Create a word count dict
+    word_count = {}
+
+    # Loop through the data and increment each word
+    for word in data:
+        if word in word_count:
+            word_count[word] += 1
+        else:
+            word_count[word] = 1
+
+    return word_count
+
+
+def sortWordCounts(word_counts : dict, sort_ord : str = "descending") -> dict:
+    '''
+    Sorts the word count dicts based on sort_ord
+    :param word_counts: the dict of word counts
+    :param sort_ord: method to sort the dicts
+    :return: sorted_word_counts: the dictionary of sorted word counts
+    '''
+
+    # Create a sorted word count dict
+    sorted_word_count = {}
+
+    # Loop through the wordcounts and sort them
+    for file_name, word_count in word_counts.items():
+        sorted_word_count[file_name] = sortWordCount(word_count,sort_ord)
+
+    return sorted_word_count
+
+def sortWordCount(word_count : dict, sort_ord : str = "descending") -> dict:
+    '''
+    Sorts the word count dicts based on sort_ord
+    :param word_count: the dict of word counts
+    :param sort_ord: method to sort the dicts
+    :return: sorted_word_count: the dictionary of sorted word counts
+    '''
+
+    word_count_list = list(word_count.items())
+
+    # Sort the word_count_list based on sort_ord
+    if sort_ord.lower() == "descending":
+        word_count_list.sort(key =lambda x: x[1], reverse=True)
+    
+    
+    sorted_word_count = dict(word_count_list)
+
+    return sorted_word_count
+
+
+def printTopWordCounts(sorted_word_counts : dict, top_n_words : int = 10):
+    '''
+    Prints out the top n number of words from the sorted word counts
+
+    :param sorted_word_counts: The dictionary of sorted word counts
+    :param top_n_words: the number of top words to print out
+    :return:
+    '''
+
+    # Loop through each of the word count dicts and print them out
+    for file_name, word_count in sorted_word_counts.items():
+        printTopWords(file_name,word_count,top_n_words)
+
+    return
+
+def printTopWords(file_name :str,word_count : dict, top_n_words : int = 10):
+    '''
+    Prints tthe top N words from the wordcount file
+    :param file_name: the name of the file
+    :param word_count: the sorted word count data
+    :param top_n_words: the top number of words to print
+    :return:
+    '''
+
+    # Print out the intro for the file
+    print(f"\n{file_name}'s top {top_n_words} words: ")
+    print("\n\t rank.  word  :  count")
+
+    # Loop through the top n number of words are print
+    # until top_n words are printed
+    words_printed = -1
+    for word, count in word_count.items():
+
+        words_printed += 1
+        # If top n words have been printed return
+        if top_n_words == words_printed:
+            return
+
+        print(f"\n\t {words_printed+1}. {word} : {count}")
 '''
 Reading in Comments
 '''
@@ -122,6 +253,7 @@ def readInRawDataList(file_name : str, data_path:str) -> List:
         data = file.readlines()
         return data
 
+
 def readInComments(data_type : str = "list") -> dict:
     '''
     A function to read in the comment files.
@@ -129,13 +261,8 @@ def readInComments(data_type : str = "list") -> dict:
     This is an I/O bound process
 
     :param data_type: a str of the data type to use. Valid types list, np, gpu
-    :return: a dictionary of all the files raw strings
+    :return: raw_data a dictionary of all the files raw strings
     '''
-
-    # Check that valid data type has been passed
-    data_type = data_type.lower()
-    checkDataType(data_type)
-
     # Get the current file directory path of the file.
     dir_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -148,27 +275,73 @@ def readInComments(data_type : str = "list") -> dict:
     raw_data = {}
     # Loop through all the files and read in the raw data
     for data_file in data_files:
-         # Read in data based on data type
+        # Read in data based on data type
         if data_type == "list":
-            raw_data[data_file] = readInRawDataList(data_file,data_path)
+            raw_data[data_file] = readInRawDataList(data_file, data_path)
         elif data_type == "np":
             raw_data[data_file] = readInRawDataNP(data_file, data_path)
 
+    return raw_data
 
 
-    # Loop through all the raw data from each clean it (parse the words)
-    cleaned_data = {}
-    for file_name, data in raw_data.items():
+def runWordCounter(data_type : str = "list") -> dict:
+    '''
+    Main function to run the word counter
 
-        #TODO add ability to work with different data_types
-        cleaned_data[file_name] = cleanDataList(data)
+    Timing of funtions will be done in nanoseconds
+
+    :param data_type: a str of the data type to use. Valid types list, np, gpu
+    :return: a dictionary of all the files raw strings
+    '''
+
+    # Check that valid data type has been passed
+    data_type = data_type.lower()
+    checkDataType(data_type)
+
+    
+   
+    # Reading in the raw data from the comments file
+    readInComments_start_time = time.time_ns()
+    data = readInComments(data_type)
+    readInComments_end_time = time.time_ns()
+    readInComments_total_time = readInComments_end_time - readInComments_start_time
+    print(f"\n(Serial) readInComments ({data_type}) is done! " +
+        f"\n\tIt took {readInComments_total_time} ns to run!\n")
 
 
-    # Looped through the cleaned data and create the word maps
-    for file_name, data in cleaned_data.items():
 
-        pass
-    print(1)
+    # Clean all the data
+    cleanData_start_time = time.time_ns()
+    data = cleanData(data)
+    cleanData_end_time = time.time_ns()
+    cleanData_total_time = cleanData_end_time - cleanData_start_time
+    print(f"\n(Serial) cleanData ({data_type}) is done! " +
+        f"\n\tIt took {cleanData_total_time} ns to run!\n")
+
+    # Get the word counts
+    createWordCounts_start_time = time.time_ns()
+    data = createWordCounts(data)
+    createWordCounts_end_time = time.time_ns()
+    createWordCounts_total_time = createWordCounts_end_time - createWordCounts_start_time
+    print(f"\n(Serial) createWordCounts ({data_type}) is done! " +
+        f"\n\tIt took {createWordCounts_total_time} ns to run!\n")
+
+    #Sort keys by top wc
+    sortWordCounts_start_time = time.time_ns()
+    data = sortWordCounts(data)
+    sortWordCounts_end_time = time.time_ns()
+    sortWordCounts_total_time = sortWordCounts_end_time - sortWordCounts_start_time
+    print(f"\n(Serial) sortWordCounts ({data_type}) is done! " +
+        f"\n\tIt took {sortWordCounts_total_time} ns to run!\n")
+
+
+    # Print the top 10 word counts
+    printTopWordCounts_start_time = time.time_ns()
+    printTopWordCounts(data)
+    printTopWordCounts_end_time = time.time_ns()
+    printTopWordCounts_total_time = printTopWordCounts_end_time - printTopWordCounts_start_time
+    print(f"\n(Serial) printTopWordCounts ({data_type}) is done! " +
+        f"\n\tIt took {printTopWordCounts_total_time} ns to run!\n")
 
     return
 
@@ -180,7 +353,7 @@ def readInComments(data_type : str = "list") -> dict:
 
 # Main function to run the script
 def main():
-    readInComments()
+    runWordCounter()
     return
 
 
