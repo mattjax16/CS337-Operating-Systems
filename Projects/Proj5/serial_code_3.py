@@ -378,18 +378,27 @@ def getLineCountOfFile(data_file: str, data_path: str) -> int:
 
 def getPartialWordCount(data_file: str, data_path: str,
                         start_line: int, end_line: int,
-                data_type: str = "list"):
+                        chunck_number : int, debug: bool = False,
+                        data_type: str = "list"):
     '''
     Main running function to get all the word count data
+
     :param data_file: the name of the file
     :param data_path: the path to the file
+    :param chunck_number:int representing which chunchk is being
+    processes
     :param start_line: the line to start the partial word count on (inclusive)
     :param end_line: the line to end the partial word count on (inclusive)
     :param data_type: a str of the data type to use. Valid types list, np
+    :param debug: if true debug printing will occur
     :return: data, the partial word count
     '''
     # make the file name
     file_name = data_path + data_file
+
+    # if Debug print the function and pid
+    if debug: print(f"\nSTART createWordCountDict {data_file} {chunck_number} pid :"
+                    f" {os.getpid()}")
 
     #Get the taw lines
     data = []
@@ -405,17 +414,25 @@ def getPartialWordCount(data_file: str, data_path: str,
     # Create the partial word count
     data = createWordCountDict(data)
 
+    # if Debug print the function and pid
+    if debug: print(f"\nEND createWordCountDict {data_file} {chunck_number} pid :"
+                    f" {os.getpid()}")
+
     #return the partial word count
     return data
 
 def getWordData(data_file: str, data_path: str,
                 line_batch_size : int = 100,
+                debug: bool = False,
                 data_type: str = "list"):
     '''
     Main running function to get all the word count data
     :param data_file: the name of the file
     :param data_path: the path to the file
+    :param chunck_number:int representing which chunchk is being
+    processes
     :param line_batch_size: the number of lines per batch size of the file
+    :param debug: if true debug printing will occur
     :param data_type: a str of the data type to use. Valid types list, np
     :return:
     '''
@@ -432,8 +449,11 @@ def getWordData(data_file: str, data_path: str,
     for batch in range(batch_amt):
         line_start = int(batch * batch_size)
         line_end = int((batch * batch_size) + batch_size)
-        partial_word_counts.append(getPartialWordCount(data_file,data_path,
-                                                       line_start,line_end))
+        partial_word_counts.append(getPartialWordCount(data_file,
+                                                       data_path,
+                                                       line_start,
+                                                       line_end,
+                                                       chunck_number=batch))
 
 
 
@@ -497,7 +517,8 @@ def getWordData(data_file: str, data_path: str,
     #
 
 
-def runWordCounter(data_type: str = "list" ,line_batch_size : int = 100 ) -> dict:
+def runWordCounter(data_type: str = "list" ,
+                   line_batch_size : int = 100 ) -> dict:
     '''
     Main function to run the word counter
 
@@ -524,20 +545,26 @@ def runWordCounter(data_type: str = "list" ,line_batch_size : int = 100 ) -> dic
 
     #calculate the word data for each data file
     word_data = {}
-    getWordData_start_time = time.perf_counter()
-    for data_file in data_files:
+    wc_start_time = time.perf_counter()
+
+    for data_file in enumerate(data_files):
+        getWordData_start_time = time.perf_counter()
         word_data[data_file] = getWordData(data_file,data_path,line_batch_size,data_type)
-    getWordData_end_time = time.perf_counter()
-    getWordData_total_time = getWordData_end_time - getWordData_start_time
+        getWordData_end_time = time.perf_counter()
+        getWordData_total_time = getWordData_end_time - getWordData_start_time
+        print(f"\ngetWordData ({data_file}) ({data_type}) is done! " +
+              f"\n\tIt took {getWordData_total_time} sec(s) to run in total!\n")
+
+    wc_end_time = time.perf_counter()
+    wc_total_time = wc_end_time - wc_start_time
     print(f"\nWord Counter ({data_type}) is done! " +
-          f"\n\tIt took {getWordData_total_time} sec(s) to run in total!\n")
+          f"\n\tIt took {wc_total_time} sec(s) to run in total!\n")
 
     return
 
 
 # Main function to run the script
 def main():
-
 
     runWordCounter()
     return
