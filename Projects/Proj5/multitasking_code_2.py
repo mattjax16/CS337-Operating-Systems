@@ -63,7 +63,7 @@ def checkDataType(data_type: str):
 Functions to parse the raw data and clean it
 '''
 
-def cleanDataListMuliProcess(raw_line_data: list,
+def cleanDataListMuliProcess1(raw_line_data: list,
                              process_count : int) -> list:
     '''
     Function to clean the raw data from each file
@@ -78,7 +78,44 @@ def cleanDataListMuliProcess(raw_line_data: list,
 
 
     # Make the cleaned data by concatting all the lists
-    clean_data = list(itertools.chain.from_iterable(a))
+    clean_data = list(itertools.chain.from_iterable(results))
+
+    return clean_data
+
+def cleanDataListMuliProcess2(raw_line_data: list,
+                             process_count : int) -> list:
+    '''
+    Function to clean the raw data from each file
+    using multi processing
+    :param raw_line_data: list of raw data strings
+    :param process_count: the number of process to use
+    :return:
+    '''
+
+    manager = multiprocessing.Manager()
+    return_dict = manager.dict()
+    processes = []
+
+    chunck = len(raw_line_data) / process_count
+
+    for process in range(process_count):
+        chunck_start = int(process * chunck)
+        chunck_end = int((process * chunck) + chunck)
+
+        p = multiprocessing.Process(target=cleanDataList,
+                                    args=(raw_line_data[chunck_start:chunck_end],))
+        processes.append(p)
+
+
+    for process in processes:
+        process.start()
+
+    for process in processes:
+        process.join()
+
+
+    # Make the cleaned data by concatting all the lists
+    clean_data = list(itertools.chain.from_iterable(return_dict.values()))
 
     return clean_data
 
