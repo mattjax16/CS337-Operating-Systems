@@ -162,6 +162,9 @@ def createWordCountDictMultiProcess(data: list,process_count : int ,debug: bool 
     # make the results a list
     results_list = list(itertools.chain.from_iterable(results))
 
+    #make all dicts a counter
+    results_list = [Counter(wc) for wc in results_list]
+
     # Make the cleaned data by concatting all the lists
     word_count = sum(results_list)
 
@@ -180,7 +183,7 @@ def createWordCountDict(data: list,chunck_number : int, debug: bool = True) \
     '''
 
     # Create a word count
-    word_count = Counter()
+    word_count = {}
 
     # if Debug print the function and pid
     if debug: print(f"\nSTART createWordCountDict {chunck_number} pid :"
