@@ -422,7 +422,7 @@ def getPartialWordCount(data_file: str, data_path: str,
     return data
 
 def getWordData(data_file: str, data_path: str,
-                line_batch_size : int = 100,
+                line_batch_size : int = 1000,
                 debug: bool = True,
                 data_type: str = "list"):
     '''
