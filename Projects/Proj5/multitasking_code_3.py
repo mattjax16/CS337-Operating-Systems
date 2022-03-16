@@ -160,10 +160,10 @@ def createWordCountDictMultiProcess(data: list,process_count : int ,debug: bool 
         results = p.map(createWordCountDict, mp_data, np.arange(len(mp_data)+1))
 
     # make the results a list
-    results = list(itertools.chain.from_iterable(results))
+    results_list = list(itertools.chain.from_iterable(results))
 
     # Make the cleaned data by concatting all the lists
-    word_count = sum(results)
+    word_count = sum(results_list)
 
     return word_count
 
@@ -195,9 +195,6 @@ def createWordCountDict(data: list,chunck_number : int, debug: bool = True) \
 
         # if debug:
         #     print(f"\nAdded {word} {word_count[word]}")
-
-    # Make word count dict a counter
-    # word_count = Counter(word_count)
 
     # if Debug print the function and pid
     if debug: print(f"\nEND createWordCountDict {chunck_number} pid :"
