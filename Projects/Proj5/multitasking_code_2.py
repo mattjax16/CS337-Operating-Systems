@@ -563,7 +563,7 @@ def runWordCounter(data_type: str = "list",
 
 # Main function to run the script
 def main():
-    runWordCounter()
+    runWordCounter(process_count=8)
     return
 
 
