@@ -480,7 +480,6 @@ def runWordCounter(data_type: str = "list",
     dir_path = os.path.dirname(os.path.realpath(__file__))
 
     # Make the filepath the reddit comments (data) path
-
     data_path = os.path.join(dir_path, os.path.normcase("data/"))
 
     # Get all the data files
@@ -492,9 +491,18 @@ def runWordCounter(data_type: str = "list",
     getWordData_start_time = time.perf_counter()
 
     #Set up data for starmap pool function
-    # data_paths = [data_path for i in data_files]
-    # data_types = [data_type for i in data_files]
     proc_args = list(zip(data_files,repeat(data_path),repeat(data_type)))
+
+    # Check that process number and thread count are there
+    if thread_count is None:
+        print(f"\nError no thread count was entered!!")
+        print(f"Setting thread_count to machines core count {os.cpu_count()}!")
+        thread_count = os.cpu_count()
+    if process_count is None:
+        print(f"\nError no process count was entered!!")
+        print(f"Setting process_count to machines core count {os.cpu_count()}!")
+        process_count = os.cpu_count()
+
 
 
     # Use the process pool context manager to start multiprocess pool with
