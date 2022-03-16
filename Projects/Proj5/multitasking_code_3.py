@@ -93,7 +93,7 @@ def cleanDataListMuliProcess(raw_line_data: list,
     return clean_data
 
 
-def cleanDataList(raw_line_data: list,chunck_number : int, debug: bool = True) -> list:
+def cleanDataList(raw_line_data: list,chunck_number : int, debug: bool = False) -> list:
     '''
     Function to clean the raw data from each file
 
@@ -169,12 +169,11 @@ def createWordCountDictMultiProcess(data: list,process_count : int ,debug: bool 
     for wc in results_list:
         word_count += wc
 
-    t = 1
+
 
     return word_count
 
-def createWordCountDict(data: list,chunck_number : int, debug: bool = True) \
-        -> dict:
+def createWordCountDict(data: list,chunck_number : int, debug: bool = False) -> dict:
     '''
     Create a word count dict from the data.
 
@@ -445,7 +444,7 @@ def readInRawDataList(file_name: str, data_path: str) -> List:
 
 def getWordData(data_file: str, data_path: str,
                 process_count : int, thread_count : int,
-                data_type: str = "list", debug: bool = True):
+                data_type: str = "list", debug: bool = False):
     '''
     Main running function to get all the word count data
     :param data_file: the name of the file
