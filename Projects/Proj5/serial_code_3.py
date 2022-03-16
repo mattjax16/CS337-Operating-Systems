@@ -378,7 +378,7 @@ def getLineCountOfFile(data_file: str, data_path: str) -> int:
 
 def getPartialWordCount(data_file: str, data_path: str,
                         start_line: int, end_line: int,
-                        chunck_number : int, debug: bool = False,
+                        chunck_number : int, debug: bool = True,
                         data_type: str = "list"):
     '''
     Main running function to get all the word count data
@@ -423,7 +423,7 @@ def getPartialWordCount(data_file: str, data_path: str,
 
 def getWordData(data_file: str, data_path: str,
                 line_batch_size : int = 100,
-                debug: bool = False,
+                debug: bool = True,
                 data_type: str = "list"):
     '''
     Main running function to get all the word count data
