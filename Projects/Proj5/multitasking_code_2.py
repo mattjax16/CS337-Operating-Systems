@@ -442,7 +442,7 @@ def getWordData(data_file: str, data_path: str,
     # Clean the data
     # TODO add ability to work with different data_types
     cleanDataList_start_time = time.perf_counter()
-    data = cleanDataListMuliProcess(data,process_count)
+    data = cleanDataListMuliProcess2(data,process_count)
     cleanDataList_end_time = time.perf_counter()
     cleanDataList_total_time = cleanDataList_end_time - cleanDataList_start_time
     print(f"\n{data_file} cleanDataList ({data_type}) is done! " +
