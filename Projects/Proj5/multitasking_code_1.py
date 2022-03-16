@@ -32,6 +32,7 @@ import multiprocessing
 import threading
 import numpy as np
 from typing import Any, List
+
 '''
 CS337 Spring 2022 - Operating Systems Prof. Al Madi
 Project 5 - Multitasking
@@ -65,8 +66,7 @@ from itertools import repeat
 import numpy as np
 from typing import Any, List
 
-from word_count_objects import MaxWordCounts,VALID_DATA_TYPES,WordCount
-
+from word_count_objects import MaxWordCounts, VALID_DATA_TYPES, WordCount
 
 '''
 Helper FunctionS
@@ -91,8 +91,6 @@ def checkDataType(data_type: str):
 '''
 Functions to parse the raw data and clean it
 '''
-
-
 
 
 def cleanDataList(raw_line_data: list) -> list:
@@ -133,7 +131,8 @@ def splitLinesList(raw_line_data: list) -> list:
 Functions to create word maps and analize
 '''
 
-def createWordCountDict(data: list, debug : bool = False) -> dict:
+
+def createWordCountDict(data: list, debug: bool = False) -> dict:
     '''
     Create a word count dict from the data.
 
@@ -157,7 +156,6 @@ def createWordCountDict(data: list, debug : bool = False) -> dict:
     return word_count
 
 
-
 def sortWordCount(word_count: dict, sort_ord: str = "descending") -> dict:
     '''
     Sorts the word count dicts based on sort_ord
@@ -176,8 +174,9 @@ def sortWordCount(word_count: dict, sort_ord: str = "descending") -> dict:
 
     return sorted_word_count
 
+
 def createWordCountHeap(data: list, sort_ord: str = "descending"
-                        , debug : bool = False):
+                        , debug: bool = False):
     '''
     Create a word count heap from the data.
 
@@ -189,7 +188,6 @@ def createWordCountHeap(data: list, sort_ord: str = "descending"
 
     if sort_ord == "descending":
         word_count = MaxWordCounts()
-
 
     # Loop through the data and increment each word
     for word in data:
@@ -215,7 +213,7 @@ def calcWordFrequencies(word_count: dict, data_type: str = "list") -> dict:
         wc_list = list(word_count.values())
 
         total_wc = sum(wc_list)
-        word_freqs = [wc/total_wc for wc in wc_list]
+        word_freqs = [wc / total_wc for wc in wc_list]
 
         word_count_freq = {word: (count, freq) for (word, count, freq) in
                            zip(word_count.keys(), wc_list, word_freqs)}
@@ -231,7 +229,6 @@ def calcWordFrequencies(word_count: dict, data_type: str = "list") -> dict:
 
         word_count_freq = {word: (count, freq) for (word, count, freq) in
                            zip(word_count.keys(), wc_array, word_freqs)}
-
 
     return word_count_freq
 
@@ -278,7 +275,6 @@ def printTopWords(file_name: str, word_count: dict, top_n_words: int = 10):
         print(f"\n\t {words_printed + 1}. {word} : {count}")
 
 
-
 def printTopWordCountsFreqs(sorted_word_data: dict, top_n_words: int = 10):
     '''
     Prints out the top n number of words from the sorted word counts
@@ -321,6 +317,7 @@ def printTopWordsFreqs(file_name: str, sorted_word_data: dict, top_n_words: int 
 
         print(f"\n\t {words_printed + 1}. {word} : {data[0]} : {data[1]}")
 
+
 def printWordFreqOverYears(word_data: dict, word: str):
     '''
     Function to print the word frequency over the years
@@ -331,7 +328,7 @@ def printWordFreqOverYears(word_data: dict, word: str):
 
     word = word.lower()
 
-    #see if the word is in the word data at all
+    # see if the word is in the word data at all
     word_in_year = [word in year_data.keys() for year_data in word_data]
 
     if True not in word_in_year:
@@ -342,7 +339,7 @@ def printWordFreqOverYears(word_data: dict, word: str):
         # Print the header
         print(f"\nThe frequency of {word} over the years:")
 
-        for year ,year_data, in_year in zip(word_data.keys(),
+        for year, year_data, in_year in zip(word_data.keys(),
                                             word_data.values(),
                                             word_in_year):
 
@@ -356,6 +353,7 @@ def printWordFreqOverYears(word_data: dict, word: str):
                 print(f"\n\t{year}. {0}")
 
         return
+
 
 '''
 Reading in Comments
@@ -393,8 +391,6 @@ def readInRawDataList(file_name: str, data_path: str) -> List:
         return data
 
 
-
-
 def getWordData(data_file: str, data_path: str,
                 data_type: str = "list"):
     '''
@@ -425,7 +421,7 @@ def getWordData(data_file: str, data_path: str,
     print(f"\n{data_file} cleanDataList ({data_type}) is done! " +
           f"\n\tIt took {cleanDataList_total_time} sec(s) to run!\n")
 
-    #TODO Create the word_count heap
+    # TODO Create the word_count heap
     # word_count = createWordCountHeap(data)
     createWordCountDict_start_time = time.perf_counter()
     data = createWordCountDict(data)
@@ -434,14 +430,13 @@ def getWordData(data_file: str, data_path: str,
     print(f"\n{data_file} createWordCountDict ({data_type}) is done! " +
           f"\n\tIt took {createWordCountDict_total_time} sec(s) to run!\n")
 
-    #sort the word count
+    # sort the word count
     sortWordCount_start_time = time.perf_counter()
     data = sortWordCount(data)
     sortWordCount_end_time = time.perf_counter()
     sortWordCount_total_time = sortWordCount_end_time - sortWordCount_start_time
     print(f"\n{data_file} sortWordCount ({data_type}) is done! " +
           f"\n\tIt took {sortWordCount_total_time} sec(s) to run!\n")
-
 
     # Calculate the frequencies
     calcWordFrequencies_start_time = time.perf_counter()
@@ -452,19 +447,18 @@ def getWordData(data_file: str, data_path: str,
           f"\n\tIt took {calcWordFrequencies_total_time} sec(s) to run!\n")
 
     # Print the top 10 words and frequencies
-    printTopWordsFreqs(data_file, data)
+    # printTopWordsFreqs(data_file, data)
 
-
-
+    return data
 
 
 def runWordCounter(data_type: str = "list",
-                   thread_count : int = None,
-                   process_count : int = None) -> dict:
+                   thread_count: int = None,
+                   process_count: int = None) -> dict:
     '''
     Main function to run the word counter
 
-    Timing of funtions will be done in nanoseconds
+    Timing of functions will be done in nanoseconds
 
     :param data_type: a str of the data type to use. Valid types list, np, gpu
     :param thread_count: the number of threads to use
@@ -485,13 +479,13 @@ def runWordCounter(data_type: str = "list",
     # Get all the data files
     data_files = os.listdir(data_path)
 
-    #calculate the word data for each data file
-    word_data = {}
-    word_data_list = []
+    # calculate the word data for each data file
+
+
     getWordData_start_time = time.perf_counter()
 
-    #Set up data for starmap pool function
-    proc_args = list(zip(data_files,repeat(data_path),repeat(data_type)))
+    # Set up data for starmap pool function
+    proc_args = list(zip(data_files, repeat(data_path), repeat(data_type)))
 
     # Check that process number and thread count are there
     if thread_count is None:
@@ -503,30 +497,28 @@ def runWordCounter(data_type: str = "list",
         print(f"Setting process_count to machines core count {os.cpu_count()}!")
         process_count = os.cpu_count()
 
-
-
     # Use the process pool context manager to start multiprocess pool with
     # desired number of processes
     with multiprocessing.Pool(process_count) as p:
         word_data_list = p.starmap(getWordData, proc_args)
 
-
     # Make the word count dicts
-    for data_file, word_data in zip(data_files,word_data_list):
-        word_data[data_file] = word_data
+    word_data = {}
+    for data_file, dat in zip(data_files, word_data_list):
+        word_data[data_file] = dat
 
     getWordData_end_time = time.perf_counter()
     getWordData_total_time = getWordData_end_time - getWordData_start_time
     print(f"\nWord Counter ({data_type}) is done! " +
           f"\n\tIt took {getWordData_total_time} sec(s) to run in total!\n")
 
+    # Print the top to words and frequencies from each year
+    printTopWordCountsFreqs(word_data)
     return
 
 
 # Main function to run the script
 def main():
-
-
     runWordCounter()
     return
 
