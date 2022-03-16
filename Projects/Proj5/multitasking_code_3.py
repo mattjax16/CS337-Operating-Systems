@@ -159,11 +159,10 @@ def createWordCountDictMultiProcess(data: list,process_count : int ,debug: bool 
     with ProcessPoolExecutor(process_count) as p:
         results = p.map(createWordCountDict, mp_data, np.arange(len(mp_data)+1))
 
-    # make the results a list
-    results_list = list(itertools.chain.from_iterable(results))
+
 
     #make all dicts a counter
-    results_list = [Counter(wc) for wc in results_list]
+    results_list = [Counter(wc) for wc in results]
 
     # Make the cleaned data by concatting all the lists
     word_count = sum(results_list)
