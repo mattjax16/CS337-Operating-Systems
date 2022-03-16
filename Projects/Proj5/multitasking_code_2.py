@@ -35,7 +35,8 @@ import multiprocessing
 import itertools
 from itertools import repeat
 import numpy as np
-from typing import  List
+from typing import List
+from concurrent.futures import ProcessPoolExecutor
 
 from word_count_objects import MaxWordCounts, VALID_DATA_TYPES
 
@@ -528,8 +529,8 @@ def runWordCounter(data_type: str = "list",
 
     # Use the process pool context manager to start multiprocess pool with
     # desired number of processes
-    with multiprocessing.Pool(process_count) as p:
-        word_data_list = p.starmap(getWordData, proc_args)
+    with ProcessPoolExecutor(process_count) as p:
+        word_data_list = p.map(getWordData, proc_args)
 
     # Make the word count dicts
     word_data = {}
