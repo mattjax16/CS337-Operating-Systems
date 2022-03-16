@@ -458,10 +458,12 @@ def getWordData(data_file: str, data_path: str,
 
 
     # Combine all the partial word coutns to a single WC
-    word_count = sum([Counter(p_wc) for p_wc in partial_word_counts])
+    word_count = Counter()
+    for p_wc in partial_word_counts:
+        word_count += p_wc
 
-    print(1)
-    return 1
+
+    return word_count
 
 
     # # Read in data based on data type
