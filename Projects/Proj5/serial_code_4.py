@@ -96,17 +96,24 @@ def getWordCount(data_file: str, data_path: str) -> Counter:
 
 
 
-def getWordData(data_file: str, data_path: str) -> dict:
+def getWordData(data_file: str, data_path: str, debug = True) -> dict:
     '''
     Main running function to get all the word count data
     :param data_file: the name of the file
     :param data_path: the path to the file
+    :param debug: Bool if true debug staatement printed
 
     :return:
     '''
 
+    if debug:
+        print(f"START getWordData {data_file}")
+
     # Get the word counter
     word_count = getWordCount(data_file,data_path)
+
+    if debug:
+        print(f"END getWordData {data_file}")
 
     return word_count
 
