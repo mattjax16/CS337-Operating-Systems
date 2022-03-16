@@ -32,13 +32,42 @@ import multiprocessing
 import threading
 import numpy as np
 from typing import Any, List
-
 '''
-GLobal variables
-'''
+CS337 Spring 2022 - Operating Systems Prof. Al Madi
+Project 5 - Multitasking
+serial_code_2.py
+Matthew Bass
+03/13/2022
 
-VALID_DATA_TYPES = ["list", "np", "gpu"]
-raw_data = {}
+This is a file to count the words and do other functions with the the
+reddit's comments data
+
+Refactored to process all the files one at a time
+
+It does the following:
+    - Read in the Reddit comments files
+
+    - Count each word
+
+    - Print the 10 most common words in each file
+
+    - Print the frequency of a given word in each year to observe word trends
+      (frequency = word_count / number_of_words)
+
+    - Time your “common word” and “word trend” code reliably for comparison
+'''
+import heapq
+import os
+import re
+import time
+import multiprocessing
+from itertools import repeat
+import numpy as np
+from typing import Any, List
+
+from word_count_objects import MaxWordCounts,VALID_DATA_TYPES,WordCount
+
+
 '''
 Helper FunctionS
 '''
@@ -64,27 +93,6 @@ Functions to parse the raw data and clean it
 '''
 
 
-def cleanData(raw_data: dict, process_count : int = None) -> dict:
-    '''
-     Function to clean the raw data from each file
-
-    :param raw_data: a dictionary of the raw data
-    :param process_count: the number of processes to use
-    :return: cleaned_data: the dictionary of cleaned data
-    '''
-
-    # Loop through all the raw data from each clean it (parse the words)
-    cleaned_data = {}
-    new_data = []
-    with multiprocessing.Pool(process_count) as p:
-        # TODO add ability to work with different data_types
-        new_data = p.map(cleanDataList,raw_data.values())
-
-    # loop through the new data and create the cleanded data dict
-    for file_name, data in zip(raw_data.keys(), new_data):
-
-        cleaned_data[file_name] = cleanDataList(data)
-    return cleaned_data
 
 
 def cleanDataList(raw_line_data: list) -> list:
@@ -125,23 +133,7 @@ def splitLinesList(raw_line_data: list) -> list:
 Functions to create word maps and analize
 '''
 
-
-def createWordCounts(cleaned_data: dict) -> dict:
-    '''
-    A function to create a word map for for each file
-
-    :param cleaned_data: a dictionary of the cleaned data for each file
-    :return: word_counts: a dictionary of the word count for each file
-    '''
-    # Looped through the cleaned data and create the word counts
-    word_counts = {}
-    for file_name, data in cleaned_data.items():
-        word_counts[file_name] = createWordCountDict(data)
-
-    return word_counts
-
-
-def createWordCountDict(data: list) -> dict:
+def createWordCountDict(data: list, debug : bool = False) -> dict:
     '''
     Create a word count dict from the data.
 
@@ -159,25 +151,11 @@ def createWordCountDict(data: list) -> dict:
         else:
             word_count[word] = 1
 
+        if debug:
+            print(f"\nAdded {word} {word_count[word]}")
+
     return word_count
 
-
-def sortWordCounts(word_counts: dict, sort_ord: str = "descending") -> dict:
-    '''
-    Sorts the word count dicts based on sort_ord
-    :param word_counts: the dict of word counts
-    :param sort_ord: method to sort the dicts
-    :return: sorted_word_counts: the dictionary of sorted word counts
-    '''
-
-    # Create a sorted word count dict
-    sorted_word_count = {}
-
-    # Loop through the wordcounts and sort them
-    for file_name, word_count in word_counts.items():
-        sorted_word_count[file_name] = sortWordCount(word_count, sort_ord)
-
-    return sorted_word_count
 
 
 def sortWordCount(word_count: dict, sort_ord: str = "descending") -> dict:
@@ -198,24 +176,26 @@ def sortWordCount(word_count: dict, sort_ord: str = "descending") -> dict:
 
     return sorted_word_count
 
-
-def calcWordFrequencies(word_counts: dict, data_type: str = "list") -> dict:
+def createWordCountHeap(data: list, sort_ord: str = "descending"
+                        , debug : bool = False):
     '''
-    This function calculates the word frequencies fot all the word count dicts
+    Create a word count heap from the data.
 
-    :param word_counts: the dict of word counts
-    :param data_type: a str of the data type to use. Valid types list, np
-    :return: word_count_freqs: a dict of the word counts and word frequencies
+    :param data: a list of all the cleaned words
+    :param sort_ord: method to sort the dicts
+    :param debug: if true debug printing will be done
+    :return: word_count: a word count dict of the file
     '''
 
-    # Create a word count frequency dict
-    word_count_freqs = {}
+    if sort_ord == "descending":
+        word_count = MaxWordCounts()
 
-    # Loop through the wordcounts and sort them
-    for file_name, word_count in word_counts.items():
-        word_count_freqs[file_name] = sortWordCount(word_count, data_type)
 
-    return word_count_freqs
+    # Loop through the data and increment each word
+    for word in data:
+        word_count.addWord(word)
+
+    return word_count
 
 
 def calcWordFrequencies(word_count: dict, data_type: str = "list") -> dict:
@@ -232,10 +212,10 @@ def calcWordFrequencies(word_count: dict, data_type: str = "list") -> dict:
     # If base list
     if data_type == "list":
 
-        wc_list = word_count.values()
+        wc_list = list(word_count.values())
 
         total_wc = sum(wc_list)
-        word_freqs = wc_list / total_wc
+        word_freqs = [wc/total_wc for wc in wc_list]
 
         word_count_freq = {word: (count, freq) for (word, count, freq) in
                            zip(word_count.keys(), wc_list, word_freqs)}
@@ -299,7 +279,7 @@ def printTopWords(file_name: str, word_count: dict, top_n_words: int = 10):
 
 
 
-def printTopWordCountsFreqa(sorted_word_data: dict, top_n_words: int = 10):
+def printTopWordCountsFreqs(sorted_word_data: dict, top_n_words: int = 10):
     '''
     Prints out the top n number of words from the sorted word counts
 
@@ -413,78 +393,69 @@ def readInRawDataList(file_name: str, data_path: str) -> List:
         return data
 
 
-def readInCommentsThreading(file_names: List,
-                            data_path: str,
-                            data_type: str = "list") -> dict:
-    '''
-    The helper function for multithreading reading in comments
 
-    :param file_name: the name of the files
-    :param data_path: the path to the files
-    :param data_type: the data type to be used
+
+def getWordData(data_file: str, data_path: str,
+                data_type: str = "list"):
+    '''
+    Main running function to get all the word count data
+    :param data_file: the name of the file
+    :param data_path: the path to the file
+    :param data_type: a str of the data type to use. Valid types list, np
     :return:
     '''
-    global raw_data
-    # Loop through all the files and read in the raw data
-    for data_file in file_names:
-        # Read in data based on data type
-        if data_type == "list":
-            raw_data[data_file] = readInRawDataList(data_file, data_path)
-        elif data_type == "np":
-            raw_data[data_file] = readInRawDataNP(data_file, data_path)
 
-    return raw_data
+    # Read in data based on data type
+    readInRawDataL_start_time = time.perf_counter()
+    if data_type == "list":
+        data = readInRawDataList(data_file, data_path)
+    elif data_type == "np":
+        data = readInRawDataNP(data_file, data_path)
+    readInRawDataL_end_time = time.perf_counter()
+    readInRawDataL_total_time = readInRawDataL_end_time - readInRawDataL_start_time
+    print(f"\n{data_file} readInRawData ({data_type}) is done! " +
+          f"\n\tIt took {readInRawDataL_total_time} sec(s) to run!\n")
 
-def readInComments(data_type: str = "list", thread_count : int = None) -> dict:
-    '''
-    A function to read in the comment files.
+    # Clean the data
+    # TODO add ability to work with different data_types
+    cleanDataList_start_time = time.perf_counter()
+    data = cleanDataList(data)
+    cleanDataList_end_time = time.perf_counter()
+    cleanDataList_total_time = cleanDataList_end_time - cleanDataList_start_time
+    print(f"\n{data_file} cleanDataList ({data_type}) is done! " +
+          f"\n\tIt took {cleanDataList_total_time} sec(s) to run!\n")
 
-    This is an I/O bound process
+    #TODO Create the word_count heap
+    # word_count = createWordCountHeap(data)
+    createWordCountDict_start_time = time.perf_counter()
+    data = createWordCountDict(data)
+    createWordCountDict_end_time = time.perf_counter()
+    createWordCountDict_total_time = createWordCountDict_end_time - createWordCountDict_start_time
+    print(f"\n{data_file} createWordCountDict ({data_type}) is done! " +
+          f"\n\tIt took {createWordCountDict_total_time} sec(s) to run!\n")
 
-    :param data_type: a str of the data type to use. Valid types list, np, gpu
-    :param thread_count: the number of threads to use, if None default is number
-    of files
-    :return: raw_data a dictionary of all the files raw strings
-    '''
-    # Get the current file directory path of the file.
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-
-    # Make the filepath the reddit comments (data) path
-    data_path = dir_path + "/data/"
-
-    # Get all the data files
-    data_files = os.listdir(data_path)
-
-    # Set threads to number of files if none
-    if thread_count is None:
-        thread_count = len(data_files)
-
-    # Setting up data for threads
-    threads = []
-    chunck = len(data_files) / thread_count
+    #sort the word count
+    sortWordCount_start_time = time.perf_counter()
+    data = sortWordCount(data)
+    sortWordCount_end_time = time.perf_counter()
+    sortWordCount_total_time = sortWordCount_end_time - sortWordCount_start_time
+    print(f"\n{data_file} sortWordCount ({data_type}) is done! " +
+          f"\n\tIt took {sortWordCount_total_time} sec(s) to run!\n")
 
 
-    # Loop through all the files and read in the raw data
-    for thread in range(thread_count):
+    # Calculate the frequencies
+    calcWordFrequencies_start_time = time.perf_counter()
+    data = calcWordFrequencies(data)
+    calcWordFrequencies_end_time = time.perf_counter()
+    calcWordFrequencies_total_time = sortWordCount_end_time - sortWordCount_start_time
+    print(f"\n{data_file} calcWordFrequencies ({data_type}) is done! " +
+          f"\n\tIt took {calcWordFrequencies_total_time} sec(s) to run!\n")
 
-        # Get the chunck indexs
-        chunck_start = int(thread * chunck)
-        chunck_end = int((thread * chunck) + chunck)
+    # Print the top 10 words and frequencies
+    printTopWordsFreqs(data_file, data)
 
-        t = threading.Thread(target=readInCommentsThreading,
-                             args=(data_files[chunck_start:chunck_end],
-                                   data_path,data_type))
-        threads.append(t)
 
-    # Run the threads
-    for thread in threads:
-        thread.start()
 
-    # Wait for threads to finish and join them
-    for thread in threads:
-        thread.join()
-
-    return raw_data
 
 
 def runWordCounter(data_type: str = "list",
@@ -496,8 +467,8 @@ def runWordCounter(data_type: str = "list",
     Timing of funtions will be done in nanoseconds
 
     :param data_type: a str of the data type to use. Valid types list, np, gpu
-    :param thread_count: the number of threads to use, if None default is of
-    threads
+    :param thread_count: the number of threads to use
+    :param process_count: the number of process to use
     :return: a dictionary of all the files raw strings
     '''
 
@@ -505,69 +476,49 @@ def runWordCounter(data_type: str = "list",
     data_type = data_type.lower()
     checkDataType(data_type)
 
-    # Check number of threads and processes
-    if thread_count is None:
-        print(f"\nWarring Thread count is None setting it to machines cpu "+
-              f"count {os.cpu_count()}")
-        thread_count = os.cpu_count()
-    if process_count is None:
-        print(f"\nWarring Process count is None setting it to machines cpu "+
-              f"count {os.cpu_count()}")
-        process_count = os.cpu_count()
+    # Get the current file directory path of the file.
+    dir_path = os.path.dirname(os.path.realpath(__file__))
 
-    # Reading in the raw data from the comments file
-    readInComments_start_time = time.perf_counter_ns()
-    data = readInComments(data_type,thread_count)
-    readInComments_end_time = time.perf_counter_ns()
-    readInComments_total_time = readInComments_end_time - readInComments_start_time
-    print(f"\n(MT1) readInComments ({data_type}) is done! " +
-          f"\n\tIt took {readInComments_total_time} ns to run!\n")
+    # Make the filepath the reddit comments (data) path
 
-    # Clean all the data
-    cleanData_start_time = time.perf_counter_ns()
-    data = cleanData(data,process_count)
-    cleanData_end_time = time.perf_counter_ns()
-    cleanData_total_time = cleanData_end_time - cleanData_start_time
-    print(f"\n(MT1) cleanData ({data_type}) is done! " +
-          f"\n\tIt took {cleanData_total_time} ns to run!\n")
+    data_path = os.path.join(dir_path, os.path.normcase("data/"))
 
-    # Get the word counts
-    createWordCounts_start_time = time.perf_counter_ns()
-    data = createWordCounts(data)
-    createWordCounts_end_time = time.perf_counter_ns()
-    createWordCounts_total_time = createWordCounts_end_time - createWordCounts_start_time
-    print(f"\n(MT1) createWordCounts ({data_type}) is done! " +
-          f"\n\tIt took {createWordCounts_total_time} ns to run!\n")
+    # Get all the data files
+    data_files = os.listdir(data_path)
 
-    # Sort keys by top wc
-    sortWordCounts_start_time = time.perf_counter_ns()
-    data = sortWordCounts(data)
-    sortWordCounts_end_time = time.perf_counter_ns()
-    sortWordCounts_total_time = sortWordCounts_end_time - sortWordCounts_start_time
-    print(f"\n(MT1) sortWordCounts ({data_type}) is done! " +
-          f"\n\tIt took {sortWordCounts_total_time} ns to run!\n")
+    #calculate the word data for each data file
+    word_data = {}
+    word_data_list = []
+    getWordData_start_time = time.perf_counter()
 
-    # Calculate the frequency of all the words over each year
-    sortWordCounts_start_time = time.perf_counter_ns()
-    data = sortWordCounts(data)
-    sortWordCounts_end_time = time.perf_counter_ns()
-    sortWordCounts_total_time = sortWordCounts_end_time - sortWordCounts_start_time
-    print(f"\n(MT1) sortWordCounts ({data_type}) is done! " +
-          f"\n\tIt took {sortWordCounts_total_time} ns to run!\n")
+    #Set up data for starmap pool function
+    # data_paths = [data_path for i in data_files]
+    # data_types = [data_type for i in data_files]
+    proc_args = list(zip(data_files,repeat(data_path),repeat(data_type)))
 
-    # Print the top 10 word counts
-    printTopWordCounts_start_time = time.perf_counter_ns()
-    printTopWordCounts(data)
-    printTopWordCounts_end_time = time.perf_counter_ns()
-    printTopWordCounts_total_time = printTopWordCounts_end_time - printTopWordCounts_start_time
-    print(f"\n(MT1) printTopWordCounts ({data_type}) is done! " +
-          f"\n\tIt took {printTopWordCounts_total_time} ns to run!\n")
+
+    # Use the process pool context manager to start multiprocess pool with
+    # desired number of processes
+    with multiprocessing.Pool(process_count) as p:
+        word_data_list = p.starmap(getWordData, proc_args)
+
+
+    # Make the word count dicts
+    for data_file, word_data in zip(data_files,word_data_list):
+        word_data[data_file] = word_data
+
+    getWordData_end_time = time.perf_counter()
+    getWordData_total_time = getWordData_end_time - getWordData_start_time
+    print(f"\nWord Counter ({data_type}) is done! " +
+          f"\n\tIt took {getWordData_total_time} sec(s) to run in total!\n")
 
     return
 
 
 # Main function to run the script
 def main():
+
+
     runWordCounter()
     return
 
