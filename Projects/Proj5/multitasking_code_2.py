@@ -32,6 +32,7 @@ import os
 import re
 import time
 import multiprocessing
+import itertools
 from itertools import repeat
 import numpy as np
 from typing import  List
@@ -62,6 +63,24 @@ def checkDataType(data_type: str):
 Functions to parse the raw data and clean it
 '''
 
+def cleanDataListMuliProcess(raw_line_data: list,
+                             process_count : int) -> list:
+    '''
+    Function to clean the raw data from each file
+    using multi processing
+    :param raw_line_data: list of raw data strings
+    :param process_count: the number of process to use
+    :return:
+    '''
+    # set up multiprocessing to run the funtion
+    with multiprocessing.Pool(process_count) as p:
+        results = p.map(cleanDataList, raw_line_data)
+
+
+    # Make the cleaned data by concatting all the lists
+    clean_data = list(itertools.chain.from_iterable(a))
+
+    return clean_data
 
 def cleanDataList(raw_line_data: list) -> list:
     '''
