@@ -149,23 +149,30 @@ def createWordCountDictMultiProcess(data: list,process_count : int ,debug: bool 
         mp_data.append(data[chunck_start:chunck_end])
 
     with ProcessPoolExecutor(process_count) as p:
-        results = p.map(createWordCountDict, mp_data)
+        results = p.map(createWordCountDict, mp_data, np.arange(len(mp_data)+1))
 
     # Make the cleaned data by concatting all the lists
     word_count = sum(results)
 
     return word_count
 
-def createWordCountDict(data: list, debug: bool = False) -> dict:
+def createWordCountDict(data: list,chunck_number : int, debug: bool = False) \
+        -> dict:
     '''
     Create a word count dict from the data.
 
     :param data: a list of all the cleaned words
+    :param chunck_number:int representing which chunchk is being
+    processes
+    :param debug: if true debug printing will occur
     :return: word_count: a word count dict of the file
     '''
 
     # Create a word count
     word_count = Counter()
+
+    # if Debug print the function and pid
+    if debug: print(f"\ncreateWordCountDict {chunck_number} pid : {os.getpid()}")
 
     # Loop through the data and increment each word
     for word in data:
