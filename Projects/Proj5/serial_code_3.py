@@ -518,7 +518,7 @@ def getWordData(data_file: str, data_path: str,
 
 
 def runWordCounter(data_type: str = "list" ,
-                   line_batch_size : int = 100 ) -> dict:
+                   line_batch_size : int = 1000 ) -> dict:
     '''
     Main function to run the word counter
 
