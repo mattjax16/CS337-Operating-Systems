@@ -165,7 +165,11 @@ def createWordCountDictMultiProcess(data: list,process_count : int ,debug: bool 
     results_list = [Counter(wc) for wc in results]
 
     # Make the cleaned data by concatting all the lists
-    word_count = sum(results_list)
+    word_count = Counter()
+    for wc in results_list:
+        word_count += word_count
+
+    t = 1
 
     return word_count
 
