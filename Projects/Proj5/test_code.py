@@ -4,16 +4,27 @@ import numpy as np
 import nltk
 import re
 import time
+import os
 from nltk.tokenize import word_tokenize
 from collections import Counter
 
 #main function for testing
 def main():
+
+    # Get the current file directory path of the file.
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    # Make the filepath the reddit comments (data) path
+    data_path = os.path.join(dir_path, os.path.normcase("data/"))
+
+    # Get all the data files
+    data_files = os.listdir(data_path)
+    fil = data_path + data_files[2]
+
     n = 40
     t1_start_time = time.perf_counter()
     for i in range(n):
         t_start_time = time.perf_counter()
-        with open("/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Projects/Proj5/data/reddit_comments_2014.txt", 'r') as file:
+        with open(fil, 'r') as file:
             data = file.read()
             data = re.sub(r"[^A-Za-z0-9\s]+", "", data)
             data = Counter(data)
