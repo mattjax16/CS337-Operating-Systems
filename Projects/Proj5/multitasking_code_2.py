@@ -531,7 +531,11 @@ def runWordCounter(data_type: str = "list",
     # desired number of processes
 
     with ProcessPoolExecutor(process_count) as p:
-        word_data_list = p.map(getWordData, list(zip(proc_args)))
+        word_data_list = p.map(getWordData, data_files,
+                               repeat(data_path),
+                               repeat(process_count), repeat(thread_count),
+                               repeat(data_type)
+                               )
 
     # Make the word count dicts
     word_data = {}
