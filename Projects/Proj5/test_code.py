@@ -26,7 +26,8 @@ def main():
         t_start_time = time.perf_counter()
         with open(fil, 'r') as file:
             data = file.read()
-            data = re.sub(r"[^A-Za-z0-9\s]+", "", data)
+            data = re.sub(r"[^A-Za-z0-9\s]+", "", data).split(" ")
+
             data = Counter(data)
 
         t_end_time = time.perf_counter()
