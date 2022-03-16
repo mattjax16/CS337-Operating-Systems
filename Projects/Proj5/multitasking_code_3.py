@@ -84,7 +84,7 @@ def cleanDataListMuliProcess(raw_line_data: list,
 
 
     with ProcessPoolExecutor(process_count) as p:
-        results = p.map(cleanDataList, mp_data)
+        results = p.map(cleanDataList, mp_data, np.arange(len(mp_data)+1))
 
 
     # Make the cleaned data by concatting all the lists
@@ -93,13 +93,17 @@ def cleanDataListMuliProcess(raw_line_data: list,
     return clean_data
 
 
-def cleanDataList(raw_line_data: list) -> list:
+def cleanDataList(raw_line_data: list,chunck_number : int, debug: bool = True) -> list:
     '''
     Function to clean the raw data from each file
 
     :param raw_line_data: list of raw data strings
     :return:
     '''
+
+    # if Debug print the function and pid
+    if debug: print(
+        f"\ncleanDataList {chunck_number} pid : {os.getpid()}")
 
     clean_data = splitLinesList(raw_line_data)
 
@@ -151,12 +155,15 @@ def createWordCountDictMultiProcess(data: list,process_count : int ,debug: bool 
     with ProcessPoolExecutor(process_count) as p:
         results = p.map(createWordCountDict, mp_data, np.arange(len(mp_data)+1))
 
+    # make the results a list
+    results = list(itertools.chain.from_iterable(results))
+
     # Make the cleaned data by concatting all the lists
     word_count = sum(results)
 
     return word_count
 
-def createWordCountDict(data: list,chunck_number : int, debug: bool = False) \
+def createWordCountDict(data: list,chunck_number : int, debug: bool = True) \
         -> dict:
     '''
     Create a word count dict from the data.
