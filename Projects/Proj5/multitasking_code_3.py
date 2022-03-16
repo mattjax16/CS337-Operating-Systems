@@ -462,7 +462,7 @@ def getWordData(data_file: str, data_path: str,
     # TODO Create the word_count heap
     # word_count = createWordCountHeap(data)
     createWordCountDict_start_time = time.perf_counter()
-    data = createWordCountDict(data)
+    data = createWordCountDictMultiProcess(data, process_count)
     createWordCountDict_end_time = time.perf_counter()
     createWordCountDict_total_time = createWordCountDict_end_time - createWordCountDict_start_time
     print(f"\n{data_file} createWordCountDict ({data_type}) is done! " +
