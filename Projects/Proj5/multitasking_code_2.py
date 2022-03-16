@@ -530,7 +530,7 @@ def runWordCounter(data_type: str = "list",
     # Use the process pool context manager to start multiprocess pool with
     # desired number of processes
     with ProcessPoolExecutor(process_count) as p:
-        word_data_list = p.map(getWordData, proc_args)
+        word_data_list = p.map(getWordData, zip(proc_args))
 
     # Make the word count dicts
     word_data = {}
