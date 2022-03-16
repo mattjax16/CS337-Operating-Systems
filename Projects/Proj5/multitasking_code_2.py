@@ -429,14 +429,18 @@ def readInRawDataList(file_name: str, data_path: str) -> List:
 
 def getWordData(data_file: str, data_path: str,
                 process_count : int, thread_count : int,
-                data_type: str = "list"):
+                data_type: str = "list",debug : bool = True):
     '''
     Main running function to get all the word count data
     :param data_file: the name of the file
     :param data_path: the path to the file
     :param data_type: a str of the data type to use. Valid types list, np
+    :param debug: if true debug printing will be done
     :return:
     '''
+
+    # if Debug print the function and pid
+    if debug: print(f"\ngetWordData {data_file} pid : {os.getpid()}")
 
     # Read in data based on data type
     readInRawDataL_start_time = time.perf_counter()
@@ -491,7 +495,8 @@ def getWordData(data_file: str, data_path: str,
 
 def runWordCounter(data_type: str = "list",
                    thread_count: int = None,
-                   process_count: int = None) -> dict:
+                   process_count: int = None,
+                   debug : bool = True) -> dict:
     '''
     Main function to run the word counter
 
@@ -500,6 +505,7 @@ def runWordCounter(data_type: str = "list",
     :param data_type: a str of the data type to use. Valid types list, np, gpu
     :param thread_count: the number of threads to use
     :param process_count: the number of process to use
+    :param debug: if true debug printing will be done
     :return: a dictionary of all the files raw strings
     '''
 
@@ -516,10 +522,10 @@ def runWordCounter(data_type: str = "list",
     # Get all the data files
     data_files = os.listdir(data_path)
 
-    # calculate the word data for each data file
 
 
-    getWordData_start_time = time.perf_counter()
+
+
 
 
     # Check that process number and thread count are there
@@ -532,9 +538,13 @@ def runWordCounter(data_type: str = "list",
         print(f"Setting process_count to machines core count {os.cpu_count()}!")
         process_count = os.cpu_count()
 
+    #if Debug print the function and pid
+    if debug: print(f"\nrunWordCounter pid : {os.getpid()}")
+
+    # calculate the word data for each data file
+    getWordData_start_time = time.perf_counter()
     # Use the process pool context manager to start multiprocess pool with
     # desired number of processes
-
     with ProcessPoolExecutor(process_count) as p:
         word_data_list = p.map(getWordData,
                                data_files,
