@@ -25,48 +25,16 @@ It does the following:
 
     - Time your “common word” and “word trend” code reliably for comparison
 '''
-import os
-import re
-import time
-import multiprocessing
-import threading
-import numpy as np
-from typing import Any, List
 
-'''
-CS337 Spring 2022 - Operating Systems Prof. Al Madi
-Project 5 - Multitasking
-serial_code_2.py
-Matthew Bass
-03/13/2022
-
-This is a file to count the words and do other functions with the the
-reddit's comments data
-
-Refactored to process all the files one at a time
-
-It does the following:
-    - Read in the Reddit comments files
-
-    - Count each word
-
-    - Print the 10 most common words in each file
-
-    - Print the frequency of a given word in each year to observe word trends
-      (frequency = word_count / number_of_words)
-
-    - Time your “common word” and “word trend” code reliably for comparison
-'''
-import heapq
 import os
 import re
 import time
 import multiprocessing
 from itertools import repeat
 import numpy as np
-from typing import Any, List
+from typing import  List
 
-from word_count_objects import MaxWordCounts, VALID_DATA_TYPES, WordCount
+from word_count_objects import MaxWordCounts, VALID_DATA_TYPES
 
 '''
 Helper FunctionS
