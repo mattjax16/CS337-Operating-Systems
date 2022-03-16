@@ -477,11 +477,14 @@ def runWordCounter(data_type: str = "list",
 
     getWordData_end_time = time.perf_counter()
     getWordData_total_time = getWordData_end_time - getWordData_start_time
-    print(f"\nWord Counter ({data_type}) is done! " +
-          f"\n\tIt took {getWordData_total_time} sec(s) to run in total!\n")
+
 
     # Print the top to words and frequencies from each year
     printTopWordCountsFreqs(word_data)
+
+    print(f"\nWord Counter ({data_type}) is done! " +
+          f"\n\tIt took {getWordData_total_time} sec(s) to run in total!\n")
+
     return
 
 
