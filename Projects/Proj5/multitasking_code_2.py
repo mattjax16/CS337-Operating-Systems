@@ -381,6 +381,7 @@ def readInRawDataList(file_name: str, data_path: str) -> List:
 
 
 def getWordData(data_file: str, data_path: str,
+                process_count : int, thread_count : int,
                 data_type: str = "list"):
     '''
     Main running function to get all the word count data
@@ -404,7 +405,7 @@ def getWordData(data_file: str, data_path: str,
     # Clean the data
     # TODO add ability to work with different data_types
     cleanDataList_start_time = time.perf_counter()
-    data = cleanDataList(data)
+    data = cleanDataListMuliProcess(data,process_count)
     cleanDataList_end_time = time.perf_counter()
     cleanDataList_total_time = cleanDataList_end_time - cleanDataList_start_time
     print(f"\n{data_file} cleanDataList ({data_type}) is done! " +
@@ -474,7 +475,9 @@ def runWordCounter(data_type: str = "list",
     getWordData_start_time = time.perf_counter()
 
     # Set up data for starmap pool function
-    proc_args = list(zip(data_files, repeat(data_path), repeat(data_type)))
+    proc_args = list(zip(data_files, repeat(data_path),
+                         repeat(process_count),repeat(thread_count),
+                         repeat(data_type)))
 
     # Check that process number and thread count are there
     if thread_count is None:
