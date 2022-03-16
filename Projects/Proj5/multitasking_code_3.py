@@ -103,7 +103,7 @@ def cleanDataList(raw_line_data: list,chunck_number : int, debug: bool = True) -
 
     # if Debug print the function and pid
     if debug: print(
-        f"\ncleanDataList {chunck_number} pid : {os.getpid()}")
+        f"\nSTART cleanDataList {chunck_number} pid : {os.getpid()}")
 
     clean_data = splitLinesList(raw_line_data)
 
@@ -114,6 +114,10 @@ def cleanDataList(raw_line_data: list,chunck_number : int, debug: bool = True) -
 
     # Make all the filtered words lowercase
     clean_data = list(map(str.lower, clean_data))
+
+    # if Debug print the function and pid
+    if debug: print(
+        f"\nEND cleanDataList {chunck_number} pid : {os.getpid()}")
 
     return clean_data
 
@@ -179,7 +183,8 @@ def createWordCountDict(data: list,chunck_number : int, debug: bool = True) \
     word_count = Counter()
 
     # if Debug print the function and pid
-    if debug: print(f"\ncreateWordCountDict {chunck_number} pid : {os.getpid()}")
+    if debug: print(f"\nSTART createWordCountDict {chunck_number} pid :"
+                    f" {os.getpid()}")
 
     # Loop through the data and increment each word
     for word in data:
@@ -193,6 +198,10 @@ def createWordCountDict(data: list,chunck_number : int, debug: bool = True) \
 
     # Make word count dict a counter
     # word_count = Counter(word_count)
+
+    # if Debug print the function and pid
+    if debug: print(f"\nEND createWordCountDict {chunck_number} pid :"
+                        f" {os.getpid()}")
     return word_count
 
 
@@ -444,7 +453,7 @@ def getWordData(data_file: str, data_path: str,
     '''
 
     # if Debug print the function and pid
-    if debug: print(f"\ngetWordData {data_file} pid : {os.getpid()}")
+    if debug: print(f"\nSTART getWordData {data_file} pid : {os.getpid()}")
 
     # Read in data based on data type
     readInRawDataL_start_time = time.perf_counter()
@@ -493,6 +502,9 @@ def getWordData(data_file: str, data_path: str,
 
     # Print the top 10 words and frequencies
     # printTopWordsFreqs(data_file, data)
+
+    # if Debug print the function and pid
+    if debug: print(f"\nEND getWordData {data_file} pid : {os.getpid()}")
 
     return data
 
