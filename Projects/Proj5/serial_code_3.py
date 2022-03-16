@@ -547,7 +547,7 @@ def runWordCounter(data_type: str = "list" ,
     word_data = {}
     wc_start_time = time.perf_counter()
 
-    for data_file in enumerate(data_files):
+    for data_file in data_files:
         getWordData_start_time = time.perf_counter()
         word_data[data_file] = getWordData(data_file,data_path,line_batch_size,data_type)
         getWordData_end_time = time.perf_counter()
