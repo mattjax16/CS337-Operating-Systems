@@ -37,7 +37,7 @@ from itertools import repeat
 import numpy as np
 from typing import List
 from concurrent.futures import ProcessPoolExecutor
-
+from collections import Counter
 from word_count_objects import MaxWordCounts, VALID_DATA_TYPES
 
 '''
@@ -73,7 +73,7 @@ def cleanDataListMuliProcess(raw_line_data: list,
     :param process_count: the number of process to use
     :return:
     '''
-    # set up multiprocessing  chunksto run the function
+    # set up multiprocessing  chunks to run the function
     chunck = len(raw_line_data) / process_count
 
     mp_data = []
@@ -92,42 +92,6 @@ def cleanDataListMuliProcess(raw_line_data: list,
 
     return clean_data
 
-def cleanDataListMuliProcess2(raw_line_data: list,
-                             process_count : int) -> list:
-    '''
-    Function to clean the raw data from each file
-    using multi processing
-    :param raw_line_data: list of raw data strings
-    :param process_count: the number of process to use
-    :return:
-    '''
-
-    manager = multiprocessing.Manager()
-    return_dict = manager.dict()
-    processes = []
-
-    chunck = len(raw_line_data) / process_count
-
-    for process in range(process_count):
-        chunck_start = int(process * chunck)
-        chunck_end = int((process * chunck) + chunck)
-
-        p = multiprocessing.Process(target=cleanDataList,
-                                    args=(raw_line_data[chunck_start:chunck_end],))
-        processes.append(p)
-
-
-    for process in processes:
-        process.start()
-
-    for process in processes:
-        process.join()
-
-
-    # Make the cleaned data by concatting all the lists
-    clean_data = list(itertools.chain.from_iterable(return_dict.values()))
-
-    return clean_data
 
 def cleanDataList(raw_line_data: list) -> list:
     '''
@@ -166,7 +130,31 @@ def splitLinesList(raw_line_data: list) -> list:
 '''
 Functions to create word maps and analize
 '''
+def createWordCountDictMultiProcess(data: list,process_count : int ,debug: bool = False) -> dict:
+    '''
+    Create a word count dict from the data. usinf mutli processing
 
+    :param data: a list of all the cleaned words
+    :param process_count: the number of process to use
+    :return: word_count: a word count dict of the file
+    '''
+
+    # set up multiprocessing  chunks to run the function
+    chunck = len(data) / process_count
+
+    mp_data = []
+    for process in range(process_count):
+        chunck_start = int(process * chunck)
+        chunck_end = int((process * chunck) + chunck)
+        mp_data.append(data[chunck_start:chunck_end])
+
+    with ProcessPoolExecutor(process_count) as p:
+        results = p.map(createWordCountDict, mp_data)
+
+    # Make the cleaned data by concatting all the lists
+    word_count = sum(results)
+
+    return word_count
 
 def createWordCountDict(data: list, debug: bool = False) -> dict:
     '''
@@ -176,8 +164,8 @@ def createWordCountDict(data: list, debug: bool = False) -> dict:
     :return: word_count: a word count dict of the file
     '''
 
-    # Create a word count dict
-    word_count = {}
+    # Create a word count
+    word_count = Counter()
 
     # Loop through the data and increment each word
     for word in data:
@@ -189,6 +177,8 @@ def createWordCountDict(data: list, debug: bool = False) -> dict:
         if debug:
             print(f"\nAdded {word} {word_count[word]}")
 
+    # Make word count dict a counter
+    # word_count = Counter(word_count)
     return word_count
 
 
