@@ -73,9 +73,18 @@ def cleanDataListMuliProcess(raw_line_data: list,
     :param process_count: the number of process to use
     :return:
     '''
-    # set up multiprocessing to run the funtion
+    # set up multiprocessing  chunksto run the function
+    chunck = len(raw_line_data) / process_count
+
+    mp_data = []
+    for process in range(process_count):
+        chunck_start = int(process * chunck)
+        chunck_end = int((process * chunck) + chunck)
+        mp_data.append(raw_line_data[chunck_start:chunck_end])
+
+
     with ProcessPoolExecutor(process_count) as p:
-        results = p.map(cleanDataList, raw_line_data)
+        results = p.map(cleanDataList, mp_data)
 
 
     # Make the cleaned data by concatting all the lists
