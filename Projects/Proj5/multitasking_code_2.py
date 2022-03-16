@@ -64,7 +64,7 @@ def checkDataType(data_type: str):
 Functions to parse the raw data and clean it
 '''
 
-def cleanDataListMuliProcess1(raw_line_data: list,
+def cleanDataListMuliProcess(raw_line_data: list,
                              process_count : int) -> list:
     '''
     Function to clean the raw data from each file
@@ -74,7 +74,7 @@ def cleanDataListMuliProcess1(raw_line_data: list,
     :return:
     '''
     # set up multiprocessing to run the funtion
-    with multiprocessing.Pool(process_count) as p:
+    with ProcessPoolExecutor(process_count) as p:
         results = p.map(cleanDataList, raw_line_data)
 
 
@@ -443,7 +443,7 @@ def getWordData(data_file: str, data_path: str,
     # Clean the data
     # TODO add ability to work with different data_types
     cleanDataList_start_time = time.perf_counter()
-    data = cleanDataListMuliProcess2(data,process_count)
+    data = cleanDataListMuliProcess(data,process_count)
     cleanDataList_end_time = time.perf_counter()
     cleanDataList_total_time = cleanDataList_end_time - cleanDataList_start_time
     print(f"\n{data_file} cleanDataList ({data_type}) is done! " +
@@ -512,10 +512,6 @@ def runWordCounter(data_type: str = "list",
 
     getWordData_start_time = time.perf_counter()
 
-    # Set up data for starmap pool function
-    proc_args = list(zip(data_files, repeat(data_path),
-                         repeat(process_count),repeat(thread_count),
-                         repeat(data_type)))
 
     # Check that process number and thread count are there
     if thread_count is None:
@@ -531,11 +527,12 @@ def runWordCounter(data_type: str = "list",
     # desired number of processes
 
     with ProcessPoolExecutor(process_count) as p:
-        word_data_list = p.map(getWordData, data_files,
+        word_data_list = p.map(getWordData,
+                               data_files,
                                repeat(data_path),
-                               repeat(process_count), repeat(thread_count),
-                               repeat(data_type)
-                               )
+                               repeat(process_count),
+                               repeat(thread_count),
+                               repeat(data_type))
 
     # Make the word count dicts
     word_data = {}
