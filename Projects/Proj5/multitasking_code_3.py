@@ -188,8 +188,8 @@ def createWordCountDict(data: list,chunck_number : int, debug: bool = True) \
         else:
             word_count[word] = 1
 
-        if debug:
-            print(f"\nAdded {word} {word_count[word]}")
+        # if debug:
+        #     print(f"\nAdded {word} {word_count[word]}")
 
     # Make word count dict a counter
     # word_count = Counter(word_count)
