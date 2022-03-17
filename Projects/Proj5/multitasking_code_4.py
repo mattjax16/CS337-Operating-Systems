@@ -29,7 +29,7 @@ It does the following:
 import os
 import re
 import time
-import multiprocessing
+from concurrent.futures import ProcessPoolExecutor
 from collections import Counter
 from itertools import repeat
 
@@ -248,14 +248,14 @@ def runWordCounter(thread_count: int = None,
 
     getWordData_start_time = time.perf_counter()
 
-    # Set up data for starmap pool function
-    proc_args = list(zip(data_files, repeat(data_path)))
 
-    # Use the process pool context manager to start multiprocess pool with
-    # desired number of processes
-    with multiprocessing.Pool(process_count) as p:
-        word_data_list = p.starmap(getWordData, proc_args)
 
+    # Use the concurrent futers process pool context manager to start
+    # multiprocess pool with desired number of processes
+    with ProcessPoolExecutor(process_count) as p:
+        word_data_list = p.map(getWordData,
+                               data_files,
+                               repeat(data_path))
     # Make the word count dicts
     files_data = {}
     for data_file, dat in zip(data_files, word_data_list):
