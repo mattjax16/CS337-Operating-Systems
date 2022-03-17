@@ -255,6 +255,7 @@ def runWordCounter() -> dict:
 def main():
 
 
+
     runWordCounter()
     return
 

@@ -29,7 +29,7 @@ It does the following:
 import os
 import re
 import time
-import multiprocessing
+from concurrent.futures import ProcessPoolExecutor
 from itertools import repeat
 import numpy as np
 from typing import  List
@@ -452,8 +452,6 @@ def runWordCounter(data_type: str = "list",
 
     getWordData_start_time = time.perf_counter()
 
-    # Set up data for starmap pool function
-    proc_args = list(zip(data_files, repeat(data_path), repeat(data_type)))
 
     # Check that process number and thread count are there
     if thread_count is None:
@@ -465,10 +463,14 @@ def runWordCounter(data_type: str = "list",
         print(f"Setting process_count to machines core count {os.cpu_count()}!")
         process_count = os.cpu_count()
 
-    # Use the process pool context manager to start multiprocess pool with
-    # desired number of processes
-    with multiprocessing.Pool(process_count) as p:
-        word_data_list = p.starmap(getWordData, proc_args)
+    # Set up data for starmap pool function
+    proc_args = list(zip(data_files, repeat(data_path), repeat(data_type)))
+
+    # Use the concurent.futures ProcessPoolExecuter to start multiprocess
+    # pool with desired number of processes
+    with ProcessPoolExecutor(process_count) as p:
+        word_data_list = p.map(getWordData, data_files,
+                               repeat(data_path), repeat(data_type))
 
     # Make the word count dicts
     word_data = {}
