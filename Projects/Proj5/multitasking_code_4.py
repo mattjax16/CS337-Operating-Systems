@@ -61,7 +61,7 @@ def readInData(data_file: str, data_path: str) -> str:
     return data
 
 
-def cleanAndTokenize(data : str) -> list:
+def cleanAndTokenize(data: str) -> list:
     '''
     A Function to clean and tokenize the raw string
     Args:
@@ -71,7 +71,10 @@ def cleanAndTokenize(data : str) -> list:
         tokens (list): a list of the cleaned word tokens
 
     '''
+    # Remove extra spaces, tabs, and line breaks
     data = " ".join(data.split())
+
+    # keep only words
     data = re.sub(r"[^A-Za-z\s]+", "", data).split(" ")
     return data
 
