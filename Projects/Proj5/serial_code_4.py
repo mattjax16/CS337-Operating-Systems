@@ -68,9 +68,8 @@ def cleanAndTokenize(data : str) -> list:
         tokens (list): a list of the cleaned word tokens
 
     '''
-    data = re.sub(r"[^A-Za-z0-9\s]+", "", data).split(" ")
+    data = re.sub(r"[^A-Za-z]+", "", data).split(" ")
     return data
-
 
 def getWordCount(data_file: str, data_path: str) -> Counter:
     '''
@@ -108,7 +107,7 @@ def getWordFrequencies(word_count : Counter) -> dict:
 
 
     for word, count in word_count.items():
-        word_frequencies[word] = (count / total_count) * 100
+        word_frequencies[word] = (count / total_count)
 
 
     return word_frequencies
