@@ -162,9 +162,15 @@ def printTopNWords(files_data: dict, top_n_words: int = 10):
     # Get the top words from all the years
     top_words = {}
     for file_name, data in files_data.items():
-        n_words = [data[0].most_common(top_n_words)]
+        n_words = data[0].most_common(top_n_words)
 
         top_words[re.sub("[^0-9]", "", file_name)] = n_words
+
+    print(f"\nThe top {n} words for each year (word, count)")
+    print(f"\n In Order Top: {[x+1 for x in range(n)]}")
+    for year, tw in top_words.items():
+        print(f"{year.upper()}. {tw}")
+
 
     return
 
