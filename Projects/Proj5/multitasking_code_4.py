@@ -167,7 +167,7 @@ def printTopNWords(files_data: dict, top_n_words: int = 10):
         top_words[re.sub("[^0-9]", "", file_name)] = n_words
 
     print(f"\nThe top {top_n_words} words for each year (word, count)")
-    print(f"\n In Order Top: {[x+1 for x in range(top_n_words)]}")
+    print(f"In Order Top: {[x+1 for x in range(top_n_words)]}")
     for year, tw in top_words.items():
         print(f"{year.upper()}. {tw}")
 
@@ -201,7 +201,7 @@ def printWordFrequencyOverYears(files_data: dict, word: str):
 
     # Print the Header
     print(f"\n The frequency of {word} over the years is:")
-    print(f"\n\t {word_freqs}")
+    print(f"\t {word_freqs}")
 
 
     return
