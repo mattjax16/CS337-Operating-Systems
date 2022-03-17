@@ -148,7 +148,25 @@ def getWordData(data_file: str, data_path: str, debug = True) -> dict:
     return word_data
 
 
+def printTopNWords(files_data: dict, top_n_words: int = 10):
+    '''
+    A Function to print out the top N words over the years
+    Args:
+        files_data ():
+        top_n_words ():
 
+    Returns:
+
+    '''
+
+    # Get the top words from all the years
+    top_words = {}
+    for file_name, data in files_data.items():
+        n_words = [data[0].most_common(top_n_words)]
+
+        top_words[re.sub("[^0-9]", "", file_name)] = n_words
+
+    return
 
 
 def runWordCounter(thread_count: int = None,
@@ -207,6 +225,9 @@ def runWordCounter(thread_count: int = None,
     getWordData_total_time = getWordData_end_time - getWordData_start_time
     print(f"\nWord Counter  is done! " +
           f"\n\tIt took {getWordData_total_time} sec(s) to run in total!\n")
+
+    # Print the top 10 words
+    printTopNWords(files_data)
 
     return
 

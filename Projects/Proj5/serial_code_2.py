@@ -263,7 +263,7 @@ def printTopWordCountsFreqs(sorted_word_data: dict, top_n_words: int = 10):
 
 def printTopWordsFreqs(file_name: str, sorted_word_data: dict, top_n_words: int = 10):
     '''
-    Prints tthe top N words from the wordcount file
+    Prints the top N words from the wordcount file
     :param file_name: the name of the file
     :param sorted_word_data: the sorted word  data
     :param top_n_words: the top number of words to print
