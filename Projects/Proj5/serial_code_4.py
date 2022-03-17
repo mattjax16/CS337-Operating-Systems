@@ -150,12 +150,12 @@ def getWordData(data_file: str, data_path: str, debug = True) -> dict:
     return word_data
 
 
-def printTopNWords(files_data : dict, top_n_words: int = 10):
+def printTopNWords(files_data: dict, top_n_words: int = 10):
     '''
     A Function to print out the top N words over the years
     Args:
-        files_data ():
-        top_n_words ():
+        files_data (dict): the dict of word data
+        top_n_words (int): the top n words to print out
 
     Returns:
 
@@ -164,13 +164,50 @@ def printTopNWords(files_data : dict, top_n_words: int = 10):
     # Get the top words from all the years
     top_words = {}
     for file_name, data in files_data.items():
-
-        n_words = [data[0].most_common(top_n_words)]
+        n_words = data[0].most_common(top_n_words)
 
         top_words[re.sub("[^0-9]", "", file_name)] = n_words
 
+    print(f"\nThe top {top_n_words} words for each year (word, count)")
+    print(f"\n In Order Top: {[x+1 for x in range(top_n_words)]}")
+    for year, tw in top_words.items():
+        print(f"{year.upper()}. {tw}")
+
+
     return
 
+
+def printWordFrequencyOverYears(files_data: dict, word: str):
+    '''
+    A Function to print out the top N words over the years
+    Args:
+        files_data (dict): the dict of word data
+        word (str): the word whos frequency to print out
+
+    Returns:
+
+    '''
+
+    # Get the word frequency from over the years
+    word_freq = {}
+    for file_name, data in files_data.items():
+        word_freqs = data[1]
+
+        # If the word is in the frequencies for that year add it
+        if word in word_freqs.keys():
+
+            word_freq[re.sub("[^0-9]", "", file_name)] = word_freqs[word]
+
+        #if it isnt the frequency is 0
+        else:
+            word_freq[re.sub("[^0-9]", "", file_name)] = 0
+
+    # Print the Header
+    print(f"\n The frequency of {word} over the years is:")
+    print(f"\n\t {word_freqs}")
+
+
+    return
 
 
 def runWordCounter() -> dict:
@@ -206,6 +243,9 @@ def runWordCounter() -> dict:
 
     # Print the top 10 words
     printTopNWords(files_data)
+
+    # Print word frequency of the
+    printWordFrequencyOverYears(files_data,"the")
 
     return
 
