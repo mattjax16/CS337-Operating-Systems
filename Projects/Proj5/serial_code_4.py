@@ -68,8 +68,9 @@ def cleanAndTokenize(data : str) -> list:
         tokens (list): a list of the cleaned word tokens
 
     '''
-    data = re.sub(r"[^A-Za-z]+", "", data).split(" ")
+    data = re.sub(r"[^A-Za-z\s]+", "", data).split(" ")
     return data
+
 
 def getWordCount(data_file: str, data_path: str) -> Counter:
     '''
