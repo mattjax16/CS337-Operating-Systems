@@ -174,6 +174,38 @@ def printTopNWords(files_data: dict, top_n_words: int = 10):
 
     return
 
+def printWordFrequencyOverYears(files_data: dict, word: str):
+    '''
+    A Function to print out the top N words over the years
+    Args:
+        files_data (dict): the dict of word data
+        word (str): the word whos frequency to print out
+
+    Returns:
+
+    '''
+
+    # Get the word frequency from over the years
+    word_freq = {}
+    for file_name, data in files_data.items():
+        word_freqs = data[1]
+
+        # If the word is in the frequencies for that year add it
+        if word in word_freqs.keys():
+
+            word_freq[re.sub("[^0-9]", "", file_name)] = word_freqs[word]
+
+        #if it isnt the frequency is 0
+        else:
+            word_freq[re.sub("[^0-9]", "", file_name)] = 0
+
+    # Print the Header
+    print(f"\n The frequency of {word} over the years is:")
+    print(f"\n\t {word_freqs}")
+
+
+    return
+
 
 def runWordCounter(thread_count: int = None,
                    process_count: int = None,
@@ -234,6 +266,9 @@ def runWordCounter(thread_count: int = None,
 
     # Print the top 10 words
     printTopNWords(files_data)
+
+    # Print word frequency of the
+    printWordFrequencyOverYears(files_data, "the")
 
     return
 
