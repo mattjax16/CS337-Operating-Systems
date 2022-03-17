@@ -108,9 +108,9 @@ def getWordFrequencies(word_count : Counter) -> dict:
 
 
     for word, count in word_count.items():
-        word_frequencies[word] = count / total_count
+        word_frequencies[word] = (count / total_count) * 100
 
-    print(sum(word_frequencies.values()))
+
     return word_frequencies
 
 
@@ -141,11 +141,13 @@ def getWordData(data_file: str, data_path: str, debug = True) -> dict:
         print(f"\nEND getWordData {data_file}! " +
               f"\n\tIt took {t_total_time} sec(s) to run in total!\n")
 
-
+    # Get the word frequencies
     word_frequencies = getWordFrequencies(word_count)
 
-    word_data = (word_count,word_frequencies)
-    return word_count
+    # Make the word data object
+    word_data = (word_count, word_frequencies)
+
+    return word_data
 
 
 

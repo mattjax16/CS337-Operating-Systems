@@ -93,6 +93,27 @@ def getWordCount(data_file: str, data_path: str) -> Counter:
     return Counter(data)
 
 
+def getWordFrequencies(word_count: Counter) -> dict:
+    '''
+    A Function to get the word frequency from the counter
+
+    Args:
+        word_count (Counter):
+
+    Returns:
+        word_frequencies (dict): a dict of the word frequencies
+    '''
+    # Initialize word frequencies dict
+    word_frequencies = {}
+
+    # Get the total word count
+    total_count = sum(word_count.values())
+
+    for word, count in word_count.items():
+        word_frequencies[word] = (count / total_count) * 100
+
+    return word_frequencies
+
 
 def getWordData(data_file: str, data_path: str, debug = True) -> dict:
     '''
@@ -101,7 +122,7 @@ def getWordData(data_file: str, data_path: str, debug = True) -> dict:
     :param data_path: the path to the file
     :param debug: Bool if true debug staatement printed
 
-    :return:
+    :return word_data: a tuple of the word counts and word frequencies
     '''
 
 
@@ -118,7 +139,14 @@ def getWordData(data_file: str, data_path: str, debug = True) -> dict:
         print(f"\nEND getWordData {data_file} pid : {os.getpid()}! " +
               f"\n\tIt took {t_total_time} sec(s) to run in total!\n")
 
-    return word_count
+    # Get the word frequencies
+    word_frequencies = getWordFrequencies(word_count)
+
+    # Make the word data object
+    word_data = (word_count, word_frequencies)
+
+    return word_data
+
 
 
 
