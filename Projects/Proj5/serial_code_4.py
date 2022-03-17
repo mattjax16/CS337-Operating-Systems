@@ -91,7 +91,7 @@ def getWordCount(data_file: str, data_path: str) -> Counter:
 
     '''
     data = readInData(data_file,data_path)
-    data = cleanAndTokenize()
+    data = cleanAndTokenize(data)
     return Counter(data)
 
 
