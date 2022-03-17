@@ -24,16 +24,11 @@ It does the following:
 
     - Time your “common word” and “word trend” code reliably for comparison
 '''
-import heapq
+
 import os
 import re
 import time
 from collections import Counter
-import numpy as np
-from typing import Any, List
-
-from word_count_objects import MaxWordCounts,VALID_DATA_TYPES,WordCount
-
 
 '''
 Helper FunctionS
