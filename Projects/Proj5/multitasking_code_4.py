@@ -216,9 +216,9 @@ def runWordCounter(thread_count: int = None,
         word_data_list = p.starmap(getWordData, proc_args)
 
     # Make the word count dicts
-    word_data = {}
+    files_data = {}
     for data_file, dat in zip(data_files, word_data_list):
-        word_data[data_file] = dat
+        files_data[data_file] = dat
 
 
     getWordData_end_time = time.perf_counter()
