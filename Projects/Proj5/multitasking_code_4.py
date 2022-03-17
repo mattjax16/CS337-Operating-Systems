@@ -71,6 +71,7 @@ def cleanAndTokenize(data : str) -> list:
         tokens (list): a list of the cleaned word tokens
 
     '''
+    data = " ".join(data.split())
     data = re.sub(r"[^A-Za-z\s]+", "", data).split(" ")
     return data
 
