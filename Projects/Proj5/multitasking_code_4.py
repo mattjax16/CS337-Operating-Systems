@@ -206,9 +206,7 @@ def printWordFrequencyOverYears(files_data: dict, word: str):
 
     # Print the Header
     print(f"\n The frequency of {word} over the years is:")
-    print(f"\t {word_freqs}")
-
-
+    print(f"\t {word_freq}")
     return
 
 
