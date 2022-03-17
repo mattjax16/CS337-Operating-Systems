@@ -524,7 +524,7 @@ def runWordCounter(data_type: str = "list",
     :param thread_count: the number of threads to use
     :param process_count: the number of process to use
     :param debug: if true debug printing will be done
-    :return: a dictionary of all the files raw strings
+    :return: a dictionary of the word counts
     '''
     # if Debug print the function and pid
     if debug: print(f"\nrunWordCounter pid : {os.getpid()}")
