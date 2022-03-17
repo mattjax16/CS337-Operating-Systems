@@ -107,7 +107,7 @@ def getWordData(data_file: str, data_path: str, debug = True) -> dict:
 
     if debug:
         t_start_time = time.perf_counter()
-        print(f"START getWordData {data_file}")
+        print(f"START getWordData {data_file} pid : {os.getpid()}")
 
     # Get the word counter
     word_count = getWordCount(data_file,data_path)
@@ -115,7 +115,7 @@ def getWordData(data_file: str, data_path: str, debug = True) -> dict:
     if debug:
         t_end_time = time.perf_counter()
         t_total_time = t_end_time - t_start_time
-        print(f"\nEND getWordData {data_file}! " +
+        print(f"\nEND getWordData {data_file} pid : {os.getpid()}! " +
               f"\n\tIt took {t_total_time} sec(s) to run in total!\n")
 
     return word_count
