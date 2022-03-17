@@ -115,7 +115,7 @@ def getWordData(data_file: str, data_path: str, debug = True) -> dict:
         print(f"\nEND getWordData {data_file}! " +
               f"\n\tIt took {t_total_time} sec(s) to run in total!\n")
 
-    return word_count
+    return dict(word_count)
 
 
 
