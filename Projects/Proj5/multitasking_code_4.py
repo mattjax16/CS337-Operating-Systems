@@ -7,7 +7,7 @@ Matthew Bass
 
 This is a file to count the words and do other functions with the the
 reddit's comments data. It is based off my fastest serial code which is
-serial_code_4.py
+serial_code_5.py the fastest version of clean and tokenize and much simpler.
 
 Another version much more simplified
 
@@ -61,26 +61,41 @@ def readInData(data_file: str, data_path: str) -> str:
     return data
 
 
-def cleanAndTokenize(data: str) -> list:
+def cleanAndTokenize(data : str, debug : bool = True) -> list:
     '''
     A Function to clean and tokenize the raw string
     Args:
         data (str): the raw string of the data
+        debug (bool): if true debug printing statements will be output
 
     Returns:
         tokens (list): a list of the cleaned word tokens
 
     '''
+    if debug:
+        t_start_time = time.perf_counter()
+
+
+    # Make all the characters lowercase (this is much quicker than doing it
+    # after the fact when the words are split)
+    data = data.lower()
+
     # Remove extra spaces, tabs, and line breaks
     data = " ".join(data.split())
 
     # keep only words
-    data = re.sub(r"[^A-Za-z\s]+", "", data).split(" ")
+    data = re.sub(r"[^a-z\s]+", "", data).split(" ")
 
-    # Make all the filtered words lowercase
-    data = list(map(str.lower, data))
+
+    if debug:
+        t_end_time = time.perf_counter()
+        t_total_time = t_end_time - t_start_time
+        print(f"\ncleanAndTokenize is done! " + f"\n\tIt took {t_total_time} sec(s) to run in total!\n")
+
+
 
     return data
+
 
 
 

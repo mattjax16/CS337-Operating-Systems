@@ -6,8 +6,9 @@ Matthew Bass
 03/13/2022
 
 This is a file to count the words and do other functions with the the
-reddit's comments data. It is based off my fastest serial code which is
-serial_code_4.py In this file I attempt to make it faster than
+reddit's comments data. It is based off my fastest serial code which is based
+off serial_code_5.py the fastest version of clean and tokenize and much
+simpler. In this file I attempt to make it faster than
 multitasking_code_4.py and 5. This is also an experiment to see if the little
 bit of multiprocessing I do is more valuable in terms of time saving when I
 parallelize just cleaning the word data and not getting the word count data
@@ -37,6 +38,7 @@ import time
 import numpy as np
 from concurrent.futures import ProcessPoolExecutor
 from collections import Counter
+import itertools
 from itertools import repeat
 
 
@@ -77,12 +79,10 @@ def cleanAndTokenize(data: str) -> list:
 
     '''
     # Make all the filtered words lowercase
-    data = list(map(str.lower, data))
+    data = str.join(data).lower()
 
     # keep only words
     data = re.sub(r"[^a-z\s]+", "", data).split(" ")
-
-
 
     return data
 

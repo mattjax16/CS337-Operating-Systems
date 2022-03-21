@@ -6,9 +6,10 @@ Matthew Bass
 03/13/2022
 
 This is a file to count the words and do other functions with the the
-reddit's comments data. It is based off my fastest serial code which is
-serial_code_4.py In this file I attempt to make it faster than
-multitasking_code_4.py by adding in more multiprocessing when parsing the words.
+reddit's comments data. It is based off my fastest serial code which is based
+off serial_code_5.py the fastest version of clean and tokenize and much
+simpler. In this file I attempt to make it faster than multitasking_code_4.py
+by adding in more multiprocessing when parsing the words.
 
 
 Another version much more simplified

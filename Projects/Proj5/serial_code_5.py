@@ -74,9 +74,6 @@ def cleanAndTokenize(data : str, debug : bool = True) -> list:
     if debug:
         t_start_time = time.perf_counter()
 
-    # Remove extra spaces, tabs, and line breaks
-    # data = data.split()
-
     # Make all the characters lowercase (this is much quicker than doing it
     # after the fact when the words are split)
     data = data.lower()

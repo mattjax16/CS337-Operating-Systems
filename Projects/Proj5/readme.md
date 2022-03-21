@@ -25,7 +25,8 @@ Python library).
 	linecache
     autopep8
 
-
+If you are on a mac will need a product such as [The Unarchiver](https://apps.apple.com/us/app/the-unarchiver/id425424353?mt=12) 
+to unpack the rar files.
 
 <br>
 
