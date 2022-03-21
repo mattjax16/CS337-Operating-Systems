@@ -1,12 +1,14 @@
 '''
 CS337 Spring 2022 - Operating Systems Prof. Al Madi
 Project 5 - Multitasking
-serial_code_4.py
+serial_code_6.py
 Matthew Bass
 03/13/2022
 
 This is a file to count the words and do other functions with the the
-reddit's comments data
+reddit's comments data (This is to compare the speed of cleaning data,
+This was done another way as compared to serial_code_4.py) From testing this
+way of cleaning data is definitely quicker while leading to the same results.
 
 Another version much more simplified
 
@@ -73,13 +75,24 @@ def cleanAndTokenize(data : str, debug : bool = True) -> list:
         t_start_time = time.perf_counter()
 
     # Remove extra spaces, tabs, and line breaks
-    data = " ".join(data.split())
+    # data = data.split()
+
+    # Make all the characters lowercase (this is much quicker than doing it
+    # after the fact when the words are split)
+    data = data.lower()
+
+    # Remove extra spaces, tabs, and line breaks
+    data = data.split()
 
     # keep only words
-    data = re.sub(r"[^A-Za-z\s]+", "", data).split(" ")
+    cleaned_data = []
+    for word in data:
+        word = re.sub(r"[^a-z\s]+", "", word)
+        if word != "":
+            cleaned_data.append(word)
 
-    # Make all the filtered words lowercase
-    data = list(map(str.lower, data))
+
+
 
     if debug:
         t_end_time = time.perf_counter()

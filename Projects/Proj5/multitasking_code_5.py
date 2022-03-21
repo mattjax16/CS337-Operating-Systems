@@ -1,12 +1,15 @@
 '''
 CS337 Spring 2022 - Operating Systems Prof. Al Madi
 Project 5 - Multitasking
-serial_code_4.py
+multitasking_code_5.py
 Matthew Bass
 03/13/2022
 
 This is a file to count the words and do other functions with the the
-reddit's comments data
+reddit's comments data. It is based off my fastest serial code which is
+serial_code_4.py In this file I attempt to make it faster than
+multitasking_code_4.py by adding in more multiprocessing when parsing the words.
+
 
 Another version much more simplified
 
@@ -28,7 +31,9 @@ It does the following:
 import os
 import re
 import time
+from concurrent.futures import ProcessPoolExecutor
 from collections import Counter
+from itertools import repeat
 
 '''
 Helper FunctionS
@@ -58,37 +63,64 @@ def readInData(data_file: str, data_path: str) -> str:
     return data
 
 
-def cleanAndTokenize(data : str, debug : bool = True) -> list:
+def cleanAndTokenize(data: str) -> list:
     '''
     A Function to clean and tokenize the raw string
     Args:
         data (str): the raw string of the data
-        debug (bool): if true debug printing statements will be output
 
     Returns:
         tokens (list): a list of the cleaned word tokens
 
     '''
-    if debug:
-        t_start_time = time.perf_counter()
-
     # Remove extra spaces, tabs, and line breaks
     data = " ".join(data.split())
 
     # keep only words
     data = re.sub(r"[^A-Za-z\s]+", "", data).split(" ")
+    return data
+
+
+
+
+def cleanAndTokenizeMultiProcess(data: str,
+                                 process_count: int = None) -> list:
+    '''
+    A Function to clean and tokenize the raw string
+    It  uses multi processing by splitting the string data into batches
+    Args:
+        data (str): the raw string of the data
+        process_count (int): the number of processes to use
+
+    Returns:
+        tokens (list): a list of the cleaned word tokens
+
+
+    '''
+
+    # make process count default number of process that machine has if no
+    # numbers are passed
+    if process_count is None:
+        print(f"\nError no process count was entered!!")
+        print(f"Setting process_count to machines core count {os.cpu_count()}!")
+        process_count = os.cpu_count()
+
+    # Remove extra spaces, tabs, and line breaks
+    # by splitting the data and also setting it up for multiprocessing
+
+    data = data.split()
 
     # Make all the filtered words lowercase
     data = list(map(str.lower, data))
 
-    if debug:
-        t_end_time = time.perf_counter()
-        t_total_time = t_end_time - t_start_time
-        print(f"\ncleanAndTokenize is done! " + f"\n\tIt took {t_total_time} sec(s) to run in total!\n")
+    # keep only words
+    data = re.sub(r"[^a-z\s]+", "", data).split(" ")
 
 
 
     return data
+
+
 
 def getWordCount(data_file: str, data_path: str) -> Counter:
     '''
@@ -108,7 +140,26 @@ def getWordCount(data_file: str, data_path: str) -> Counter:
     return Counter(data)
 
 
-def getWordFrequencies(word_count : Counter) -> dict:
+def getWordCountMultiProcess(data_file: str, data_path: str) -> Counter:
+    '''
+    A Function to get the word count from specified file uses multiprocessing by
+    splitting up the the words into batches
+
+    Args:
+        data_file (str): the name of the file
+        data_path (str): the path to the file
+
+    Returns:
+        word_count(Counter): A counter of the files word count
+
+
+    '''
+    data = readInData(data_file,data_path)
+    data = cleanAndTokenize(data)
+    return Counter(data)
+
+
+def getWordFrequencies(word_count: Counter) -> dict:
     '''
     A Function to get the word frequency from the counter
 
@@ -124,17 +175,13 @@ def getWordFrequencies(word_count : Counter) -> dict:
     # Get the total word count
     total_count = sum(word_count.values())
 
-
     for word, count in word_count.items():
         word_frequencies[word] = (count / total_count)
-
 
     return word_frequencies
 
 
-
-
-def getWordData(data_file: str, data_path: str, debug = True) -> dict:
+def getWordData(data_file: str, data_path: str, debug : bool = True) -> dict:
     '''
     Main running function to get all the word count data
     :param data_file: the name of the file
@@ -143,12 +190,13 @@ def getWordData(data_file: str, data_path: str, debug = True) -> dict:
 
     :return word_data: a tuple of the word counts and word frequencies
 
+
     '''
 
 
     if debug:
         t_start_time = time.perf_counter()
-        print(f"START getWordData {data_file}")
+        print(f"START getWordData {data_file} pid : {os.getpid()}")
 
     # Get the word counter
     word_count = getWordCount(data_file,data_path)
@@ -156,7 +204,7 @@ def getWordData(data_file: str, data_path: str, debug = True) -> dict:
     if debug:
         t_end_time = time.perf_counter()
         t_total_time = t_end_time - t_start_time
-        print(f"\nEND getWordData {data_file}! " +
+        print(f"\nEND getWordData {data_file} pid : {os.getpid()}! " +
               f"\n\tIt took {t_total_time} sec(s) to run in total!\n")
 
     # Get the word frequencies
@@ -172,10 +220,11 @@ def printTopNWords(files_data: dict, top_n_words: int = 10):
     '''
     A Function to print out the top N words over the years
     Args:
-        files_data (dict): the dict of word data
-        top_n_words (int): the top n words to print out
+        files_data ():
+        top_n_words ():
 
     Returns:
+
 
     '''
 
@@ -193,7 +242,6 @@ def printTopNWords(files_data: dict, top_n_words: int = 10):
 
 
     return
-
 
 def printWordFrequencyOverYears(files_data: dict, word: str):
     '''
@@ -226,32 +274,63 @@ def printWordFrequencyOverYears(files_data: dict, word: str):
     return
 
 
-def runWordCounter() -> dict:
+def runWordCounter(thread_count: int = None,
+                   process_count: int = None,
+                   debug: bool = True) -> dict:
     '''
     Main function to run the word counter
 
-    Timing of funtions will be done in nanoseconds
+    Timing of functions will be done in seconds
 
-    :param data_type: a str of the data type to use. Valid types list, np, gpu
+    Args:
+        thread_count (int): the number of threads to use
+        process_count (int): the number of processes to use
+        debug (bool): if true debug print statements will be displayed
+
     :return: a dictionary of all the files raw strings
+
+
     '''
+
+    # Check that process number and thread count are there
+    if thread_count is None:
+        print(f"\nError no thread count was entered!!")
+        print(f"Setting thread_count to machines core count {os.cpu_count()}!")
+        thread_count = os.cpu_count()
+    if process_count is None:
+        print(f"\nError no process count was entered!!")
+        print(f"Setting process_count to machines core count {os.cpu_count()}!")
+        process_count = os.cpu_count()
+
+    # if Debug print the function and pid
+    if debug: print(f"\nrunWordCounter pid : {os.getpid()}")
 
 
     # Get the current file directory path of the file.
     dir_path = os.path.dirname(os.path.realpath(__file__))
 
     # Make the filepath the reddit comments (data) path
-
     data_path = os.path.join(dir_path, os.path.normcase("data/"))
 
     # Get all the data files
     data_files = os.listdir(data_path)
 
-    #calculate the word data for each data file
-    files_data = {}
     getWordData_start_time = time.perf_counter()
-    for data_file in data_files:
-        files_data[data_file] = getWordData(data_file,data_path)
+
+
+
+    # Use the concurrent futers process pool context manager to start
+    # multiprocess pool with desired number of processes
+    with ProcessPoolExecutor(process_count) as p:
+        word_data_list = p.map(getWordData,
+                               data_files,
+                               repeat(data_path))
+    # Make the word count dicts
+    files_data = {}
+    for data_file, dat in zip(data_files, word_data_list):
+        files_data[data_file] = dat
+
+
     getWordData_end_time = time.perf_counter()
     getWordData_total_time = getWordData_end_time - getWordData_start_time
     print(f"\nWord Counter  is done! " +
@@ -261,14 +340,13 @@ def runWordCounter() -> dict:
     printTopNWords(files_data)
 
     # Print word frequency of the
-    printWordFrequencyOverYears(files_data,"the")
+    printWordFrequencyOverYears(files_data, "the")
 
     return
 
 
 # Main function to run the script
 def main():
-
 
 
     runWordCounter()
