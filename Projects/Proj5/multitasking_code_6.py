@@ -69,7 +69,7 @@ def readInData(data_file: str, data_path: str) -> str:
 
 
 def cleanAndTokenize(data: list, chunk_num : int
-                     , debug : bool = True) -> list:
+                     , debug : bool = False) -> list:
     '''
     A Function to clean and tokenize the raw string
     Args:
