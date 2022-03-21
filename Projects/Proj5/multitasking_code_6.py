@@ -369,7 +369,7 @@ def runWordCounter(thread_count: int = None, process_count: int = None,
 
 # Main function to run the script
 def main():
-    runWordCounter()
+    runWordCounter(process_count=8)
     return
 
 
