@@ -31,6 +31,22 @@ Python library).
 
 ---
 
+### Intro:
+
+talk about the experience and learning 
+
+Topics:
+- memory constraints
+- order of operations
+- use of proper data types
+- how stats were calculated.
+- how multiprocessing in particular was use full
+- talk about traces (used form viztrace) that were used to see where my code 
+  imporoved
+  - this is also a reason to why I used concurrent futures to run the 
+    multiprocessing in the functions instead of `multiprocessing.Pool()`.
+- Also talk about why mulitthreading here would not be that usefull in reality
+
 ### Resources:
 - [Info on different python timers](https://www.webucator.com/article/python-clocks-explained/#:~:text=perf_counter()%20%2C%20which%20has%20a,33%2C491%20times%20faster%20than%20time.)
 - [Why viztracer doesnt work with multiprocessing Pool](https://viztracer.readthedocs.io/en/latest/concurrency.html)
