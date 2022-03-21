@@ -68,21 +68,36 @@ def readInData(data_file: str, data_path: str) -> str:
     return data
 
 
-def cleanAndTokenize(data: list) -> list:
+def cleanAndTokenize(data: list, chunk_num : int
+                     , debug : bool = True) -> list:
     '''
     A Function to clean and tokenize the raw string
     Args:
-        data (list): a list of strind
+        chunk_num (int): the number of the chunk
+        data (list): a list of string
+        debug (bool): if true debug printing statements will be output
 
     Returns:
         tokens (list): a list of the cleaned word tokens
 
     '''
+    if debug:
+        t_start_time = time.perf_counter()
+
     # Make all the filtered words lowercase
     data = str.join(data).lower()
 
     # keep only words
     data = re.sub(r"[^a-z\s]+", "", data).split(" ")
+
+    if debug:
+        t_end_time = time.perf_counter()
+        t_total_time = t_end_time - t_start_time
+        print(f"\ncleanAndTokenize chunk {chunk_num} , pid : {os.getpid()} is" +
+              " done!" +
+              f"\n\tIt took {t_total_time} sec(s) to run in total!\n")
+
+
 
     return data
 
