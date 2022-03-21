@@ -85,7 +85,7 @@ def cleanAndTokenize(data: list, chunk_num : int
         t_start_time = time.perf_counter()
 
     # Make all the filtered words lowercase
-    data = str.join(data).lower()
+    data = " ".join(data).lower()
 
     # keep only words
     data = re.sub(r"[^a-z\s]+", "", data).split(" ")
