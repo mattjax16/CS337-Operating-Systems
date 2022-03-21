@@ -68,11 +68,11 @@ def readInData(data_file: str, data_path: str) -> str:
     return data
 
 
-def cleanAndTokenize(data: str) -> list:
+def cleanAndTokenize(data: list) -> list:
     '''
     A Function to clean and tokenize the raw string
     Args:
-        data (str): the raw string of the data
+        data (list): a list of strind
 
     Returns:
         tokens (list): a list of the cleaned word tokens
@@ -124,15 +124,12 @@ def cleanAndTokenizeMultiProcess(data: str, process_count: int = None) -> list:
         mp_data.append(data[chunck_start:chunck_end])
 
     with ProcessPoolExecutor(process_count) as p:
-        results = p.map(cleanDataList, mp_data, np.arange(len(mp_data)+1))
+        results = p.map(cleanAndTokenize, mp_data, np.arange(len(mp_data)+1))
 
 
     # Make the cleaned data by concatting all the lists
-    clean_data = list(itertools.chain.from_iterable(results))
+    data = list(itertools.chain.from_iterable(results))
 
-
-    # keep only words
-    data = re.sub(r"[^A-Za-z\s]+", "", data).split(" ")
     return data
 
 
