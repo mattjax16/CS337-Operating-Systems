@@ -446,52 +446,52 @@ def runWordCounter(data_type: str = "list") -> dict:
     checkDataType(data_type)
 
     # Reading in the raw data from the comments file
-    readInComments_start_time = time.perf_counter_ns()
+    readInComments_start_time = time.perf_counter()
     data = readInComments(data_type)
-    readInComments_end_time = time.perf_counter_ns()
+    readInComments_end_time = time.perf_counter()
     readInComments_total_time = readInComments_end_time - readInComments_start_time
     print(f"\n(Serial) readInComments ({data_type}) is done! " +
-          f"\n\tIt took {readInComments_total_time} ns to run!\n")
+          f"\n\tIt took {readInComments_total_time} sec(s) to run!\n")
 
     # Clean all the data
-    cleanData_start_time = time.perf_counter_ns()
+    cleanData_start_time = time.perf_counter()
     data = cleanData(data)
-    cleanData_end_time = time.perf_counter_ns()
+    cleanData_end_time = time.perf_counter()
     cleanData_total_time = cleanData_end_time - cleanData_start_time
     print(f"\n(Serial) cleanData ({data_type}) is done! " +
-          f"\n\tIt took {cleanData_total_time} ns to run!\n")
+          f"\n\tIt took {cleanData_total_time} sec(s) to run!\n")
 
     # Get the word counts
-    createWordCounts_start_time = time.perf_counter_ns()
+    createWordCounts_start_time = time.perf_counter()
     data = createWordCounts(data)
-    createWordCounts_end_time = time.perf_counter_ns()
+    createWordCounts_end_time = time.perf_counter()
     createWordCounts_total_time = createWordCounts_end_time - createWordCounts_start_time
     print(f"\n(Serial) createWordCounts ({data_type}) is done! " +
-          f"\n\tIt took {createWordCounts_total_time} ns to run!\n")
+          f"\n\tIt took {createWordCounts_total_time} sec(s) to run!\n")
 
     # Sort keys by top wc
-    sortWordCounts_start_time = time.perf_counter_ns()
+    sortWordCounts_start_time = time.perf_counter()
     data = sortWordCounts(data)
-    sortWordCounts_end_time = time.perf_counter_ns()
+    sortWordCounts_end_time = time.perf_counter()
     sortWordCounts_total_time = sortWordCounts_end_time - sortWordCounts_start_time
     print(f"\n(Serial) sortWordCounts ({data_type}) is done! " +
-          f"\n\tIt took {sortWordCounts_total_time} ns to run!\n")
+          f"\n\tIt took {sortWordCounts_total_time} sec(s) to run!\n")
 
     # Calculate the frequency of all the words over each year
-    sortWordCounts_start_time = time.perf_counter_ns()
+    sortWordCounts_start_time = time.perf_counter()
     data = sortWordCounts(data)
-    sortWordCounts_end_time = time.perf_counter_ns()
+    sortWordCounts_end_time = time.perf_counter()
     sortWordCounts_total_time = sortWordCounts_end_time - sortWordCounts_start_time
     print(f"\n(Serial) sortWordCounts ({data_type}) is done! " +
-          f"\n\tIt took {sortWordCounts_total_time} ns to run!\n")
+          f"\n\tIt took {sortWordCounts_total_time} sec(s) to run!\n")
 
     # Print the top 10 word counts
-    printTopWordCounts_start_time = time.perf_counter_ns()
+    printTopWordCounts_start_time = time.perf_counter()
     printTopWordCounts(data)
-    printTopWordCounts_end_time = time.perf_counter_ns()
+    printTopWordCounts_end_time = time.perf_counter()
     printTopWordCounts_total_time = printTopWordCounts_end_time - printTopWordCounts_start_time
     print(f"\n(Serial) printTopWordCounts ({data_type}) is done! " +
-          f"\n\tIt took {printTopWordCounts_total_time} ns to run!\n")
+          f"\n\tIt took {printTopWordCounts_total_time} sec(s) to run!\n")
 
     return
 

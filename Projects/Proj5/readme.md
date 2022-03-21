@@ -32,7 +32,7 @@ to unpack the rar files.
 
 ---
 
-### Intro:
+## Intro:
 
 talk about the experience and learning 
 
@@ -47,6 +47,24 @@ Topics:
   - this is also a reason to why I used concurrent futures to run the 
     multiprocessing in the functions instead of `multiprocessing.Pool()`.
 - Also talk about why mulitthreading here would not be that usefull in reality
+
+
+Overall I found this project, in using multitasking to speed up the word 
+counting python code, to be extremly rewarding in learning the limits of 
+multiprocessing and mulithreading as well as using memory resources properly,
+and overall strategies to optimize code (Including Traces from [viztracer](
+https://viztracer.readthedocs.io/en/latest/basic_usage.html))
+
+
+## Code Overview and Analysis:
+
+To Views the traces uses the command `vizviewer viztraces/`
+
+
+### serial_code_1.py:
+
+To start out I wrote (serial_code) which read in all the data from all files 
+at once (this proved to be extremely inefficient )
 
 ### Resources:
 - [Info on different python timers](https://www.webucator.com/article/python-clocks-explained/#:~:text=perf_counter()%20%2C%20which%20has%20a,33%2C491%20times%20faster%20than%20time.)
