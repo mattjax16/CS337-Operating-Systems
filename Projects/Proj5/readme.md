@@ -144,16 +144,16 @@ call graph then the main process and subprocesses.
 
 
 ##### Overall Call Graph:
-<img src="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Projects/Proj5/pics/mt2_call_graph.png">
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/mt2_call_graph.png">
 
 ##### Main Process:
 
-<img src="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Projects/Proj5/pics/mt2_main_process.png">
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/mt2_main_process.PNG">
 
 
 ##### Subprocesses:
 
-<img src="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Projects/Proj5/pics/mt2_sub_process.png">
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/mt2_sub_process.PNG">
 
 ##### Preformance:
 From the call graohs above we can see that overall `multitasking_code_2.
@@ -347,17 +347,17 @@ with viztracer from the `multitasking_code_3.py`. We will see the overall
 call graph then the main process and subprocesses.
 
 ##### Overall Call Graph:
-<img src="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Projects/Proj5/pics/mt3_call_graph.png">
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/mt3_call_graph.PNG">
 
 
 ##### Main Process:
 
-<img src="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Projects/Proj5/pics/mt3_main_process.png">
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/mt3_main_process.png">
 
 
 ##### Subprocesses:
 
-<img src="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Projects/Proj5/pics/mt3_sub_process.png">
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/mt3_sub_process.png">
 
 ##### Preformance:
 From the call graohs above we can see that overall `multitasking_code_3.
