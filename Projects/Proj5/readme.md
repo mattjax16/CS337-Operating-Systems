@@ -132,7 +132,7 @@ for data_file, dat in zip(data_files, word_data_list):
     word_data[data_file] = dat
 ```
 
-Now to go through the preformace will now look at the call graph produced 
+Now to go through the performance will now look at the call graph produced 
 with viztracer from the `multitasking_code_2.py`. We will see the overall 
 call graph then the main process and subprocesses.
 
@@ -150,7 +150,7 @@ call graph then the main process and subprocesses.
 <img src="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Projects/Proj5/pics/mt2_sub_process.png">
 
 ##### Preformance:
-  From the call graohs above we can see that overall `multitasking_code_2.
+From the call graohs above we can see that overall `multitasking_code_2.
   py` took around 57.5 seconds to run. That makes this basic multiprocessing 
   code using eight cores to run (The number of files to process), about 4 
   times faster than the serial code (3.92262608696 times faster to be exact).
@@ -335,6 +335,41 @@ def cleanDataList(raw_line_data: list, chunck_number: int,
     return clean_data
 ```
 
+
+Now to go through the performance will now look at the call graph produced 
+with viztracer from the `multitasking_code_3.py`. We will see the overall 
+call graph then the main process and subprocesses.
+
+##### Overall Call Graph:
+<img src="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Projects/Proj5/pics/mt3_call_graph.png">
+
+
+##### Main Process:
+
+<img src="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Projects/Proj5/pics/mt3_main_process.png">
+
+
+##### Subprocesses:
+
+<img src="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Projects/Proj5/pics/mt3_sub_process.png">
+
+##### Preformance:
+From the call graohs above we can see that overall `multitasking_code_3.
+  py` took around 79 seconds to run. This was surprising that it would take 
+  more time than `multitasking_code_2.py` with it being about 1.4 times longer. 
+  However, I guess it is due to the fact that the subprocesses take time to spin up and run and there are 
+  still memory constraints.
+
+My next thought to optimize the code even more if adding more 
+multiprocessing would not do the job was to try and optimize the codes base 
+functions in particular how it cleans the data, creates the word count, and 
+also try and find a better data object to hold the word count data so that I 
+would not need to sort the word count dictionary at the end of creating it. 
+This lead me to creating the file 'serial_code_3.py'.
+
+
+
+  
 
 ### Resources:
 - [Info on different python timers](https://www.webucator.com/article/python-clocks-explained/#:~:text=perf_counter()%20%2C%20which%20has%20a,33%2C491%20times%20faster%20than%20time.)
