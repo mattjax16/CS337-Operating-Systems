@@ -115,9 +115,22 @@ function. There is a process created for each file.
 
 Here is the code snippet for multiprocessing below:
 
-<img src="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Projects/Proj5/pics/mt2_code.png">
+```python
+# Use the process pool context manager to start multiprocess pool with
+# desired number of processes
+with ProcessPoolExecutor(process_count) as p:
+    word_data_list = p.map(getWordData,
+                           data_files,
+                           repeat(data_path),
+                           repeat(process_count),
+                           repeat(thread_count),
+                           repeat(data_type))
 
-
+# Make the word count dicts
+word_data = {}
+for data_file, dat in zip(data_files, word_data_list):
+    word_data[data_file] = dat
+```
 
 Now to go through the preformace will now look at the call graph produced 
 with viztracer from the `multitasking_code_2.py`. We will see the overall 
@@ -145,7 +158,7 @@ call graph then the main process and subprocesses.
   with.
 
 
-### serial_code_3.py:
+### multitasking_code_3.py:
 
 Next with `serial_code_3.py` I used the `multiprocessing` and `concurent 
 futures`  modules to try and speed up my code even more multiprocessing to my 
@@ -167,9 +180,10 @@ Here is the code snippet for multiprocessing below in the main function
 using multiprocessing, `getWordData()`:
 
 ```python
+
 # Clean the data
 cleanDataList_start_time = time.perf_counter()
-data = cleanDataListMuliProcess(data,process_count)
+data = cleanDataListMuliProcess(data, process_count)
 cleanDataList_end_time = time.perf_counter()
 cleanDataList_total_time = cleanDataList_end_time - cleanDataList_start_time
 print(f"\n{data_file} cleanDataList ({data_type}) is done! " +
@@ -179,21 +193,146 @@ print(f"\n{data_file} cleanDataList ({data_type}) is done! " +
 createWordCountDict_start_time = time.perf_counter()
 data = createWordCountDictMultiProcess(data, process_count)
 createWordCountDict_end_time = time.perf_counter()
-createWordCountDict_total_time = createWordCountDict_end_time - createWordCountDict_start_time
+createWordCountDict_total_time = createWordCountDict_end_time - \
+    createWordCountDict_start_time
 print(f"\n{data_file} createWordCountDict ({data_type}) is done! " +
       f"\n\tIt took {createWordCountDict_total_time} sec(s) to run!\n")
+
 ```
 
 Here is how I added multiprocessing to the `cleanDataList()` function:
 ```python
-# Clean the data
+def createWordCountDictMultiProcess(
+        data: list, process_count: int) -> dict:
+    '''
+    Create a word count dict from the data. usinf mutli processing
 
+    :param data: a list of all the cleaned words
+    :param process_count: the number of process to use
+    :return: word_count: a word count dict of the file
+    '''
+
+    # set up multiprocessing  chunks to run the function
+    chunck = len(data) / process_count
+
+    mp_data = []
+    for process in range(process_count):
+        chunck_start = int(process * chunck)
+        chunck_end = int((process * chunck) + chunck)
+        mp_data.append(data[chunck_start:chunck_end])
+
+    with ProcessPoolExecutor(process_count) as p:
+        results = p.map(
+            createWordCountDict,
+            mp_data,
+            np.arange(
+                len(mp_data) + 1))
+
+    # make all dicts a counter
+    results_list = [Counter(wc) for wc in results]
+
+    # Make the cleaned data by concatting all the lists
+    word_count = Counter()
+    for wc in results_list:
+        word_count += wc
+
+    return word_count
+
+
+def createWordCountDict(data: list, chunck_number: int,
+                        debug: bool = False) -> dict:
+    '''
+    Create a word count dict from the data.
+
+    :param data: a list of all the cleaned words
+    :param chunck_number:int representing which chunchk is being
+    processes
+    :param debug: if true debug printing will occur
+    :return: word_count: a word count dict of the file
+    '''
+
+    # Create a word count
+    word_count = {}
+
+    # if Debug print the function and pid
+    if debug:
+        print(f"\nSTART createWordCountDict {chunck_number} pid :"
+              f" {os.getpid()}")
+
+    # Loop through the data and increment each word
+    for word in data:
+        if word in word_count:
+            word_count[word] += 1
+        else:
+            word_count[word] = 1
+
+    # if Debug print the function and pid
+    if debug:
+        print(f"\nEND createWordCountDict {chunck_number} pid :"
+              f" {os.getpid()}")
+    return word_count
 ```
 
 Here is the code snippet for multiprocessing below in the 
 'createWordCountDict()' function:
 ```python
+def cleanDataListMuliProcess(raw_line_data: list,
+                             process_count: int) -> list:
+    '''
+    Function to clean the raw data from each file
+    using multi processing
+    :param raw_line_data: list of raw data strings
+    :param process_count: the number of process to use
+    :return:
+    '''
+    # set up multiprocessing  chunks to run the function
+    chunck = len(raw_line_data) / process_count
 
+    mp_data = []
+    for process in range(process_count):
+        chunck_start = int(process * chunck)
+        chunck_end = int((process * chunck) + chunck)
+        mp_data.append(raw_line_data[chunck_start:chunck_end])
+
+    with ProcessPoolExecutor(process_count) as p:
+        results = p.map(cleanDataList, mp_data, np.arange(len(mp_data) + 1))
+
+    # Make the cleaned data by concatting all the lists
+    clean_data = list(itertools.chain.from_iterable(results))
+
+    return clean_data
+
+
+def cleanDataList(raw_line_data: list, chunck_number: int,
+                  debug: bool = False) -> list:
+    '''
+    Function to clean the raw data from each file
+
+    :param raw_line_data: list of raw data strings
+    :return:
+    '''
+
+    # if Debug print the function and pid
+    if debug:
+        print(
+            f"\nSTART cleanDataList {chunck_number} pid : {os.getpid()}")
+
+    clean_data = splitLinesList(raw_line_data)
+
+    # making regex to look for word
+    word_regex = re.compile("^[a-zA-Z]")
+    # Filter out all words strings that are not begging with letters
+    clean_data = list(filter(word_regex.match, clean_data))
+
+    # Make all the filtered words lowercase
+    clean_data = list(map(str.lower, clean_data))
+
+    # if Debug print the function and pid
+    if debug:
+        print(
+            f"\nEND cleanDataList {chunck_number} pid : {os.getpid()}")
+
+    return clean_data
 ```
 
 
