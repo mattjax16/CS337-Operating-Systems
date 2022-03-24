@@ -88,7 +88,13 @@ Overall this was an afwul approached that made the counter slow taking 234.635 s
 ### multitasking_code_1.py:
 Overall this code is not even worth showing the trace to because it took 
 forever to run and would crash both computers because the memory constraints 
-where so large so then 
+where so large,so then I wrote a new version of the serial code called 
+`serial_code_2.py` which reads in the data from the files one at a time. 
+
+Below is an example of the memory issues on mac with it not even running.
+
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/memory_issue.png">
+
 
 
 ### serial_code_2.py:
