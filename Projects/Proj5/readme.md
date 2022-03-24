@@ -373,7 +373,57 @@ also try and find a better data object to hold the word count data so that I
 would not need to sort the word count dictionary at the end of creating it. 
 This lead me to creating the file 'serial_code_3.py'.
 
+#### serial_code_3.py:
 
+To start in `serial_code_3.py` I first made it much simpler by removing a 
+lot of functions and combining some into one. The next big change in code 
+design that I made was to make the word count info and word frequency info 
+into two separate data objects. This way I could create the word count with 
+a `Counter` object from the `collections()` module, and then I create the word 
+frequency with normal `dict ()` object. This way I could have the word count 
+automatically sorted by the count of each word, and then I could just use the 
+`most_common()` to print out the top 10 words. This allowed me to remove the 
+function to sort the word count and also since the `Counter` object is build 
+upon a priority queue heaped data structure, it was much faster to use. This 
+by far was one of the biggest contributions to speeding up the code. 
+
+I also created a function to clean the data and split the lines into a list 
+which was much faster than the previous method. Here is the function:
+```python
+def cleanAndTokenize(data: str, debug: bool = True) -> list:
+    '''
+    A Function to clean and tokenize the raw string
+    Args:
+        data (str): the raw string of the data
+        debug (bool): if true debug printing statements will be output
+
+    Returns:
+        tokens (list): a list of the cleaned word tokens
+
+    '''
+    if debug:
+        t_start_time = time.perf_counter()
+
+    # Remove extra spaces, tabs, and line breaks
+    data = " ".join(data.split())
+
+    # keep only words
+    data = re.sub(r"[^A-Za-z\s]+", "", data).split(" ")
+
+    # Make all the filtered words lowercase
+    data = list(map(str.lower, data))
+
+    if debug:
+        t_end_time = time.perf_counter()
+        t_total_time = t_end_time - t_start_time
+        print(f"\ncleanAndTokenize is done! " +
+              f"\n\tIt took {t_total_time} sec(s) to run in total!\n")
+
+    return data
+```
+
+##### Performance:
+From the call graph above we can see that `serial_code_3.py` took around 
 
   
 
