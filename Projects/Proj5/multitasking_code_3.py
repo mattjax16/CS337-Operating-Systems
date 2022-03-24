@@ -64,8 +64,9 @@ def checkDataType(data_type: str):
 Functions to parse the raw data and clean it
 '''
 
+
 def cleanDataListMuliProcess(raw_line_data: list,
-                             process_count : int) -> list:
+                             process_count: int) -> list:
     '''
     Function to clean the raw data from each file
     using multi processing
@@ -82,10 +83,8 @@ def cleanDataListMuliProcess(raw_line_data: list,
         chunck_end = int((process * chunck) + chunck)
         mp_data.append(raw_line_data[chunck_start:chunck_end])
 
-
     with ProcessPoolExecutor(process_count) as p:
-        results = p.map(cleanDataList, mp_data, np.arange(len(mp_data)+1))
-
+        results = p.map(cleanDataList, mp_data, np.arange(len(mp_data) + 1))
 
     # Make the cleaned data by concatting all the lists
     clean_data = list(itertools.chain.from_iterable(results))
@@ -93,7 +92,8 @@ def cleanDataListMuliProcess(raw_line_data: list,
     return clean_data
 
 
-def cleanDataList(raw_line_data: list,chunck_number : int, debug: bool = False) -> list:
+def cleanDataList(raw_line_data: list, chunck_number: int,
+                  debug: bool = False) -> list:
     '''
     Function to clean the raw data from each file
 
@@ -102,8 +102,9 @@ def cleanDataList(raw_line_data: list,chunck_number : int, debug: bool = False) 
     '''
 
     # if Debug print the function and pid
-    if debug: print(
-        f"\nSTART cleanDataList {chunck_number} pid : {os.getpid()}")
+    if debug:
+        print(
+            f"\nSTART cleanDataList {chunck_number} pid : {os.getpid()}")
 
     clean_data = splitLinesList(raw_line_data)
 
@@ -116,8 +117,9 @@ def cleanDataList(raw_line_data: list,chunck_number : int, debug: bool = False) 
     clean_data = list(map(str.lower, clean_data))
 
     # if Debug print the function and pid
-    if debug: print(
-        f"\nEND cleanDataList {chunck_number} pid : {os.getpid()}")
+    if debug:
+        print(
+            f"\nEND cleanDataList {chunck_number} pid : {os.getpid()}")
 
     return clean_data
 
@@ -138,7 +140,10 @@ def splitLinesList(raw_line_data: list) -> list:
 '''
 Functions to create word maps and analize
 '''
-def createWordCountDictMultiProcess(data: list,process_count : int ,debug: bool = False) -> dict:
+
+
+def createWordCountDictMultiProcess(
+        data: list, process_count: int, debug: bool = False) -> dict:
     '''
     Create a word count dict from the data. usinf mutli processing
 
@@ -157,11 +162,13 @@ def createWordCountDictMultiProcess(data: list,process_count : int ,debug: bool 
         mp_data.append(data[chunck_start:chunck_end])
 
     with ProcessPoolExecutor(process_count) as p:
-        results = p.map(createWordCountDict, mp_data, np.arange(len(mp_data)+1))
+        results = p.map(
+            createWordCountDict,
+            mp_data,
+            np.arange(
+                len(mp_data) + 1))
 
-
-
-    #make all dicts a counter
+    # make all dicts a counter
     results_list = [Counter(wc) for wc in results]
 
     # Make the cleaned data by concatting all the lists
@@ -169,11 +176,11 @@ def createWordCountDictMultiProcess(data: list,process_count : int ,debug: bool 
     for wc in results_list:
         word_count += wc
 
-
-
     return word_count
 
-def createWordCountDict(data: list,chunck_number : int, debug: bool = False) -> dict:
+
+def createWordCountDict(data: list, chunck_number: int,
+                        debug: bool = False) -> dict:
     '''
     Create a word count dict from the data.
 
@@ -188,8 +195,9 @@ def createWordCountDict(data: list,chunck_number : int, debug: bool = False) -> 
     word_count = {}
 
     # if Debug print the function and pid
-    if debug: print(f"\nSTART createWordCountDict {chunck_number} pid :"
-                    f" {os.getpid()}")
+    if debug:
+        print(f"\nSTART createWordCountDict {chunck_number} pid :"
+              f" {os.getpid()}")
 
     # Loop through the data and increment each word
     for word in data:
@@ -198,12 +206,10 @@ def createWordCountDict(data: list,chunck_number : int, debug: bool = False) -> 
         else:
             word_count[word] = 1
 
-        # if debug:
-        #     print(f"\nAdded {word} {word_count[word]}")
-
     # if Debug print the function and pid
-    if debug: print(f"\nEND createWordCountDict {chunck_number} pid :"
-                        f" {os.getpid()}")
+    if debug:
+        print(f"\nEND createWordCountDict {chunck_number} pid :"
+              f" {os.getpid()}")
     return word_count
 
 
@@ -226,8 +232,8 @@ def sortWordCount(word_count: dict, sort_ord: str = "descending") -> dict:
     return sorted_word_count
 
 
-def createWordCountHeap(data: list, sort_ord: str = "descending"
-                        , debug: bool = False):
+def createWordCountHeap(
+        data: list, sort_ord: str = "descending", debug: bool = False):
     '''
     Create a word count heap from the data.
 
@@ -343,7 +349,8 @@ def printTopWordCountsFreqs(sorted_word_data: dict, top_n_words: int = 10):
     return
 
 
-def printTopWordsFreqs(file_name: str, sorted_word_data: dict, top_n_words: int = 10):
+def printTopWordsFreqs(
+        file_name: str, sorted_word_data: dict, top_n_words: int = 10):
     '''
     Prints tthe top N words from the wordcount file
     :param file_name: the name of the file
@@ -443,7 +450,7 @@ def readInRawDataList(file_name: str, data_path: str) -> List:
 
 
 def getWordData(data_file: str, data_path: str,
-                process_count : int, thread_count : int,
+                process_count: int, thread_count: int,
                 data_type: str = "list", debug: bool = False):
     '''
     Main running function to get all the word count data
@@ -455,7 +462,8 @@ def getWordData(data_file: str, data_path: str,
     '''
 
     # if Debug print the function and pid
-    if debug: print(f"\nSTART getWordData {data_file} pid : {os.getpid()}")
+    if debug:
+        print(f"\nSTART getWordData {data_file} pid : {os.getpid()}")
 
     # Read in data based on data type
     readInRawDataL_start_time = time.perf_counter()
@@ -469,20 +477,19 @@ def getWordData(data_file: str, data_path: str,
           f"\n\tIt took {readInRawDataL_total_time} sec(s) to run!\n")
 
     # Clean the data
-    # TODO add ability to work with different data_types
     cleanDataList_start_time = time.perf_counter()
-    data = cleanDataListMuliProcess(data,process_count)
+    data = cleanDataListMuliProcess(data, process_count)
     cleanDataList_end_time = time.perf_counter()
     cleanDataList_total_time = cleanDataList_end_time - cleanDataList_start_time
     print(f"\n{data_file} cleanDataList ({data_type}) is done! " +
           f"\n\tIt took {cleanDataList_total_time} sec(s) to run!\n")
 
-    # TODO Create the word_count heap
     # word_count = createWordCountHeap(data)
     createWordCountDict_start_time = time.perf_counter()
     data = createWordCountDictMultiProcess(data, process_count)
     createWordCountDict_end_time = time.perf_counter()
-    createWordCountDict_total_time = createWordCountDict_end_time - createWordCountDict_start_time
+    createWordCountDict_total_time = createWordCountDict_end_time - \
+        createWordCountDict_start_time
     print(f"\n{data_file} createWordCountDict ({data_type}) is done! " +
           f"\n\tIt took {createWordCountDict_total_time} sec(s) to run!\n")
 
@@ -506,7 +513,8 @@ def getWordData(data_file: str, data_path: str,
     # printTopWordsFreqs(data_file, data)
 
     # if Debug print the function and pid
-    if debug: print(f"\nEND getWordData {data_file} pid : {os.getpid()}")
+    if debug:
+        print(f"\nEND getWordData {data_file} pid : {os.getpid()}")
 
     return data
 
@@ -527,7 +535,8 @@ def runWordCounter(data_type: str = "list",
     :return: a dictionary of the word counts
     '''
     # if Debug print the function and pid
-    if debug: print(f"\nrunWordCounter pid : {os.getpid()}")
+    if debug:
+        print(f"\nrunWordCounter pid : {os.getpid()}")
 
     # Check that valid data type has been passed
     data_type = data_type.lower()
@@ -542,9 +551,6 @@ def runWordCounter(data_type: str = "list",
     # Get all the data files
     data_files = os.listdir(data_path)
 
-
-
-
     # Check that process number and thread count are there
     if thread_count is None:
         print(f"\nError no thread count was entered!!")
@@ -552,11 +558,13 @@ def runWordCounter(data_type: str = "list",
         thread_count = os.cpu_count()
     if process_count is None:
         print(f"\nError no process count was entered!!")
-        print(f"Setting process_count to machines core count {os.cpu_count()}!")
+        print(
+            f"Setting process_count to machines core count {os.cpu_count()}!")
         process_count = os.cpu_count()
 
     # if Debug print the function and pid
-    if debug: print(f"\nrunWordCounter pid : {os.getpid()}")
+    if debug:
+        print(f"\nrunWordCounter pid : {os.getpid()}")
 
     # Use the process pool context manager to start multiprocess pool with
     # desired number of processes
@@ -577,7 +585,6 @@ def runWordCounter(data_type: str = "list",
 
     getWordData_end_time = time.perf_counter()
     getWordData_total_time = getWordData_end_time - getWordData_start_time
-
 
     # Print the top to words and frequencies from each year
     printTopWordCountsFreqs(word_data)

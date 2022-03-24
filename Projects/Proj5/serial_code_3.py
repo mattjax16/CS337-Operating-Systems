@@ -35,7 +35,6 @@ Helper FunctionS
 '''
 
 
-
 '''
 Functions to parse the raw data and clean it
 '''
@@ -53,12 +52,12 @@ def readInData(data_file: str, data_path: str) -> str:
         data (str): the raw string of the data
 
     '''
-    with open(data_path+data_file, 'r') as file:
+    with open(data_path + data_file, 'r') as file:
         data = file.read()
     return data
 
 
-def cleanAndTokenize(data : str, debug : bool = True) -> list:
+def cleanAndTokenize(data: str, debug: bool = True) -> list:
     '''
     A Function to clean and tokenize the raw string
     Args:
@@ -84,11 +83,11 @@ def cleanAndTokenize(data : str, debug : bool = True) -> list:
     if debug:
         t_end_time = time.perf_counter()
         t_total_time = t_end_time - t_start_time
-        print(f"\ncleanAndTokenize is done! " + f"\n\tIt took {t_total_time} sec(s) to run in total!\n")
-
-
+        print(f"\ncleanAndTokenize is done! " +
+              f"\n\tIt took {t_total_time} sec(s) to run in total!\n")
 
     return data
+
 
 def getWordCount(data_file: str, data_path: str) -> Counter:
     '''
@@ -103,12 +102,12 @@ def getWordCount(data_file: str, data_path: str) -> Counter:
 
 
     '''
-    data = readInData(data_file,data_path)
+    data = readInData(data_file, data_path)
     data = cleanAndTokenize(data)
     return Counter(data)
 
 
-def getWordFrequencies(word_count : Counter) -> dict:
+def getWordFrequencies(word_count: Counter) -> dict:
     '''
     A Function to get the word frequency from the counter
 
@@ -124,17 +123,13 @@ def getWordFrequencies(word_count : Counter) -> dict:
     # Get the total word count
     total_count = sum(word_count.values())
 
-
     for word, count in word_count.items():
         word_frequencies[word] = (count / total_count)
-
 
     return word_frequencies
 
 
-
-
-def getWordData(data_file: str, data_path: str, debug = True) -> dict:
+def getWordData(data_file: str, data_path: str, debug=True) -> dict:
     '''
     Main running function to get all the word count data
     :param data_file: the name of the file
@@ -145,13 +140,12 @@ def getWordData(data_file: str, data_path: str, debug = True) -> dict:
 
     '''
 
-
     if debug:
         t_start_time = time.perf_counter()
         print(f"START getWordData {data_file}")
 
     # Get the word counter
-    word_count = getWordCount(data_file,data_path)
+    word_count = getWordCount(data_file, data_path)
 
     if debug:
         t_end_time = time.perf_counter()
@@ -191,7 +185,6 @@ def printTopNWords(files_data: dict, top_n_words: int = 10):
     for year, tw in top_words.items():
         print(f"{year.upper()}. {tw}")
 
-
     return
 
 
@@ -216,7 +209,7 @@ def printWordFrequencyOverYears(files_data: dict, word: str):
 
             word_freq[re.sub("[^0-9]", "", file_name)] = word_freqs[word]
 
-        #if it isnt the frequency is 0
+        # if it isnt the frequency is 0
         else:
             word_freq[re.sub("[^0-9]", "", file_name)] = 0
 
@@ -236,7 +229,6 @@ def runWordCounter() -> dict:
     :return: a dictionary of all the files raw strings
     '''
 
-
     # Get the current file directory path of the file.
     dir_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -247,11 +239,11 @@ def runWordCounter() -> dict:
     # Get all the data files
     data_files = os.listdir(data_path)
 
-    #calculate the word data for each data file
+    # calculate the word data for each data file
     files_data = {}
     getWordData_start_time = time.perf_counter()
     for data_file in data_files:
-        files_data[data_file] = getWordData(data_file,data_path)
+        files_data[data_file] = getWordData(data_file, data_path)
     getWordData_end_time = time.perf_counter()
     getWordData_total_time = getWordData_end_time - getWordData_start_time
     print(f"\nWord Counter  is done! " +
@@ -261,15 +253,13 @@ def runWordCounter() -> dict:
     printTopNWords(files_data)
 
     # Print word frequency of the
-    printWordFrequencyOverYears(files_data,"the")
+    printWordFrequencyOverYears(files_data, "the")
 
     return
 
 
 # Main function to run the script
 def main():
-
-
 
     runWordCounter()
     return

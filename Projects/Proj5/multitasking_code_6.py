@@ -7,7 +7,7 @@ Matthew Bass
 
 This is a file to count the words and do other functions with the the
 reddit's comments data. It is based off my fastest serial code which is based
-off serial_code_5.py the fastest version of clean and tokenize and much
+off serial_code_4.py the fastest version of clean and tokenize and much
 simpler. In this file I attempt to make it faster than
 multitasking_code_4.py and 5. This is also an experiment to see if the little
 bit of multiprocessing I do is more valuable in terms of time saving when I
@@ -68,8 +68,7 @@ def readInData(data_file: str, data_path: str) -> str:
     return data
 
 
-def cleanAndTokenize(data: list, chunk_num : int
-                     , debug : bool = False) -> list:
+def cleanAndTokenize(data: list, chunk_num: int, debug: bool = False) -> list:
     '''
     A Function to clean and tokenize the raw string
     Args:
@@ -97,8 +96,6 @@ def cleanAndTokenize(data: list, chunk_num : int
               " done!" +
               f"\n\tIt took {t_total_time} sec(s) to run in total!\n")
 
-
-
     return data
 
 
@@ -120,13 +117,13 @@ def cleanAndTokenizeMultiProcess(data: str, process_count: int = None) -> list:
     # that machine has if no numbers are passed
     if process_count is None:
         print(f"\nError no process count was entered!!")
-        print(f"Setting process_count to machines core count {os.cpu_count()}!")
+        print(
+            f"Setting process_count to machines core count {os.cpu_count()}!")
         process_count = os.cpu_count()
 
     # Remove extra spaces, tabs, and line breaks
     # by splitting the data and also setting it up for multiprocessing
     data = data.split()
-
 
     # Set up data for Multiprocessing
     # set up multiprocessing  chunks to run the function
@@ -139,8 +136,7 @@ def cleanAndTokenizeMultiProcess(data: str, process_count: int = None) -> list:
         mp_data.append(data[chunck_start:chunck_end])
 
     with ProcessPoolExecutor(process_count) as p:
-        results = p.map(cleanAndTokenize, mp_data, np.arange(len(mp_data)+1))
-
+        results = p.map(cleanAndTokenize, mp_data, np.arange(len(mp_data) + 1))
 
     # Make the cleaned data by concatting all the lists
     data = list(itertools.chain.from_iterable(results))
@@ -225,7 +221,8 @@ def getWordDataMultiProcess(data_file: str, data_path: str,
     # that machine has if no numbers are passed
     if process_count is None:
         print(f"\nError no process count was entered!!")
-        print(f"Setting process_count to machines core count {os.cpu_count()}!")
+        print(
+            f"Setting process_count to machines core count {os.cpu_count()}!")
         process_count = os.cpu_count()
 
     if debug:
@@ -238,7 +235,9 @@ def getWordDataMultiProcess(data_file: str, data_path: str,
     if debug:
         t_end_time = time.perf_counter()
         t_total_time = t_end_time - t_start_time
-        print(f"\nEND getWordData {data_file} pid : {os.getpid()}! " + f"\n\tIt took {t_total_time} sec(s) to run in total!\n")
+        print(
+            f"\nEND getWordData {data_file} pid : {os.getpid()}! " +
+            f"\n\tIt took {t_total_time} sec(s) to run in total!\n")
 
     # Get the word frequencies
     word_frequencies = getWordFrequencies(word_count)
@@ -331,11 +330,13 @@ def runWordCounter(thread_count: int = None, process_count: int = None,
         thread_count = os.cpu_count()
     if process_count is None:
         print(f"\nError no process count was entered!!")
-        print(f"Setting process_count to machines core count {os.cpu_count()}!")
+        print(
+            f"Setting process_count to machines core count {os.cpu_count()}!")
         process_count = os.cpu_count()
 
     # if Debug print the function and pid
-    if debug: print(f"\nrunWordCounter pid : {os.getpid()}")
+    if debug:
+        print(f"\nrunWordCounter pid : {os.getpid()}")
 
     # Get the current file directory path of the file.
     dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -356,7 +357,8 @@ def runWordCounter(thread_count: int = None, process_count: int = None,
 
     getWordData_end_time = time.perf_counter()
     getWordData_total_time = getWordData_end_time - getWordData_start_time
-    print(f"\nWord Counter  is done! " + f"\n\tIt took {getWordData_total_time} sec(s) to run in total!\n")
+    print(f"\nWord Counter  is done! " +
+          f"\n\tIt took {getWordData_total_time} sec(s) to run in total!\n")
 
     # Print the top 10 words
     printTopNWords(files_data)

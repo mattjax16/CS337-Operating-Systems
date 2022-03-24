@@ -30,7 +30,7 @@ import time
 import numpy as np
 from typing import Any, List
 
-from word_count_objects import MaxWordCounts,VALID_DATA_TYPES,WordCount
+from word_count_objects import MaxWordCounts, VALID_DATA_TYPES, WordCount
 
 
 '''
@@ -56,8 +56,6 @@ def checkDataType(data_type: str):
 '''
 Functions to parse the raw data and clean it
 '''
-
-
 
 
 def cleanDataList(raw_line_data: list) -> list:
@@ -98,7 +96,8 @@ def splitLinesList(raw_line_data: list) -> list:
 Functions to create word maps and analize
 '''
 
-def createWordCountDict(data: list, debug : bool = False) -> dict:
+
+def createWordCountDict(data: list, debug: bool = False) -> dict:
     '''
     Create a word count dict from the data.
 
@@ -122,7 +121,6 @@ def createWordCountDict(data: list, debug : bool = False) -> dict:
     return word_count
 
 
-
 def sortWordCount(word_count: dict, sort_ord: str = "descending") -> dict:
     '''
     Sorts the word count dicts based on sort_ord
@@ -141,8 +139,9 @@ def sortWordCount(word_count: dict, sort_ord: str = "descending") -> dict:
 
     return sorted_word_count
 
-def createWordCountHeap(data: list, sort_ord: str = "descending"
-                        , debug : bool = False):
+
+def createWordCountHeap(
+        data: list, sort_ord: str = "descending", debug: bool = False):
     '''
     Create a word count heap from the data.
 
@@ -154,7 +153,6 @@ def createWordCountHeap(data: list, sort_ord: str = "descending"
 
     if sort_ord == "descending":
         word_count = MaxWordCounts()
-
 
     # Loop through the data and increment each word
     for word in data:
@@ -180,7 +178,7 @@ def calcWordFrequencies(word_count: dict, data_type: str = "list") -> dict:
         wc_list = list(word_count.values())
 
         total_wc = sum(wc_list)
-        word_freqs = [wc/total_wc for wc in wc_list]
+        word_freqs = [wc / total_wc for wc in wc_list]
 
         word_count_freq = {word: (count, freq) for (word, count, freq) in
                            zip(word_count.keys(), wc_list, word_freqs)}
@@ -196,7 +194,6 @@ def calcWordFrequencies(word_count: dict, data_type: str = "list") -> dict:
 
         word_count_freq = {word: (count, freq) for (word, count, freq) in
                            zip(word_count.keys(), wc_array, word_freqs)}
-
 
     return word_count_freq
 
@@ -243,7 +240,6 @@ def printTopWords(file_name: str, word_count: dict, top_n_words: int = 10):
         print(f"\n\t {words_printed + 1}. {word} : {count}")
 
 
-
 def printTopWordCountsFreqs(sorted_word_data: dict, top_n_words: int = 10):
     '''
     Prints out the top n number of words from the sorted word counts
@@ -261,7 +257,8 @@ def printTopWordCountsFreqs(sorted_word_data: dict, top_n_words: int = 10):
     return
 
 
-def printTopWordsFreqs(file_name: str, sorted_word_data: dict, top_n_words: int = 10):
+def printTopWordsFreqs(
+        file_name: str, sorted_word_data: dict, top_n_words: int = 10):
     '''
     Prints the top N words from the wordcount file
     :param file_name: the name of the file
@@ -286,6 +283,7 @@ def printTopWordsFreqs(file_name: str, sorted_word_data: dict, top_n_words: int 
 
         print(f"\n\t {words_printed + 1}. {word} : {data[0]} : {data[1]}")
 
+
 def printWordFreqOverYears(word_data: dict, word: str):
     '''
     Function to print the word frequency over the years
@@ -296,7 +294,7 @@ def printWordFreqOverYears(word_data: dict, word: str):
 
     word = word.lower()
 
-    #see if the word is in the word data at all
+    # see if the word is in the word data at all
     word_in_year = [word in year_data.keys() for year_data in word_data]
 
     if True not in word_in_year:
@@ -307,7 +305,7 @@ def printWordFreqOverYears(word_data: dict, word: str):
         # Print the header
         print(f"\nThe frequency of {word} over the years:")
 
-        for year ,year_data, in_year in zip(word_data.keys(),
+        for year, year_data, in_year in zip(word_data.keys(),
                                             word_data.values(),
                                             word_in_year):
 
@@ -321,6 +319,7 @@ def printWordFreqOverYears(word_data: dict, word: str):
                 print(f"\n\t{year}. {0}")
 
         return
+
 
 '''
 Reading in Comments
@@ -358,8 +357,6 @@ def readInRawDataList(file_name: str, data_path: str) -> List:
         return data
 
 
-
-
 def getWordData(data_file: str, data_path: str,
                 data_type: str = "list"):
     '''
@@ -390,23 +387,23 @@ def getWordData(data_file: str, data_path: str,
     print(f"\n{data_file} cleanDataList ({data_type}) is done! " +
           f"\n\tIt took {cleanDataList_total_time} sec(s) to run!\n")
 
-    #TODO Create the word_count heap
+    # TODO Create the word_count heap
     # word_count = createWordCountHeap(data)
     createWordCountDict_start_time = time.perf_counter()
     data = createWordCountDict(data)
     createWordCountDict_end_time = time.perf_counter()
-    createWordCountDict_total_time = createWordCountDict_end_time - createWordCountDict_start_time
+    createWordCountDict_total_time = createWordCountDict_end_time - \
+        createWordCountDict_start_time
     print(f"\n{data_file} createWordCountDict ({data_type}) is done! " +
           f"\n\tIt took {createWordCountDict_total_time} sec(s) to run!\n")
 
-    #sort the word count
+    # sort the word count
     sortWordCount_start_time = time.perf_counter()
     data = sortWordCount(data)
     sortWordCount_end_time = time.perf_counter()
     sortWordCount_total_time = sortWordCount_end_time - sortWordCount_start_time
     print(f"\n{data_file} sortWordCount ({data_type}) is done! " +
           f"\n\tIt took {sortWordCount_total_time} sec(s) to run!\n")
-
 
     # Calculate the frequencies
     calcWordFrequencies_start_time = time.perf_counter()
@@ -418,9 +415,6 @@ def getWordData(data_file: str, data_path: str,
 
     # Print the top 10 words and frequencies
     printTopWordsFreqs(data_file, data)
-
-
-
 
 
 def runWordCounter(data_type: str = "list") -> dict:
@@ -447,11 +441,11 @@ def runWordCounter(data_type: str = "list") -> dict:
     # Get all the data files
     data_files = os.listdir(data_path)
 
-    #calculate the word data for each data file
+    # calculate the word data for each data file
     word_data = {}
     getWordData_start_time = time.perf_counter()
     for data_file in data_files:
-        word_data[data_file] = getWordData(data_file,data_path,data_type)
+        word_data[data_file] = getWordData(data_file, data_path, data_type)
     getWordData_end_time = time.perf_counter()
     getWordData_total_time = getWordData_end_time - getWordData_start_time
     print(f"\nWord Counter ({data_type}) is done! " +
@@ -462,7 +456,6 @@ def runWordCounter(data_type: str = "list") -> dict:
 
 # Main function to run the script
 def main():
-
 
     runWordCounter()
     return

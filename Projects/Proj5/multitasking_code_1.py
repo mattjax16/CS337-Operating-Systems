@@ -32,7 +32,7 @@ import time
 from concurrent.futures import ProcessPoolExecutor
 from itertools import repeat
 import numpy as np
-from typing import  List
+from typing import List
 
 from word_count_objects import MaxWordCounts, VALID_DATA_TYPES
 
@@ -143,8 +143,8 @@ def sortWordCount(word_count: dict, sort_ord: str = "descending") -> dict:
     return sorted_word_count
 
 
-def createWordCountHeap(data: list, sort_ord: str = "descending"
-                        , debug: bool = False):
+def createWordCountHeap(
+        data: list, sort_ord: str = "descending", debug: bool = False):
     '''
     Create a word count heap from the data.
 
@@ -260,7 +260,8 @@ def printTopWordCountsFreqs(sorted_word_data: dict, top_n_words: int = 10):
     return
 
 
-def printTopWordsFreqs(file_name: str, sorted_word_data: dict, top_n_words: int = 10):
+def printTopWordsFreqs(
+        file_name: str, sorted_word_data: dict, top_n_words: int = 10):
     '''
     Prints tthe top N words from the wordcount file
     :param file_name: the name of the file
@@ -394,7 +395,8 @@ def getWordData(data_file: str, data_path: str,
     createWordCountDict_start_time = time.perf_counter()
     data = createWordCountDict(data)
     createWordCountDict_end_time = time.perf_counter()
-    createWordCountDict_total_time = createWordCountDict_end_time - createWordCountDict_start_time
+    createWordCountDict_total_time = createWordCountDict_end_time - \
+        createWordCountDict_start_time
     print(f"\n{data_file} createWordCountDict ({data_type}) is done! " +
           f"\n\tIt took {createWordCountDict_total_time} sec(s) to run!\n")
 
@@ -449,9 +451,7 @@ def runWordCounter(data_type: str = "list",
 
     # calculate the word data for each data file
 
-
     getWordData_start_time = time.perf_counter()
-
 
     # Check that process number and thread count are there
     if thread_count is None:
@@ -460,7 +460,8 @@ def runWordCounter(data_type: str = "list",
         thread_count = os.cpu_count()
     if process_count is None:
         print(f"\nError no process count was entered!!")
-        print(f"Setting process_count to machines core count {os.cpu_count()}!")
+        print(
+            f"Setting process_count to machines core count {os.cpu_count()}!")
         process_count = os.cpu_count()
 
     # Set up data for starmap pool function
@@ -479,7 +480,6 @@ def runWordCounter(data_type: str = "list",
 
     getWordData_end_time = time.perf_counter()
     getWordData_total_time = getWordData_end_time - getWordData_start_time
-
 
     # Print the top to words and frequencies from each year
     printTopWordCountsFreqs(word_data)

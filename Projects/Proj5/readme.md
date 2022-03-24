@@ -99,8 +99,102 @@ at a time. This can be see in the call graph below.
 
 <img src="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Projects/Proj5/pics/sc2_trace.png">
 
-Here the word counter took 225.551 seconds to run. Which is even worse than serial_code_1.py. This is because the function `readInComments()` is called multiple times and each time it reads in the file and then calls the function `CreateWordCounts()` which is called multiple times. This wouldnt be a problem if it wasnt for the fact that I tried to get creative by making the file word_count_objects.py which had custom objects to manage the word counts using the `heapq` module. However I used this along with the `Counter` object from the `collections` module to but it was ver slow and inefficent. So then I decided to try processesing each file one at a time in serial_code_3.py.
+Here the word counter took 225.551 seconds to run. Which is even worse than serial_code_1.py. This is because the function `readInComments()` is called multiple times and each time it reads in the file and then calls the function `CreateWordCounts()` which is called multiple times. This wouldnt be a problem if it wasnt for the fact that I tried to get creative by making the file word_count_objects.py which had custom objects to manage the word counts using the `heapq` module. However I used this along with the `Counter` object from the `collections` module to but it was very slow and inefficent as we will see in later versions of serial codes. However for now this was enough of a solution for the memory constraints when using multiprocessing with the word counter.
 
+
+### multitasking_code_2.py:
+In this code I used the `multiprocessing` and `concurent futures` module to 
+run the word counter in parallel. At first I used the `multiprocessing.Pool()
+` function to run the word counter in parallel but this was not the best 
+approach because when using viztracer it can not tracess multipleprocesses 
+when they are called with the `Pool()` function on windows so instead I used 
+the `concurent futures` module instead which is a better approach along with 
+the `multiprocessing.Manager()` object which also worked with viztracer. In 
+this code I did basic multiprocessing by only running the `getWordData()` 
+function. There is a process created for each file.
+
+Here is the code snippet for multiprocessing below:
+
+<img src="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Projects/Proj5/pics/mt2_code.png">
+
+
+
+Now to go through the preformace will now look at the call graph produced 
+with viztracer from the `multitasking_code_2.py`. We will see the overall 
+call graph then the main process and subprocesses.
+
+
+##### Overall Call Graph:
+<img src="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Projects/Proj5/pics/mt2_call_graph.png">
+
+##### Main Process:
+
+<img src="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Projects/Proj5/pics/mt2_main_process.png">
+
+
+##### Subprocesses:
+
+<img src="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Projects/Proj5/pics/mt2_sub_process.png">
+
+##### Preformance:
+  From the call graohs above we can see that overall `multitasking_code_2.
+  py` took around 57.5 seconds to run. That makes this basic multiprocessing 
+  code using eight cores to run (The number of files to process), about 4 
+  times faster than the serial code (3.92262608696 times faster to be exact).
+  This of course is helped because my I9-1090K has at least eight cores to work 
+  with.
+
+
+### serial_code_3.py:
+
+Next with `serial_code_3.py` I used the `multiprocessing` and `concurent 
+futures`  modules to try and speed up my code even more multiprocessing to my 
+code. When looking at the traces from `multitasking_code_2.py` and just from 
+running it, I can see 
+that the two other functions that took the most time to run were 
+`cleanDataList()` and `createWordCountDict()` taking around 12 and 10 
+seconds to run respectively for the large text files. I also saw that 
+the `readInComments()` function took around only a little over a second to 
+run so not that much time at all. Considering these facts and due to 
+`readInComments()` being an I/O bound function, and `createWordCountDict()` 
+and `cleanDataList()` being CPU bound functions, I decided to only implement 
+more multiprocessing on the two functions `cleanDataList()` and 
+`createWordCountDict()` to try and speed up the overall code instead of 
+using multithreading with the function `readInComments()`.
+
+
+Here is the code snippet for multiprocessing below in the main function 
+using multiprocessing, `getWordData()`:
+
+```python
+# Clean the data
+cleanDataList_start_time = time.perf_counter()
+data = cleanDataListMuliProcess(data,process_count)
+cleanDataList_end_time = time.perf_counter()
+cleanDataList_total_time = cleanDataList_end_time - cleanDataList_start_time
+print(f"\n{data_file} cleanDataList ({data_type}) is done! " +
+      f"\n\tIt took {cleanDataList_total_time} sec(s) to run!\n")
+
+# word_count = createWordCountHeap(data)
+createWordCountDict_start_time = time.perf_counter()
+data = createWordCountDictMultiProcess(data, process_count)
+createWordCountDict_end_time = time.perf_counter()
+createWordCountDict_total_time = createWordCountDict_end_time - createWordCountDict_start_time
+print(f"\n{data_file} createWordCountDict ({data_type}) is done! " +
+      f"\n\tIt took {createWordCountDict_total_time} sec(s) to run!\n")
+```
+
+Here is how I added multiprocessing to the `cleanDataList()` function:
+```python
+# Clean the data
+
+```
+
+Here is the code snippet for multiprocessing below in the 
+'createWordCountDict()' function:
+```python
+
+```
 
 
 ### Resources:

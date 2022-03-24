@@ -64,8 +64,9 @@ def checkDataType(data_type: str):
 Functions to parse the raw data and clean it
 '''
 
+
 def cleanDataListMuliProcess(raw_line_data: list,
-                             process_count : int) -> list:
+                             process_count: int) -> list:
     '''
     Function to clean the raw data from each file
     using multi processing
@@ -82,18 +83,17 @@ def cleanDataListMuliProcess(raw_line_data: list,
         chunck_end = int((process * chunck) + chunck)
         mp_data.append(raw_line_data[chunck_start:chunck_end])
 
-
     with ProcessPoolExecutor(process_count) as p:
         results = p.map(cleanDataList, mp_data)
-
 
     # Make the cleaned data by concatting all the lists
     clean_data = list(itertools.chain.from_iterable(results))
 
     return clean_data
 
+
 def cleanDataListMuliProcess2(raw_line_data: list,
-                             process_count : int) -> list:
+                              process_count: int) -> list:
     '''
     Function to clean the raw data from each file
     using multi processing
@@ -116,18 +116,17 @@ def cleanDataListMuliProcess2(raw_line_data: list,
                                     args=(raw_line_data[chunck_start:chunck_end],))
         processes.append(p)
 
-
     for process in processes:
         process.start()
 
     for process in processes:
         process.join()
 
-
     # Make the cleaned data by concatting all the lists
     clean_data = list(itertools.chain.from_iterable(return_dict.values()))
 
     return clean_data
+
 
 def cleanDataList(raw_line_data: list) -> list:
     '''
@@ -211,8 +210,8 @@ def sortWordCount(word_count: dict, sort_ord: str = "descending") -> dict:
     return sorted_word_count
 
 
-def createWordCountHeap(data: list, sort_ord: str = "descending"
-                        , debug: bool = False):
+def createWordCountHeap(
+        data: list, sort_ord: str = "descending", debug: bool = False):
     '''
     Create a word count heap from the data.
 
@@ -328,7 +327,8 @@ def printTopWordCountsFreqs(sorted_word_data: dict, top_n_words: int = 10):
     return
 
 
-def printTopWordsFreqs(file_name: str, sorted_word_data: dict, top_n_words: int = 10):
+def printTopWordsFreqs(
+        file_name: str, sorted_word_data: dict, top_n_words: int = 10):
     '''
     Prints tthe top N words from the wordcount file
     :param file_name: the name of the file
@@ -428,8 +428,8 @@ def readInRawDataList(file_name: str, data_path: str) -> List:
 
 
 def getWordData(data_file: str, data_path: str,
-                process_count : int, thread_count : int,
-                data_type: str = "list",debug : bool = True):
+                process_count: int, thread_count: int,
+                data_type: str = "list", debug: bool = True):
     '''
     Main running function to get all the word count data
     :param data_file: the name of the file
@@ -440,7 +440,8 @@ def getWordData(data_file: str, data_path: str,
     '''
 
     # if Debug print the function and pid
-    if debug: print(f"\ngetWordData {data_file} pid : {os.getpid()}")
+    if debug:
+        print(f"\ngetWordData {data_file} pid : {os.getpid()}")
 
     # Read in data based on data type
     readInRawDataL_start_time = time.perf_counter()
@@ -456,7 +457,7 @@ def getWordData(data_file: str, data_path: str,
     # Clean the data
     # TODO add ability to work with different data_types
     cleanDataList_start_time = time.perf_counter()
-    data = cleanDataListMuliProcess(data,process_count)
+    data = cleanDataListMuliProcess(data, process_count)
     cleanDataList_end_time = time.perf_counter()
     cleanDataList_total_time = cleanDataList_end_time - cleanDataList_start_time
     print(f"\n{data_file} cleanDataList ({data_type}) is done! " +
@@ -467,7 +468,8 @@ def getWordData(data_file: str, data_path: str,
     createWordCountDict_start_time = time.perf_counter()
     data = createWordCountDict(data)
     createWordCountDict_end_time = time.perf_counter()
-    createWordCountDict_total_time = createWordCountDict_end_time - createWordCountDict_start_time
+    createWordCountDict_total_time = createWordCountDict_end_time - \
+        createWordCountDict_start_time
     print(f"\n{data_file} createWordCountDict ({data_type}) is done! " +
           f"\n\tIt took {createWordCountDict_total_time} sec(s) to run!\n")
 
@@ -496,7 +498,7 @@ def getWordData(data_file: str, data_path: str,
 def runWordCounter(data_type: str = "list",
                    thread_count: int = None,
                    process_count: int = None,
-                   debug : bool = True) -> dict:
+                   debug: bool = True) -> dict:
     '''
     Main function to run the word counter
 
@@ -522,12 +524,6 @@ def runWordCounter(data_type: str = "list",
     # Get all the data files
     data_files = os.listdir(data_path)
 
-
-
-
-
-
-
     # Check that process number and thread count are there
     if thread_count is None:
         print(f"\nError no thread count was entered!!")
@@ -535,11 +531,13 @@ def runWordCounter(data_type: str = "list",
         thread_count = os.cpu_count()
     if process_count is None:
         print(f"\nError no process count was entered!!")
-        print(f"Setting process_count to machines core count {os.cpu_count()}!")
+        print(
+            f"Setting process_count to machines core count {os.cpu_count()}!")
         process_count = os.cpu_count()
 
-    #if Debug print the function and pid
-    if debug: print(f"\nrunWordCounter pid : {os.getpid()}")
+    # if Debug print the function and pid
+    if debug:
+        print(f"\nrunWordCounter pid : {os.getpid()}")
 
     # calculate the word data for each data file
     getWordData_start_time = time.perf_counter()
@@ -560,7 +558,6 @@ def runWordCounter(data_type: str = "list",
 
     getWordData_end_time = time.perf_counter()
     getWordData_total_time = getWordData_end_time - getWordData_start_time
-
 
     # Print the top to words and frequencies from each year
     printTopWordCountsFreqs(word_data)

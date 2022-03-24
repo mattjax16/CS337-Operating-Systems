@@ -25,7 +25,7 @@ import re
 import time
 import numpy as np
 from typing import Any, List
-from word_count_objects import MaxHeap,MinHeap,VALID_DATA_TYPES,WordCount
+from word_count_objects import MaxHeap, MinHeap, VALID_DATA_TYPES, WordCount
 
 '''
 GLobal variables
@@ -240,7 +240,6 @@ def calcWordFrequencies(word_count: dict, data_type: str = "list") -> dict:
         word_count_freq = {word: (count, freq) for (word, count, freq) in
                            zip(word_count.keys(), wc_array, word_freqs)}
 
-
     return word_count_freq
 
 
@@ -286,7 +285,6 @@ def printTopWords(file_name: str, word_count: dict, top_n_words: int = 10):
         print(f"\n\t {words_printed + 1}. {word} : {count}")
 
 
-
 def printTopWordCountsFreqa(sorted_word_data: dict, top_n_words: int = 10):
     '''
     Prints out the top n number of words from the sorted word counts
@@ -304,7 +302,8 @@ def printTopWordCountsFreqa(sorted_word_data: dict, top_n_words: int = 10):
     return
 
 
-def printTopWordsFreqs(file_name: str, sorted_word_data: dict, top_n_words: int = 10):
+def printTopWordsFreqs(
+        file_name: str, sorted_word_data: dict, top_n_words: int = 10):
     '''
     Prints tthe top N words from the wordcount file
     :param file_name: the name of the file
@@ -329,6 +328,7 @@ def printTopWordsFreqs(file_name: str, sorted_word_data: dict, top_n_words: int 
 
         print(f"\n\t {words_printed + 1}. {word} : {data[0]} : {data[1]}")
 
+
 def printWordFreqOverYears(word_data: dict, word: str):
     '''
     Function to print the word frequency over the years
@@ -339,7 +339,7 @@ def printWordFreqOverYears(word_data: dict, word: str):
 
     word = word.lower()
 
-    #see if the word is in the word data at all
+    # see if the word is in the word data at all
     word_in_year = [word in year_data.keys() for year_data in word_data]
 
     if True not in word_in_year:
@@ -350,7 +350,7 @@ def printWordFreqOverYears(word_data: dict, word: str):
         # Print the header
         print(f"\nThe frequency of {word} over the years:")
 
-        for year ,year_data, in_year in zip(word_data.keys(),
+        for year, year_data, in_year in zip(word_data.keys(),
                                             word_data.values(),
                                             word_in_year):
 
@@ -364,6 +364,7 @@ def printWordFreqOverYears(word_data: dict, word: str):
                 print(f"\n\t{year}. {0}")
 
         return
+
 
 '''
 Reading in Comments
@@ -489,7 +490,8 @@ def runWordCounter(data_type: str = "list") -> dict:
     printTopWordCounts_start_time = time.perf_counter()
     printTopWordCounts(data)
     printTopWordCounts_end_time = time.perf_counter()
-    printTopWordCounts_total_time = printTopWordCounts_end_time - printTopWordCounts_start_time
+    printTopWordCounts_total_time = printTopWordCounts_end_time - \
+        printTopWordCounts_start_time
     print(f"\n(Serial) printTopWordCounts ({data_type}) is done! " +
           f"\n\tIt took {printTopWordCounts_total_time} sec(s) to run!\n")
 

@@ -7,7 +7,7 @@ Matthew Bass
 
 This is a file to count the words and do other functions with the the
 reddit's comments data. It is based off my fastest serial code which is based
-off serial_code_5.py the fastest version of clean and tokenize and much
+off serial_code_4.py the fastest version of clean and tokenize and much
 simpler. In this file I attempt to make it faster than multitasking_code_4.py
 by adding in more multiprocessing when parsing the words.
 
@@ -41,7 +41,6 @@ Helper FunctionS
 '''
 
 
-
 '''
 Functions to parse the raw data and clean it
 '''
@@ -59,7 +58,7 @@ def readInData(data_file: str, data_path: str) -> str:
         data (str): the raw string of the data
 
     '''
-    with open(data_path+data_file, 'r') as file:
+    with open(data_path + data_file, 'r') as file:
         data = file.read()
     return data
 
@@ -82,8 +81,6 @@ def cleanAndTokenize(data: str) -> list:
     return data
 
 
-
-
 def cleanAndTokenizeMultiProcess(data: str,
                                  process_count: int = None) -> list:
     '''
@@ -103,7 +100,8 @@ def cleanAndTokenizeMultiProcess(data: str,
     # numbers are passed
     if process_count is None:
         print(f"\nError no process count was entered!!")
-        print(f"Setting process_count to machines core count {os.cpu_count()}!")
+        print(
+            f"Setting process_count to machines core count {os.cpu_count()}!")
         process_count = os.cpu_count()
 
     # Remove extra spaces, tabs, and line breaks
@@ -117,10 +115,7 @@ def cleanAndTokenizeMultiProcess(data: str,
     # keep only words
     data = re.sub(r"[^a-z\s]+", "", data).split(" ")
 
-
-
     return data
-
 
 
 def getWordCount(data_file: str, data_path: str) -> Counter:
@@ -136,7 +131,7 @@ def getWordCount(data_file: str, data_path: str) -> Counter:
 
 
     '''
-    data = readInData(data_file,data_path)
+    data = readInData(data_file, data_path)
     data = cleanAndTokenize(data)
     return Counter(data)
 
@@ -155,7 +150,7 @@ def getWordCountMultiProcess(data_file: str, data_path: str) -> Counter:
 
 
     '''
-    data = readInData(data_file,data_path)
+    data = readInData(data_file, data_path)
     data = cleanAndTokenize(data)
     return Counter(data)
 
@@ -182,7 +177,7 @@ def getWordFrequencies(word_count: Counter) -> dict:
     return word_frequencies
 
 
-def getWordData(data_file: str, data_path: str, debug : bool = True) -> dict:
+def getWordData(data_file: str, data_path: str, debug: bool = True) -> dict:
     '''
     Main running function to get all the word count data
     :param data_file: the name of the file
@@ -194,13 +189,12 @@ def getWordData(data_file: str, data_path: str, debug : bool = True) -> dict:
 
     '''
 
-
     if debug:
         t_start_time = time.perf_counter()
         print(f"START getWordData {data_file} pid : {os.getpid()}")
 
     # Get the word counter
-    word_count = getWordCount(data_file,data_path)
+    word_count = getWordCount(data_file, data_path)
 
     if debug:
         t_end_time = time.perf_counter()
@@ -241,8 +235,8 @@ def printTopNWords(files_data: dict, top_n_words: int = 10):
     for year, tw in top_words.items():
         print(f"{year.upper()}. {tw}")
 
-
     return
+
 
 def printWordFrequencyOverYears(files_data: dict, word: str):
     '''
@@ -265,7 +259,7 @@ def printWordFrequencyOverYears(files_data: dict, word: str):
 
             word_freq[re.sub("[^0-9]", "", file_name)] = word_freqs[word]
 
-        #if it isnt the frequency is 0
+        # if it isnt the frequency is 0
         else:
             word_freq[re.sub("[^0-9]", "", file_name)] = 0
 
@@ -300,12 +294,13 @@ def runWordCounter(thread_count: int = None,
         thread_count = os.cpu_count()
     if process_count is None:
         print(f"\nError no process count was entered!!")
-        print(f"Setting process_count to machines core count {os.cpu_count()}!")
+        print(
+            f"Setting process_count to machines core count {os.cpu_count()}!")
         process_count = os.cpu_count()
 
     # if Debug print the function and pid
-    if debug: print(f"\nrunWordCounter pid : {os.getpid()}")
-
+    if debug:
+        print(f"\nrunWordCounter pid : {os.getpid()}")
 
     # Get the current file directory path of the file.
     dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -318,8 +313,6 @@ def runWordCounter(thread_count: int = None,
 
     getWordData_start_time = time.perf_counter()
 
-
-
     # Use the concurrent futers process pool context manager to start
     # multiprocess pool with desired number of processes
     with ProcessPoolExecutor(process_count) as p:
@@ -330,7 +323,6 @@ def runWordCounter(thread_count: int = None,
     files_data = {}
     for data_file, dat in zip(data_files, word_data_list):
         files_data[data_file] = dat
-
 
     getWordData_end_time = time.perf_counter()
     getWordData_total_time = getWordData_end_time - getWordData_start_time
@@ -348,7 +340,6 @@ def runWordCounter(thread_count: int = None,
 
 # Main function to run the script
 def main():
-
 
     runWordCounter()
     return
