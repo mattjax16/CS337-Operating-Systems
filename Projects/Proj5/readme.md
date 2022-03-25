@@ -34,20 +34,6 @@ to unpack the rar files.
 
 ## Intro:
 
-talk about the experience and learning 
-
-Topics:
-- memory constraints
-- order of operations
-- use of proper data types
-- how stats were calculated.
-- how multiprocessing in particular was use full
-- talk about traces (used form viztrace) that were used to see where my code 
-  imporoved
-  - this is also a reason to why I used concurrent futures to run the 
-    multiprocessing in the functions instead of `multiprocessing.Pool()`.
-- Also talk about why mulitthreading here would not be that usefull in reality
-
 
 Overall I found this project, in using multitasking to speed up the word 
 counting python code, to be extremly rewarding in learning the limits of 
@@ -55,13 +41,13 @@ multiprocessing and mulithreading as well as using memory resources properly,
 and overall strategies to optimize code (Including Traces from [viztracer](
 https://viztracer.readthedocs.io/en/latest/basic_usage.html))
 
+<br>
 
 ## Code Overview and Analysis:
 
 To Views the traces uses the command `vizviewer viztraces/`
 
 
-<br>
 
 ### serial_code_1.py:
 
@@ -73,7 +59,7 @@ wordcounter from the viztrace file we can see that this was an awful
 approach to counting all the words in the reddit comments.
 
 
-<img src="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Projects/Proj5/pics/serial1_pycharm_call_graph.png" width="1200" height="800">
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/serial1_pycharm_call_graph.png" width="1200" height="800">
 
 From The Trace above we can see the all the main function for running the word counter `CreateWordCounts()`
 is only ran once showing that all the files are read in at the sametime (the function `readInComments()` also shows this.) 
@@ -82,7 +68,7 @@ One of the biggest issues of this code is the in total all the text files combin
 
 Here is the machine at is memory limitations
 
-<img src="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Projects/Proj5/pics/sc1_mem.png">
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/sc1_mem.png">
 
 Overall this was an afwul approached that made the counter slow taking 234.635 seconds to run in total. I used this appriach though in `multitasking_code_1.py` which I would come to regret imensly.
 
@@ -559,7 +545,7 @@ with viztracer from the `serial_code_4.py`.
 
 ###### Call Graph:
 
-<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/sc3_trace.png">
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/sc4_trace.png">
 
 
 Here is the time it took to process `reddit_comments_2015.txt` (From another run so might be slightly different from the 
@@ -641,7 +627,7 @@ with viztracer from the `serial_code_5.py`.
 
 ###### Call Graph:
 
-<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/sc3_trace.png">
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/sc5_trace.png">
 
 
 Here is the time it took to process `reddit_comments_2015.txt` (From another run so might be slightly different from the 
@@ -720,17 +706,17 @@ with viztracer from the `multitasking_code_4.py`. We will see the overall
 call graph then the main process and subprocesses.
 
 ##### Overall Call Graph:
-<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/mt3_call_graph.PNG">
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/mt4_call_graph.PNG">
 
 
 ##### Main Process:
 
-<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/mt3_main_process.png">
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/mt4_main_process.png">
 
 
 ##### Subprocesses:
 
-<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/mt3_sub_process.png">
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/mt4_sub_process.png">
 
 ##### Time it took to process `reddit_comments_2015.txt` (From another run so might be slightly different from the trace above):
 ```commandline
