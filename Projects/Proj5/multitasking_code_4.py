@@ -78,11 +78,8 @@ def cleanAndTokenize(data: str, debug: bool = True) -> list:
     # after the fact when the words are split)
     data = data.lower()
 
-    # Remove extra spaces, tabs, and line breaks
-    data = " ".join(data.split())
-
-    # keep only words
-    data = re.sub(r"[^a-z\s]+", "", data).split(" ")
+    # Get all the words from the raw text
+    data = re.findall(r'\w+', data)
 
     if debug:
         t_end_time = time.perf_counter()
