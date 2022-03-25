@@ -3,12 +3,14 @@ CS337 Spring 2022 - Operating Systems Prof. Al Madi
 Project 5 - Multitasking
 serial_code_3.py
 Matthew Bass
-03/16/2022
+03/13/2022
 
 This is a file to count the words and do other functions with the the
 reddit's comments data
 
-Refactored to process all the files one at a time by certain line amount
+Another version much more simplified
+
+Refactored to process all the files one at a time
 
 It does the following:
     - Read in the Reddit comments files
@@ -22,38 +24,16 @@ It does the following:
 
     - Time your “common word” and “word trend” code reliably for comparison
 '''
-import math
+
 import os
 import re
 import time
-import linecache
-import math
-
-import numpy as np
-from typing import List
 from collections import Counter
-
-from word_count_objects import MaxWordCounts,VALID_DATA_TYPES,WordCount
-
 
 '''
 Helper FunctionS
 '''
 
-
-def checkDataType(data_type: str):
-    '''
-    This is a function to check the data types if the datatype is valid
-    then nothing happens if it isnt the code exits
-
-    :param data_type: string of data type being passes
-    :return:
-    '''
-    if data_type.lower() not in VALID_DATA_TYPES:
-        print(f"Error {data_type} is not a valid data type!!!\n" +
-              f"Valid data_types are {VALID_DATA_TYPES}\n" +
-              f"exiting from the code!!!")
-        exit()
 
 
 '''
@@ -61,479 +41,201 @@ Functions to parse the raw data and clean it
 '''
 
 
-
-
-def cleanDataList(raw_line_data: list) -> list:
+def readInData(data_file: str, data_path: str) -> str:
     '''
-    Function to clean the raw data from each file
+    A Function to read in the raw data from the file as a string
 
-    :param raw_line_data: list of raw data strings
-    :return:
+    Args:
+        data_file (str): the name of the file
+        data_path (str): the path to the file
+
+    Returns:
+        data (str): the raw string of the data
+
     '''
-
-    clean_data = splitLinesList(raw_line_data)
-
-    # making regex to look for word
-    word_regex = re.compile("^[a-zA-Z]")
-    # Filter out all words strings that are not begging with letters
-    clean_data = list(filter(word_regex.match, clean_data))
-
-    # Make all the filtered words lowercase
-    clean_data = list(map(str.lower, clean_data))
-
-    return clean_data
-
-
-def splitLinesList(raw_line_data: list) -> list:
-    '''
-    This function splits the raw list of line strings into
-
-    :param raw_line_data: list of raw data strings
-    :return:
-    '''
-    raw_words_list = []
-    for line in raw_line_data:
-        raw_words_list += re.split("[^a-zA-Z0-9']", line)
-    return raw_words_list
-
-
-'''
-Functions to create word maps and analize
-'''
-
-def createWordCountDict(data: list, debug : bool = False) -> dict:
-    '''
-    Create a word count dict from the data.
-
-    :param data: a list of all the cleaned words
-    :return: word_count: a word count dict of the file
-    '''
-
-    # Create a word count dict
-    word_count = {}
-
-    # Loop through the data and increment each word
-    for word in data:
-        if word in word_count:
-            word_count[word] += 1
-        else:
-            word_count[word] = 1
-
-        if debug:
-            print(f"\nAdded {word} {word_count[word]}")
-
-    return word_count
-
-
-
-def sortWordCount(word_count: dict, sort_ord: str = "descending") -> dict:
-    '''
-    Sorts the word count dicts based on sort_ord
-    :param word_count: the dict of word counts
-    :param sort_ord: method to sort the dicts
-    :return: sorted_word_count: the dictionary of sorted word counts
-    '''
-
-    word_count_list = list(word_count.items())
-
-    # Sort the word_count_list based on sort_ord
-    if sort_ord.lower() == "descending":
-        word_count_list.sort(key=lambda x: x[1], reverse=True)
-
-    sorted_word_count = dict(word_count_list)
-
-    return sorted_word_count
-
-def createWordCountHeap(data: list, sort_ord: str = "descending"
-                        , debug : bool = False):
-    '''
-    Create a word count heap from the data.
-
-    :param data: a list of all the cleaned words
-    :param sort_ord: method to sort the dicts
-    :param debug: if true debug printing will be done
-    :return: word_count: a word count dict of the file
-    '''
-
-    if sort_ord == "descending":
-        word_count = MaxWordCounts()
-
-
-    # Loop through the data and increment each word
-    for word in data:
-        word_count.addWord(word)
-
-    return word_count
-
-
-def calcWordFrequencies(word_count: dict, data_type: str = "list") -> dict:
-    '''
-    This function calculates the word frequencies fot all the word count dicts
-
-    :param word_count: a word count dict
-    :param data_type: a str of the data type to use. Valid types list, np
-    :return: word_count_freq: a dict of the word count and word frequency
-    '''
-
-    # Calculate the total number of words based on data type
-    # and the frequencies
-    # If base list
-    if data_type == "list":
-
-        wc_list = list(word_count.values())
-
-        total_wc = sum(wc_list)
-        word_freqs = [wc/total_wc for wc in wc_list]
-
-        word_count_freq = {word: (count, freq) for (word, count, freq) in
-                           zip(word_count.keys(), wc_list, word_freqs)}
-
-    # If numpy
-    elif data_type == "np":
-
-        wc_array = np.array(word_count.values())
-
-        total_wc = wc_array.sum()
-
-        word_freqs = wc_array / total_wc
-
-        word_count_freq = {word: (count, freq) for (word, count, freq) in
-                           zip(word_count.keys(), wc_array, word_freqs)}
-
-
-    return word_count_freq
-
-
-def printTopWordCounts(sorted_word_counts: dict, top_n_words: int = 10):
-    '''
-    Prints out the top n number of words from the sorted word counts
-
-    :param sorted_word_counts: The dictionary of sorted word counts
-    :param top_n_words: the number of top words to print out
-    :return:
-    '''
-
-    # Loop through each of the word count dicts and print them out
-    for file_name, word_count in sorted_word_counts.items():
-        printTopWords(file_name, word_count, top_n_words)
-
-    return
-
-
-def printTopWords(file_name: str, word_count: dict, top_n_words: int = 10):
-    '''
-    Prints tthe top N words from the wordcount file
-    :param file_name: the name of the file
-    :param word_count: the sorted word count data
-    :param top_n_words: the top number of words to print
-    :return:
-    '''
-
-    # Print out the intro for the file
-    print(f"\n{file_name}'s top {top_n_words} words: ")
-    print("\n\t rank.  word  :  count")
-
-    # Loop through the top n number of words are print
-    # until top_n words are printed
-    words_printed = -1
-    for word, count in word_count.items():
-
-        words_printed += 1
-        # If top n words have been printed return
-        if top_n_words == words_printed:
-            return
-
-        print(f"\n\t {words_printed + 1}. {word} : {count}")
-
-
-
-def printTopWordCountsFreqs(sorted_word_data: dict, top_n_words: int = 10):
-    '''
-    Prints out the top n number of words from the sorted word counts
-
-    :param sorted_word_data: The dictionary of sorted word counts and
-    frequencies
-    :param top_n_words: the number of top words to print out
-    :return:
-    '''
-
-    # Loop through each of the word count dicts and print them out
-    for file_name, word_count in sorted_word_data.items():
-        printTopWordsFreqs(file_name, word_count, top_n_words)
-
-    return
-
-
-def printTopWordsFreqs(file_name: str, sorted_word_data: dict, top_n_words: int = 10):
-    '''
-    Prints tthe top N words from the wordcount file
-    :param file_name: the name of the file
-    :param sorted_word_data: the sorted word  data
-    :param top_n_words: the top number of words to print
-    :return:
-    '''
-
-    # Print out the intro for the file
-    print(f"\n{file_name}'s top {top_n_words} words: ")
-    print("\n\t rank.\tword\t:\tcount\t:\tfrequency")
-
-    # Loop through the top n number of words are print
-    # until top_n words are printed
-    words_printed = -1
-    for word, data in sorted_word_data.items():
-
-        words_printed += 1
-        # If top n words have been printed return
-        if top_n_words == words_printed:
-            return
-
-        print(f"\n\t {words_printed + 1}. {word} : {data[0]} : {data[1]}")
-
-def printWordFreqOverYears(word_data: dict, word: str):
-    '''
-    Function to print the word frequency over the years
-    :param word_data: the word data
-    :param word: the word whos frequent you want to print
-    :return:
-    '''
-
-    word = word.lower()
-
-    #see if the word is in the word data at all
-    word_in_year = [word in year_data.keys() for year_data in word_data]
-
-    if True not in word_in_year:
-        print(f"\nERROR {word} is not in any year!")
-        return
-
-    else:
-        # Print the header
-        print(f"\nThe frequency of {word} over the years:")
-
-        for year ,year_data, in_year in zip(word_data.keys(),
-                                            word_data.values(),
-                                            word_in_year):
-
-            # get the year
-            year = re.sub("[^0-9]", "", year)
-
-            # if the word is in the year
-            if in_year:
-                print(f"\n\t{year}. {year_data[1]}")
-            else:
-                print(f"\n\t{year}. {0}")
-
-        return
-
-'''
-Reading in Comments
-'''
-
-
-def readInRawDataNP(file_name: str, data_path: str) -> np.chararray:
-    '''
-    A function to read in the data of the file and
-    returns the raw sting in a list data structure
-
-    :param file_name: the name of the file
-    :param data_path: the path to the file
-    :return: raw_data: the raw data string of the file in a np char array
-    '''
-
-    with open(data_path + file_name, 'r') as file:
-        data = file.readlines()
-        data = np.chararray(data)
-        return data
-
-
-def readInRawDataList(file_name: str, data_path: str) -> List:
-    '''
-    A function to read in the data of the file and
-    returns the raw sting in a list data structure
-
-    :param file_name: the name of the file
-    :param data_path: the path to the file
-    :return: raw_data: the raw data string of the file in a List
-    '''
-
-    with open(data_path + file_name, 'r') as file:
-        data = file.readlines()
-        return data
-
-def getLineCountOfFile(data_file: str, data_path: str) -> int:
-    '''
-    Function gets the total line count of the file
-
-    :param data_file: the name of the file
-    :param data_path: the path to the file
-    :return: line_count
-    '''
-    line_count = 0
-    with open(data_path + data_file, 'r') as file:
-        line_count = sum(1 for line in file)
-
-    return line_count
-
-
-
-def getPartialWordCount(data_file: str, data_path: str,
-                        start_line: int, end_line: int,
-                        chunck_number : int, debug: bool = True,
-                        data_type: str = "list"):
-    '''
-    Main running function to get all the word count data
-
-    :param data_file: the name of the file
-    :param data_path: the path to the file
-    :param chunck_number:int representing which chunchk is being
-    processes
-    :param start_line: the line to start the partial word count on (inclusive)
-    :param end_line: the line to end the partial word count on (inclusive)
-    :param data_type: a str of the data type to use. Valid types list, np
-    :param debug: if true debug printing will occur
-    :return: data, the partial word count
-    '''
-    # make the file name
-    file_name = data_path + data_file
-
-    # if Debug print the function and pid
-    if debug: print(f"\nSTART createWordCountDict {data_file} {chunck_number} pid :"
-                    f" {os.getpid()}")
-
-    #Get the taw lines
-    data = []
-    for i in range(start_line,end_line):
-        data.append(linecache.getline(file_name,i))
-
-    #clear the line cache
-    linecache.clearcache()
-
-    # Clean the data
-    data = cleanDataList(data)
-
-    # Create the partial word count
-    data = createWordCountDict(data)
-
-    # if Debug print the function and pid
-    if debug: print(f"\nEND createWordCountDict {data_file} {chunck_number} pid :"
-                    f" {os.getpid()}")
-
-    #return the partial word count
+    with open(data_path+data_file, 'r') as file:
+        data = file.read()
     return data
 
-def getWordData(data_file: str, data_path: str,
-                line_batch_size : int = 1000,
-                debug: bool = True,
-                data_type: str = "list"):
+
+def cleanAndTokenize(data : str, debug : bool = True) -> list:
+    '''
+    A Function to clean and tokenize the raw string
+    Args:
+        data (str): the raw string of the data
+        debug (bool): if true debug printing statements will be output
+
+    Returns:
+        tokens (list): a list of the cleaned word tokens
+
+    '''
+    if debug:
+        t_start_time = time.perf_counter()
+
+    # Remove extra spaces, tabs, and line breaks
+    data = " ".join(data.split())
+
+    # keep only words
+    data = re.sub(r"[^A-Za-z\s]+", "", data).split(" ")
+
+    # Make all the filtered words lowercase
+    data = list(map(str.lower, data))
+
+    if debug:
+        t_end_time = time.perf_counter()
+        t_total_time = t_end_time - t_start_time
+        print(f"\ncleanAndTokenize is done! " + f"\n\tIt took {t_total_time} sec(s) to run in total!\n")
+
+
+
+    return data
+
+def getWordCount(data_file: str, data_path: str) -> Counter:
+    '''
+    A Function to get the word count from specified file
+
+    Args:
+        data_file (str): the name of the file
+        data_path (str): the path to the file
+
+    Returns:
+        word_count(Counter): A counter of the files word count
+
+
+    '''
+    data = readInData(data_file,data_path)
+    data = cleanAndTokenize(data)
+    return Counter(data)
+
+
+def getWordFrequencies(word_count : Counter) -> dict:
+    '''
+    A Function to get the word frequency from the counter
+
+    Args:
+        word_count (Counter):
+
+    Returns:
+        word_frequencies (dict): a dict of the word frequencies
+    '''
+    # Initialize word frequencies dict
+    word_frequencies = {}
+
+    # Get the total word count
+    total_count = sum(word_count.values())
+
+
+    for word, count in word_count.items():
+        word_frequencies[word] = (count / total_count)
+
+
+    return word_frequencies
+
+
+
+
+def getWordData(data_file: str, data_path: str, debug = True) -> dict:
     '''
     Main running function to get all the word count data
     :param data_file: the name of the file
     :param data_path: the path to the file
-    :param chunck_number:int representing which chunchk is being
-    processes
-    :param line_batch_size: the number of lines per batch size of the file
-    :param debug: if true debug printing will occur
-    :param data_type: a str of the data type to use. Valid types list, np
-    :return:
+    :param debug: Bool if true debug staatement printed
+
+    :return word_data: a tuple of the word counts and word frequencies
+
     '''
 
 
-    # Make the partial word counts
-    partial_word_counts = []
+    if debug:
+        t_start_time = time.perf_counter()
+        print(f"START getWordData {data_file}")
 
-    # Get the line count of the file
-    line_count = getLineCountOfFile(data_file,data_path)
-    batch_amt = int(math.ceil(line_count / line_batch_size))
-    batch_size = int(math.ceil(line_count / batch_amt))
+    # Get the word counter
+    word_count = getWordCount(data_file,data_path)
 
-    for batch in range(batch_amt):
-        line_start = int(batch * batch_size)
-        line_end = int((batch * batch_size) + batch_size)
-        partial_word_counts.append(getPartialWordCount(data_file,
-                                                       data_path,
-                                                       line_start,
-                                                       line_end,
-                                                       chunck_number=batch))
+    if debug:
+        t_end_time = time.perf_counter()
+        t_total_time = t_end_time - t_start_time
+        print(f"\nEND getWordData {data_file}! " +
+              f"\n\tIt took {t_total_time} sec(s) to run in total!\n")
 
+    # Get the word frequencies
+    word_frequencies = getWordFrequencies(word_count)
 
+    # Make the word data object
+    word_data = (word_count, word_frequencies)
 
-    # Combine all the partial word coutns to a single WC
-    word_count = Counter()
-    for p_wc in partial_word_counts:
-        word_count += p_wc
+    return word_data
 
 
-    return word_count
+def printTopNWords(files_data: dict, top_n_words: int = 10):
+    '''
+    A Function to print out the top N words over the years
+    Args:
+        files_data (dict): the dict of word data
+        top_n_words (int): the top n words to print out
+
+    Returns:
+
+    '''
+
+    # Get the top words from all the years
+    top_words = {}
+    for file_name, data in files_data.items():
+        n_words = data[0].most_common(top_n_words)
+
+        top_words[re.sub("[^0-9]", "", file_name)] = n_words
+
+    print(f"\nThe top {top_n_words} words for each year (word, count)")
+    print(f"In Order Top: {[x+1 for x in range(top_n_words)]}")
+    for year, tw in top_words.items():
+        print(f"{year.upper()}. {tw}")
 
 
-    # # Read in data based on data type
-    # readInRawDataL_start_time = time.perf_counter()
-    # if data_type == "list":
-    #     data = readInRawDataList(data_file, data_path)
-    # elif data_type == "np":
-    #     data = readInRawDataNP(data_file, data_path)
-    # readInRawDataL_end_time = time.perf_counter()
-    # readInRawDataL_total_time = readInRawDataL_end_time - readInRawDataL_start_time
-    # print(f"\n{data_file} readInRawData ({data_type}) is done! " +
-    #       f"\n\tIt took {readInRawDataL_total_time} sec(s) to run!\n")
-    #
-    # # Clean the data
-    # # TODO add ability to work with different data_types
-    # cleanDataList_start_time = time.perf_counter()
-    # data = cleanDataList(data)
-    # cleanDataList_end_time = time.perf_counter()
-    # cleanDataList_total_time = cleanDataList_end_time - cleanDataList_start_time
-    # print(f"\n{data_file} cleanDataList ({data_type}) is done! " +
-    #       f"\n\tIt took {cleanDataList_total_time} sec(s) to run!\n")
-    #
-    # #TODO Create the word_count heap
-    # # word_count = createWordCountHeap(data)
-    # createWordCountDict_start_time = time.perf_counter()
-    # data = createWordCountDict(data)
-    # createWordCountDict_end_time = time.perf_counter()
-    # createWordCountDict_total_time = createWordCountDict_end_time - createWordCountDict_start_time
-    # print(f"\n{data_file} createWordCountDict ({data_type}) is done! " +
-    #       f"\n\tIt took {createWordCountDict_total_time} sec(s) to run!\n")
-    #
-    # #sort the word count
-    # sortWordCount_start_time = time.perf_counter()
-    # data = sortWordCount(data)
-    # sortWordCount_end_time = time.perf_counter()
-    # sortWordCount_total_time = sortWordCount_end_time - sortWordCount_start_time
-    # print(f"\n{data_file} sortWordCount ({data_type}) is done! " +
-    #       f"\n\tIt took {sortWordCount_total_time} sec(s) to run!\n")
-    #
-    #
-    # # Calculate the frequencies
-    # calcWordFrequencies_start_time = time.perf_counter()
-    # data = calcWordFrequencies(data)
-    # calcWordFrequencies_end_time = time.perf_counter()
-    # calcWordFrequencies_total_time = sortWordCount_end_time - sortWordCount_start_time
-    # print(f"\n{data_file} calcWordFrequencies ({data_type}) is done! " +
-    #       f"\n\tIt took {calcWordFrequencies_total_time} sec(s) to run!\n")
-    #
-    # # Print the top 10 words and frequencies
-    # printTopWordsFreqs(data_file, data)
-    #
-    #
-    #
+    return
 
 
-def runWordCounter(data_type: str = "list" ,
-                   line_batch_size : int = 1000 ) -> dict:
+def printWordFrequencyOverYears(files_data: dict, word: str):
+    '''
+    A Function to print out the top N words over the years
+    Args:
+        files_data (dict): the dict of word data
+        word (str): the word whos frequency to print out
+
+    Returns:
+
+    '''
+
+    # Get the word frequency from over the years
+    word_freq = {}
+    for file_name, data in files_data.items():
+        word_freqs = data[1]
+
+        # If the word is in the frequencies for that year add it
+        if word in word_freqs.keys():
+
+            word_freq[re.sub("[^0-9]", "", file_name)] = word_freqs[word]
+
+        #if it isnt the frequency is 0
+        else:
+            word_freq[re.sub("[^0-9]", "", file_name)] = 0
+
+    # Print the Header
+    print(f"\n The frequency of {word} over the years is:")
+    print(f"\t {word_freq}")
+    return
+
+
+def runWordCounter() -> dict:
     '''
     Main function to run the word counter
 
     Timing of funtions will be done in nanoseconds
 
     :param data_type: a str of the data type to use. Valid types list, np, gpu
-    :param line_batch_size: the number of lines per batch size of the file
     :return: a dictionary of all the files raw strings
     '''
 
-    # Check that valid data type has been passed
-    data_type = data_type.lower()
-    checkDataType(data_type)
 
     # Get the current file directory path of the file.
     dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -546,27 +248,28 @@ def runWordCounter(data_type: str = "list" ,
     data_files = os.listdir(data_path)
 
     #calculate the word data for each data file
-    word_data = {}
-    wc_start_time = time.perf_counter()
-
+    files_data = {}
+    getWordData_start_time = time.perf_counter()
     for data_file in data_files:
-        getWordData_start_time = time.perf_counter()
-        word_data[data_file] = getWordData(data_file,data_path,line_batch_size,data_type)
-        getWordData_end_time = time.perf_counter()
-        getWordData_total_time = getWordData_end_time - getWordData_start_time
-        print(f"\ngetWordData ({data_file}) ({data_type}) is done! " +
-              f"\n\tIt took {getWordData_total_time} sec(s) to run in total!\n")
+        files_data[data_file] = getWordData(data_file,data_path)
+    getWordData_end_time = time.perf_counter()
+    getWordData_total_time = getWordData_end_time - getWordData_start_time
+    print(f"\nWord Counter  is done! " +
+          f"\n\tIt took {getWordData_total_time} sec(s) to run in total!\n")
 
-    wc_end_time = time.perf_counter()
-    wc_total_time = wc_end_time - wc_start_time
-    print(f"\nWord Counter ({data_type}) is done! " +
-          f"\n\tIt took {wc_total_time} sec(s) to run in total!\n")
+    # Print the top 10 words
+    printTopNWords(files_data)
+
+    # Print word frequency of the
+    printWordFrequencyOverYears(files_data,"the")
 
     return
 
 
 # Main function to run the script
 def main():
+
+
 
     runWordCounter()
     return
