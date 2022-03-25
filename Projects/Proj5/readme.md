@@ -706,7 +706,7 @@ with viztracer from the `multitasking_code_4.py`. We will see the overall
 call graph then the main process and subprocesses.
 
 ##### Overall Call Graph:
-<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/mt4_call_graph.PNG">
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/mt4_call_graph.png">
 
 
 ##### Main Process:
