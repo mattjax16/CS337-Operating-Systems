@@ -755,9 +755,4 @@ proficient at profiling code and how to use the profiler to see how much time ea
 
 <br>
 
----
-
-### Layout:
-	.
-    
 
