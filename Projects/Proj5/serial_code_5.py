@@ -10,6 +10,8 @@ reddit's comments data (This is to compare the speed of cleaning data,
 This was done another way as compared to serial_code_3.py) From testing this
 way of cleaning data is definitely quicker while leading to the same results.
 
+What is really different here is the regex function that i am using to clean the data.
+
 Another version much more simplified
 
 Refactored to process all the files one at a time
@@ -73,27 +75,17 @@ def cleanAndTokenize(data: str, debug: bool = True) -> list:
     if debug:
         t_start_time = time.perf_counter()
 
-    # Remove extra spaces, tabs, and line breaks
-    # data = data.split()
-
     # Make all the characters lowercase (this is much quicker than doing it
     # after the fact when the words are split)
     data = data.lower()
 
-    # Remove extra spaces, tabs, and line breaks
-    data = data.split()
-
-    # keep only words
-    cleaned_data = []
-    for word in data:
-        word = re.sub(r"[^a-z\s]+", "", word)
-        if word != "":
-            cleaned_data.append(word)
+    # Get all the words from the raw text
+    data = re.findall(r'\w+', data)
 
     if debug:
         t_end_time = time.perf_counter()
         t_total_time = t_end_time - t_start_time
-        print(f"\ncleanAndTokenize is done! " +
+        print(f"\ncleanAndTokenize is done there are {len(data)} words! " +
               f"\n\tIt took {t_total_time} sec(s) to run in total!\n")
 
     return data

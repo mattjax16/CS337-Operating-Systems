@@ -61,6 +61,8 @@ https://viztracer.readthedocs.io/en/latest/basic_usage.html))
 To Views the traces uses the command `vizviewer viztraces/`
 
 
+<br>
+
 ### serial_code_1.py:
 
 To start out I wrote (serial_code) which read in all the data from all files 
@@ -85,6 +87,9 @@ Here is the machine at is memory limitations
 Overall this was an afwul approached that made the counter slow taking 234.635 seconds to run in total. I used this appriach though in `multitasking_code_1.py` which I would come to regret imensly.
 
 
+<br>
+
+
 ### multitasking_code_1.py:
 Overall this code is not even worth showing the trace to because it took 
 forever to run and would crash both computers because the memory constraints 
@@ -96,6 +101,8 @@ Below is an example of the memory issues on mac with it not even running.
 <img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/memory_issue.png">
 
 
+<br>
+
 
 ### serial_code_2.py:
 
@@ -106,6 +113,9 @@ at a time. This can be seen in the call graph below.
 <img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/sc2_trace.png">
 
 Here the word counter took 225.551 seconds to run. Which is even worse than serial_code_1.py. This is because the function `readInComments()` is called multiple times and each time it reads in the file and then calls the function `CreateWordCounts()` which is called multiple times. This wouldnt be a problem if it wasnt for the fact that I tried to get creative by making the file word_count_objects.py which had custom objects to manage the word counts using the `heapq` module. However I used this along with the `Counter` object from the `collections` module to but it was very slow and inefficent as we will see in later versions of serial codes. However for now this was enough of a solution for the memory constraints when using multiprocessing with the word counter.
+
+
+<br>
 
 
 ### multitasking_code_2.py:
@@ -162,6 +172,9 @@ From the call graohs above we can see that overall `multitasking_code_2.
   times faster than the serial code (3.92262608696 times faster to be exact).
   This of course is helped because my I9-1090K has at least eight cores to work 
   with.
+
+
+<br>
 
 
 ### multitasking_code_3.py:
@@ -373,7 +386,11 @@ also try and find a better data object to hold the word count data so that I
 would not need to sort the word count dictionary at the end of creating it. 
 This lead me to creating the file 'serial_code_3.py'.
 
-#### serial_code_3.py:
+
+<br>
+
+
+### serial_code_3.py:
 
 To start in `serial_code_3.py` I first made it much simpler by removing a 
 lot of functions and combining some into one. The next big change in code 
@@ -385,7 +402,9 @@ automatically sorted by the count of each word, and then I could just use the
 `most_common()` to print out the top 10 words. This allowed me to remove the 
 function to sort the word count and also since the `Counter` object is build 
 upon a priority queue heaped data structure, it was much faster to use. This 
-by far was one of the biggest contributions to speeding up the code. 
+by far was one of the biggest contributions to speeding up the code. By using dictionaries to hold the word frequencies 
+for each year it made it much faster to find and print out the frequency of a word over the years since searching for a
+word in a dictionary is done in constant time.
 
 I also created a function to clean the data and split the lines into a list 
 which was much faster than the previous method. Here is the function:
@@ -425,14 +444,253 @@ def cleanAndTokenize(data: str, debug: bool = True) -> list:
 Now to go through the performance will now look at the call graph produced 
 with viztracer from the `serial_code_3.py`.
 
-image here
+###### Call Graph:
+
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/sc3_trace.png">
 
 
+###### Total time to run the word counter (From another run so might be slightly different from the trace above):
+```commandline
+Word Counter  is done! 
+	It took 110.0330921 sec(s) to run in total!
+```
+
+###### Output of the top 10 words over the years:
+```commandline
+The top 10 words for each year (word, count)
+In Order Top: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+2008. [('the', 711513), ('to', 431563), ('a', 379813), ('of', 329578), ('and', 317301), ('i', 278455), ('that', 263598), ('is', 259208), ('in', 217093), ('you', 214583)]
+2009. [('the', 1670402), ('to', 1057262), ('a', 955963), ('and', 803046), ('i', 790624), ('of', 787511), ('that', 624333), ('is', 602729), ('you', 573489), ('it', 550267)]
+2010. [('the', 1856866), ('to', 1226757), ('a', 1136860), ('i', 1033577), ('and', 949769), ('of', 852237), ('you', 722363), ('that', 686378), ('it', 659562), ('is', 656993)]
+2011. [('the', 1671332), ('to', 1120193), ('a', 1056315), ('i', 1006873), ('and', 878485), ('of', 763567), ('you', 660990), ('that', 622743), ('it', 607347), ('is', 590998)]
+2012. [('the', 1502821), ('to', 1023874), ('a', 968789), ('i', 947775), ('and', 815605), ('of', 680333), ('you', 625966), ('it', 567488), ('that', 563968), ('is', 545467)]
+2013. [('the', 1472358), ('to', 983628), ('a', 939884), ('i', 900757), ('and', 794882), ('of', 650948), ('you', 585021), ('it', 550504), ('', 538472), ('that', 532510)]
+2014. [('the', 1547761), ('to', 1030803), ('a', 983303), ('i', 913603), ('and', 840100), ('of', 671992), ('', 621048), ('you', 615935), ('it', 568066), ('is', 544677)]
+2015. [('the', 1534523), ('to', 1011979), ('a', 957860), ('i', 867651), ('and', 828038), ('of', 651833), ('', 644593), ('you', 596518), ('it', 546009), ('is', 531635)]
+```
+This confirms that the word counter is in fact working because it is common stop words (the, to, a, and, of, i, you, it, is) 
+at the top of the list for each year. Also, the is the most common word in the english language, so it makes sense that it 
+has the highest count in each year.
 
 ##### Performance:
-From the call graph above we can see that `serial_code_3.py` took around 
+From the call graph above we can see that `serial_code_3.py` took around much faster than the original serial 
+code that processed each file one at a time (`serial_code_2.py`). This is due to the fact that I mentioned above. Having a
+time to complete of around 108 seconds it is around 2 times faster than `serial_code_2.py` (which has a time to run of 
+around 225.551 seconds). 
 
+This had me very happy that with just a little of thought process in how I structured the code 
+I was able to make it much faster. This however got me thinking could I improve how the data was cleaned and tokenized making it even faster
+Here is the function in this file:
+```python
+def cleanAndTokenize(data: str, debug: bool = True) -> list:
+    '''
+    A Function to clean and tokenize the raw string
+    Args:
+        data (str): the raw string of the data
+        debug (bool): if true debug printing statements will be output
+
+    Returns:
+        tokens (list): a list of the cleaned word tokens
+
+    '''
+    if debug:
+        t_start_time = time.perf_counter()
+
+    # Remove extra spaces, tabs, and line breaks
+    data = " ".join(data.split())
+
+    # keep only words
+    data = re.sub(r"[^A-Za-z\s]+", "", data).split(" ")
+
+    # Make all the filtered words lowercase
+    data = list(map(str.lower, data))
+
+    if debug:
+        t_end_time = time.perf_counter()
+        t_total_time = t_end_time - t_start_time
+        print(f"\ncleanAndTokenize is done! " +
+              f"\n\tIt took {t_total_time} sec(s) to run in total!\n")
+
+    return data
+```
+
+When looking at the `cleanAndTokenize` function I can see a few way It could be imporved. To start with I know that loops in python are extremely slow 
+and also that the `map` function is has approximately the same time as a for loop since the `map` function is basically a for loop under the hood. 
+So my first idea was to make the initial raw string lower case and then split the string into a list of words. Then also by lower casing all the \
+characters in the initial raw string I could onlt have to search for lower case characters in the regex function which could also 
+improve the speed of the function. 
+
+Here is the time it took to process `reddit_comments_2015.txt` (From another run so might be slightly different from the 
+trace above):
+```commandline
+START getWordData reddit_comments_2015.txt
+
+cleanAndTokenize is done there are 39380697 words! 
+	It took 10.270400999999993 sec(s) to run in total!
+
+
+END getWordData reddit_comments_2015.txt! 
+	It took 14.4489497 sec(s) to run in total!
+```
+
+
+
+<br>
+
+
+
+### serial_code_4.py
+
+In `serial_code_4.py` I changed the `cleanAndTokenize` function to use the ideas that I mentioned in the performance analysis above. 
+
+Here is the new `cleanAndTokenize` function (only the lines that are different from the original function):
+```python
+data = data.lower()
+
+# Remove extra spaces, tabs, and line breaks
+data = " ".join(data.split())
+
+# keep only words
+data = re.sub(r"[^a-z\s]+", "", data).split(" ")
+```
+
+Now to go through the performance will now look at the call graph produced 
+with viztracer from the `serial_code_4.py`.
+
+###### Call Graph:
+
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/sc3_trace.png">
+
+
+Here is the time it took to process `reddit_comments_2015.txt` (From another run so might be slightly different from the 
+trace above):
+```commandline
+END getWordData reddit_comments_2014.txt! 
+	It took 12.563553400000004 sec(s) to run in total!
+
+START getWordData reddit_comments_2015.txt
+
+cleanAndTokenize is done there are 39380697 words! 
+	It took 8.325998400000003 sec(s) to run in total!
+
+
+END getWordData reddit_comments_2015.txt! 
+	It took 12.464330599999997 sec(s) to run in total!
+```
+We can see that the time to clean and tokenize the data is a little faster than it took in `serial_code_3.py` and it 
+is still producing the same result (39380697 words). 
+
+###### Total time to run the word counter (From another run so might be slightly different from the trace above):
+```commandline
+Word Counter  is done! 
+	It took 105.5036884 sec(s) to run in total!
+```
+
+###### Output of the top 10 words over the years:
+```commandline
+The top 10 words for each year (word, count)
+In Order Top: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+2008. [('the', 711513), ('to', 431563), ('a', 379813), ('of', 329578), ('and', 317301), ('i', 278455), ('that', 263598), ('is', 259208), ('in', 217093), ('you', 214583)]
+2009. [('the', 1670402), ('to', 1057262), ('a', 955963), ('and', 803046), ('i', 790624), ('of', 787511), ('that', 624333), ('is', 602729), ('you', 573489), ('it', 550267)]
+2010. [('the', 1856866), ('to', 1226757), ('a', 1136860), ('i', 1033577), ('and', 949769), ('of', 852237), ('you', 722363), ('that', 686378), ('it', 659562), ('is', 656993)]
+2011. [('the', 1671332), ('to', 1120193), ('a', 1056315), ('i', 1006873), ('and', 878485), ('of', 763567), ('you', 660990), ('that', 622743), ('it', 607347), ('is', 590998)]
+2012. [('the', 1502821), ('to', 1023874), ('a', 968789), ('i', 947775), ('and', 815605), ('of', 680333), ('you', 625966), ('it', 567488), ('that', 563968), ('is', 545467)]
+2013. [('the', 1472358), ('to', 983628), ('a', 939884), ('i', 900757), ('and', 794882), ('of', 650948), ('you', 585021), ('it', 550504), ('', 538472), ('that', 532510)]
+2014. [('the', 1547761), ('to', 1030803), ('a', 983303), ('i', 913603), ('and', 840100), ('of', 671992), ('', 621048), ('you', 615935), ('it', 568066), ('is', 544677)]
+2015. [('the', 1534523), ('to', 1011979), ('a', 957860), ('i', 867651), ('and', 828038), ('of', 651833), ('', 644593), ('you', 596518), ('it', 546009), ('is', 531635)]
+```
+This confirms that the word counter is in fact working as expected because the top 10 words for each year are the same 
+as the top 10 words from `serial_code_3.py`.
+
+##### Performance:
   
+  Since we can see that the time to clean and tokenize the data is a little faster than it took in `serial_code_4.py` and it 
+is still producing the same result (39380697 words). I know that making all the characters lowercase in the initial raw 
+string is faster than doing it after the fact when the words are split. This lead me to thinking that the overall time to run the word
+counter would have had more of a speed increase from `serial_code_4.py` than it did, however this is not the case. With 
+the overall time taking around 105 seconds to run, only a 5 second difference to the total time for `serial_code_4.py`.
+
+This still lead me to wanting to find a even better way to clean and tokenize my data because when looking at my function
+I thought it was inefficient to do split and join the data just to get rid of the tabs, whitespace, and newlines. So I looked
+through the `re` module and found a function that would let me get the words from the raw lower case string all in one action.
+
+<br>
+
+
+<br>
+
+
+### serial_code_5.py
+
+In `serial_code_5.py` I changed the `cleanAndTokenize` function to use the ideas that I mentioned in the performance analysis above. 
+The function that I used to get all the words in one action is `re.findall`.
+
+
+Here is the new `cleanAndTokenize` function (only the lines that are different from the original function):
+```python
+# Make all the characters lowercase (this is much quicker than doing it
+# after the fact when the words are split)
+data = data.lower()
+
+# Get all the words from the raw text
+data = re.findall(r'\w+', data)
+```
+
+Now to go through the performance will now look at the call graph produced 
+with viztracer from the `serial_code_5.py`.
+
+###### Call Graph:
+
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/sc3_trace.png">
+
+
+Here is the time it took to process `reddit_comments_2015.txt` (From another run so might be slightly different from the 
+trace above):
+```commandline
+START getWordData reddit_comments_2015.txt
+
+cleanAndTokenize is done there are 42148765 words! 
+	It took 7.087127999999993 sec(s) to run in total!
+
+
+END getWordData reddit_comments_2015.txt! 
+	It took 11.608390700000001 sec(s) to run in total!
+```
+We can see that the time to clean and tokenize the data is a much faster than it took in `serial_code_4.py` and it 
+is still producing the same result (39380697 words). 
+
+###### Total time to run the word counter (From another run so might be slightly different from the trace above):
+```commandline
+Word Counter  is done! 
+	It took 87.05234469999999 sec(s) to run in total!
+```
+
+###### Output of the top 10 words over the years:
+```commandline
+The top 10 words for each year (word, count)
+In Order Top: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+2008. [('the', 711513), ('to', 431563), ('a', 379813), ('of', 329578), ('and', 317301), ('i', 278455), ('that', 263598), ('is', 259208), ('in', 217093), ('you', 214583)]
+2009. [('the', 1670402), ('to', 1057262), ('a', 955963), ('and', 803046), ('i', 790624), ('of', 787511), ('that', 624333), ('is', 602729), ('you', 573489), ('it', 550267)]
+2010. [('the', 1856866), ('to', 1226757), ('a', 1136860), ('i', 1033577), ('and', 949769), ('of', 852237), ('you', 722363), ('that', 686378), ('it', 659562), ('is', 656993)]
+2011. [('the', 1671332), ('to', 1120193), ('a', 1056315), ('i', 1006873), ('and', 878485), ('of', 763567), ('you', 660990), ('that', 622743), ('it', 607347), ('is', 590998)]
+2012. [('the', 1502821), ('to', 1023874), ('a', 968789), ('i', 947775), ('and', 815605), ('of', 680333), ('you', 625966), ('it', 567488), ('that', 563968), ('is', 545467)]
+2013. [('the', 1472358), ('to', 983628), ('a', 939884), ('i', 900757), ('and', 794882), ('of', 650948), ('you', 585021), ('it', 550504), ('', 538472), ('that', 532510)]
+2014. [('the', 1547761), ('to', 1030803), ('a', 983303), ('i', 913603), ('and', 840100), ('of', 671992), ('', 621048), ('you', 615935), ('it', 568066), ('is', 544677)]
+2015. [('the', 1534523), ('to', 1011979), ('a', 957860), ('i', 867651), ('and', 828038), ('of', 651833), ('', 644593), ('you', 596518), ('it', 546009), ('is', 531635)]
+```
+This confirms that the word counter is in fact working as expected because the top 10 words for each year are the same 
+as the top 10 words from `serial_code_4.py`.
+
+##### Performance:
+  
+  Since we can see that the time to clean and tokenize the data is a much faster than it took in `serial_code_4.py` and it 
+is still producing the same result (39380697 words). I was also extremely happy with the overal time it took the word counter 
+to run with it being around 87 seconds. That makes it around 26% faster than the time it took in `serial_code_3.py`. 
+
+
+With this new and improved serial code I went and tried to write new and improved parallel code.
+<br>
+
 
 ### Resources:
 - [Info on different python timers](https://www.webucator.com/article/python-clocks-explained/#:~:text=perf_counter()%20%2C%20which%20has%20a,33%2C491%20times%20faster%20than%20time.)

@@ -86,7 +86,7 @@ def cleanAndTokenize(data: str, debug: bool = True) -> list:
     if debug:
         t_end_time = time.perf_counter()
         t_total_time = t_end_time - t_start_time
-        print(f"\ncleanAndTokenize is done! " +
+        print(f"\ncleanAndTokenize is done there are {len(data)} words! " +
               f"\n\tIt took {t_total_time} sec(s) to run in total!\n")
 
     return data
