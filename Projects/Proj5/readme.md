@@ -101,9 +101,9 @@ Below is an example of the memory issues on mac with it not even running.
 
 This code is a bit more efficient in terms of memory usage but still takes 
 some time to run. To improve the memory efficiency I proccesed each file one 
-at a time. This can be see in the call graph below.
+at a time. This can be seen in the call graph below.
 
-<img src="/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Projects/Proj5/pics/sc2_trace.png">
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/sc2_trace.png">
 
 Here the word counter took 225.551 seconds to run. Which is even worse than serial_code_1.py. This is because the function `readInComments()` is called multiple times and each time it reads in the file and then calls the function `CreateWordCounts()` which is called multiple times. This wouldnt be a problem if it wasnt for the fact that I tried to get creative by making the file word_count_objects.py which had custom objects to manage the word counts using the `heapq` module. However I used this along with the `Counter` object from the `collections` module to but it was very slow and inefficent as we will see in later versions of serial codes. However for now this was enough of a solution for the memory constraints when using multiprocessing with the word counter.
 
@@ -421,6 +421,13 @@ def cleanAndTokenize(data: str, debug: bool = True) -> list:
 
     return data
 ```
+
+Now to go through the performance will now look at the call graph produced 
+with viztracer from the `serial_code_3.py`.
+
+image here
+
+
 
 ##### Performance:
 From the call graph above we can see that `serial_code_3.py` took around 
