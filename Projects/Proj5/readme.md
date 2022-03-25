@@ -179,7 +179,7 @@ From the call graohs above we can see that overall `multitasking_code_2.
 
 ### multitasking_code_3.py:
 
-Next with `serial_code_3.py` I used the `multiprocessing` and `concurent 
+Next with `multitasking_code_3.py` I used the `multiprocessing` and `concurent 
 futures`  modules to try and speed up my code even more multiprocessing to my 
 code. When looking at the traces from `multitasking_code_2.py` and just from 
 running it, I can see 
@@ -647,18 +647,18 @@ with viztracer from the `serial_code_5.py`.
 Here is the time it took to process `reddit_comments_2015.txt` (From another run so might be slightly different from the 
 trace above):
 ```commandline
+END getWordData reddit_comments_2014.txt! 
+	It took 12.563553400000004 sec(s) to run in total!
+
 START getWordData reddit_comments_2015.txt
 
-cleanAndTokenize is done there are 42148765 words! 
-	It took 7.087127999999993 sec(s) to run in total!
+cleanAndTokenize is done there are 39380697 words! 
+	It took 8.325998400000003 sec(s) to run in total!
 
 
 END getWordData reddit_comments_2015.txt! 
-	It took 11.608390700000001 sec(s) to run in total!
+	It took 12.464330599999997 sec(s) to run in total!
 ```
-We can see that the time to clean and tokenize the data is a much faster than it took in `serial_code_4.py` and it 
-is still producing the same result (39380697 words). 
-
 ###### Total time to run the word counter (From another run so might be slightly different from the trace above):
 ```commandline
 Word Counter  is done! 
@@ -684,15 +684,86 @@ as the top 10 words from `serial_code_4.py`.
 ##### Performance:
   
   Since we can see that the time to clean and tokenize the data is a much faster than it took in `serial_code_4.py` and it 
-is still producing the same result (39380697 words). I was also extremely happy with the overal time it took the word counter 
+is still producing the same result (39380697 words). I was also extremely happy with the overall time it took the word counter 
 to run with it being around 87 seconds. That makes it around 26% faster than the time it took in `serial_code_3.py`. 
 
 
 With this new and improved serial code I went and tried to write new and improved parallel code.
 <br>
 
+### multitasking_code_4.py:
+
+Here in `multitasking_code_3.py` I just used multiprocessing to run the `getWordData` function in parallel and only that funciton 
+since form my other experiments in parallizing the code I found that this was the fastest method.
+
+Here is the code snippet for multiprocessing below in the main function 
+using multiprocessing, `getWordData()`:
+
+```python
+
+# Use the concurrent futers process pool context manager to start
+# multiprocess pool with desired number of processes
+with ProcessPoolExecutor(process_count) as p:
+    word_data_list = p.map(getWordData,
+                           data_files,
+                           repeat(data_path))
+# Make the word count dicts
+files_data = {}
+for data_file, dat in zip(data_files, word_data_list):
+    files_data[data_file] = dat
+```
+
+
+
+Now to go through the performance will now look at the call graph produced 
+with viztracer from the `multitasking_code_4.py`. We will see the overall 
+call graph then the main process and subprocesses.
+
+##### Overall Call Graph:
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/mt3_call_graph.PNG">
+
+
+##### Main Process:
+
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/mt3_main_process.png">
+
+
+##### Subprocesses:
+
+<img src="https://github.com/mattjax16/CS337-Operating-Systems/blob/master/Projects/Proj5/pics/mt3_sub_process.png">
+
+##### Time it took to process `reddit_comments_2015.txt` (From another run so might be slightly different from the trace above):
+```commandline
+END getWordData reddit_comments_2015.txt pid : 8284!
+        It took 14.160474800000001 sec(s) to run in total!
+```
+
+###### Total time to run the word counter (From another run so might be slightly different from the trace above):
+```commandline
+Word Counter  is done!
+        It took 16.354506999999998 sec(s) to run in total!
+```
+
+##### Performance:
+
+This by far was my best code I have written for processing all the reddit comment data as it took only about 16.4 seconds to run. 
+This is a very fast time to run compared to the time it took in `serial_code_5.py` which was around 87 seconds and also proved 
+to be my greatest improvement from in time with multiprocessing as this code is about 5.3 tines faster than its serial version.
+
+<br>
+
+
+## Conclusion:
+  Overall I am very happy with the results of this project. I am very happy with the time it took to run the code and the fact that
+I was able to go all the way from a 200+ second run time down to a 16.3 second runtime in processing the data by rewriting the code
+many times. In this project I learned a ton about optimizing code and how to use multiprocessing to speed up the code. It showed me that more multiprocessing
+is not always the answer to speeding up code and also that sometimes much more speed can be gained by proper use of data structures
+, use of efficient functions and just overall refactoring and rethinking of every line of code to save time. It also was a great
+learning experience in memory limitations and bottlenecks and how to write code tow ork within those limitations. This project also allowed me to become very
+proficient at profiling code and how to use the profiler to see how much time each function took to run. (I love the viztracer library).
 
 ### Resources:
+- [Dr. Al Madi](https://www.cs.colby.edu/nsalmadi/)
 - [Info on different python timers](https://www.webucator.com/article/python-clocks-explained/#:~:text=perf_counter()%20%2C%20which%20has%20a,33%2C491%20times%20faster%20than%20time.)
 - [Why viztracer doesnt work with multiprocessing Pool](https://viztracer.readthedocs.io/en/latest/concurrency.html)
 
