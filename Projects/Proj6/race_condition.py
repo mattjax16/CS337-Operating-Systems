@@ -19,6 +19,8 @@ VALID_SOLUTIONS = {'none', '1', '2', 'peterson', 'bakery', 'builtin'}
 # Setting global var x to 0
 x = 0
 
+INCREMENT = 1000000
+
 
 def increment():
     '''
@@ -32,32 +34,43 @@ def increment():
     x += 1
 
 
-def thread1_task(lock : , my_num):
+def thread1_task(lock : SyncSolution, my_num : int):
+    '''
+    This is the first thread that will be used to test the software
+    synchronization solutions.
+
+    Args:
+        lock (SyncSolution): The lock that will be used to synchronize
+        my_num (int): The number that will be used to synchronize (the thread number)
+    '''
     global turn
-    for _ in range(10000):
+    for _ in range(INCREMENT):
         increment()
 
 
-def thread2_task(lock, my_num):
+def thread2_task(lock : SyncSolution, my_num : int):
     '''
     This is the second thread that will be used to test the
     software synchronization solutions.
+
+    Args:
+        lock (SyncSolution): The lock that will be used to synchronize
+        my_num (int): The number that will be used to synchronize (the thread number)
     '''
     global turn
-    for _ in range(10000):
+    for _ in range(INCREMENT):
         increment()
 
 
-def main_task(solution : str, sync_solution =None):
+def main_task(solution : str):
     '''
     This is the main task that will be used to test the
     software synchronization solutions.
 
     Args:
-        sync_solutions: The solution that the user wants to test.
+        solution: The solution that the user wants to test.
             Valid solutions are:
                 none, 1, 2, peterson, bakery, builtin
-    Returns:
 
     '''
 
