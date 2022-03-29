@@ -14,8 +14,9 @@ from dataclasses import dataclass, field
 # Abstract class for all the solutions
 class SyncSolution(ABC):
 
-    @abstractmethod
+
     def __init__(self) -> None:
+        self.name = None
         return
 
     @abstractmethod

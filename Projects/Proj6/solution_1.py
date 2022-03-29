@@ -33,9 +33,10 @@ class SolutionOne(SyncSolution):
             turn (int): The initial value of the turn variable.
 
     '''
-    turn: int = field(default=0)
+    turn: int = field(default=1)
+    name: str = '1'
 
-    def lock(self, thread_id : int) -> None:
+    def lock(self, thread_id : int, debug : bool = True) -> None:
         '''
         This method implements the first synchronization attempt from lecture slides
         (lecture 12).
@@ -50,13 +51,15 @@ class SolutionOne(SyncSolution):
             None
         '''
 
-        if self.turn == thread_id:
-            self.turn = (thread_id + 1) % 2
-        else:
-            while self.turn != thread_id:
-                pass
+        print(f"Thread {thread_id} Spinning")
+        while self.turn != thread_id:
+            pass
 
-    def unlock(self, thread_id : int) -> None:
+        if debug:
+            print(f'Thread {thread_id} acquired the lock.')
+            print(f'Turn is {self.turn}')
+
+    def unlock(self, thread_id : int, debug : bool = True) -> None:
         '''
         This method implements the first synchronization attempt from lecture slides
         (lecture 12).
@@ -65,10 +68,15 @@ class SolutionOne(SyncSolution):
         according to the pseudocode in lecture slides. All it does is change the
         value of turn according to thread_id being unlocked.
 
-        Args: thread_id (int): The thread_id of the thread that is trying to
-        release the lock of.
+        Args:
+            thread_id (int): The thread_id of the thread that is trying to
+            release the lock of.
+            debug (bool): If True, print the value of turn after the unlock.
         '''
-        self.turn = thread_id
+        self.turn = (thread_id) % 2 + 1
+
+        if debug:
+            print(f'Turn is {self.turn}')
 
 
 
