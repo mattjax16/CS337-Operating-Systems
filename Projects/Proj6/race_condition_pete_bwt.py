@@ -1,12 +1,12 @@
 '''
 CS337 Spring 2022 - Operating Systems Prof. Al Madi
 Project 6 - Software Synchronization Solutions
-race_condition_sol2_bwt.py
+race_condition_pete_bwt.py
 Matthew Bass
 04/05/2022
 
 This is to make a race condition that will be used to test for bounded wait
-time for solution 2. To do this I will induce a context switch by using
+time for peterson's solution. To do this I will induce a context switch by using
 time.sleep(0.0001)
 '''
 import threading
@@ -19,13 +19,13 @@ from sync_solution import SyncSolution
 # Setting global var x to 0
 x = 0
 
-INCREMENT = 10
+INCREMENT = 50000
 NUM_THREADS = 2
 T1_AMT = INCREMENT
-T2_AMT = INCREMENT * 2
+T2_AMT = INCREMENT * 5
 
 
-SYNCSOLUTION = sync_solutions.Solution2()
+SYNCSOLUTION = sync_solutions.SolutionPeterson()
 
 def increment():
     '''
@@ -51,7 +51,7 @@ def thread1_task(lock: SyncSolution, thread_id: int, debug: bool = True):
     '''
 
 
-    lock.lockSleep(thread_id, True)
+    lock.lockSleep(thread_id, False)
 
     for _ in range(T1_AMT):
 
@@ -88,7 +88,7 @@ def thread2_task(lock: SyncSolution, thread_id: int, debug: bool = True):
     '''
 
 
-    lock.lock(thread_id, True)
+    lock.lock(thread_id, False)
 
     for _ in range(T2_AMT):
 

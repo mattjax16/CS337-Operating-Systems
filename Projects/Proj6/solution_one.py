@@ -1,7 +1,7 @@
 '''
 CS337 Spring 2022 - Operating Systems Prof. Al Madi
 Project 6 - Software Synchronization Solutions
-solution_2.py
+solution_two.py
 Matthew Bass
 03/29/2022
 
@@ -75,7 +75,9 @@ class Solution1(SyncSolution):
             release the lock of.
             debug (bool): If True, print the value of turn after the unlock.
         '''
-        self.turn = (thread_id) % 2 + 1
+
+        # Change self.turn to the next thread_id (between 1 or 2)
+        self.turn = thread_id % 2 + 1
 
         if debug:
             print(f"Thread {thread_id} released the lock.")

@@ -1,16 +1,15 @@
 '''
 CS337 Spring 2022 - Operating Systems Prof. Al Madi
 Project 6 - Software Synchronization Solutions
-race_condition_sol2_bwt.py
+race_condition_pete_prog.py
 Matthew Bass
 04/05/2022
 
-This is to make a race condition that will be used to test for bounded wait
-time for solution 2. To do this I will induce a context switch by using
-time.sleep(0.0001)
+This is to make a race condition that will be used to test progress for
+Peterson's solution (if this doesnt work I know bounded wait time fails because
+bounded wait time relies on progress)
 '''
 import threading
-import time
 import sync_solutions
 
 from sync_solution import SyncSolution
@@ -19,13 +18,13 @@ from sync_solution import SyncSolution
 # Setting global var x to 0
 x = 0
 
-INCREMENT = 10
+INCREMENT = 10000
 NUM_THREADS = 2
 T1_AMT = INCREMENT
-T2_AMT = INCREMENT * 2
+T2_AMT = INCREMENT * 5
 
+SYNCSOLUTION = sync_solutions.SolutionPeterson()
 
-SYNCSOLUTION = sync_solutions.Solution2()
 
 def increment():
     '''
@@ -50,24 +49,21 @@ def thread1_task(lock: SyncSolution, thread_id: int, debug: bool = True):
         debug (bool): If the debug flag is set to True, then the debug
     '''
 
-
-    lock.lockSleep(thread_id, True)
-
     for _ in range(T1_AMT):
 
-
+        lock.lock(thread_id, False)
 
         if debug:
             print(f'Thread {thread_id} is incrementing x ({x})')
 
         increment()
 
-    if debug:
-        print(f'Thread {thread_id} is unlocking')
-    lock.unlock(thread_id,False)
+        if debug:
+            print(f'Thread {thread_id} is unlocking')
+        lock.unlock(thread_id,False)
 
     prog_check = 0
-    for _ in range(T1_AMT * 10):
+    for _ in range(T2_AMT * 10):
         prog_check += 1
 
     if debug:
@@ -88,25 +84,24 @@ def thread2_task(lock: SyncSolution, thread_id: int, debug: bool = True):
     '''
 
 
-    lock.lock(thread_id, True)
-
     for _ in range(T2_AMT):
+
+        lock.lock(thread_id, False)
 
         if debug:
             print(f'Thread {thread_id} is incrementing x ({x})')
-
         increment()
 
-    if debug:
-        print(f'Thread {thread_id} is unlocking')
-    lock.unlock(thread_id, False)
+
+        if debug:
+            print(f'Thread {thread_id} is unlocking')
+
+        lock.unlock(thread_id, False)
 
     prog_check = 0
-    for _ in range(T2_AMT * 10):
+    for _ in range(T2_AMT*10):
         prog_check += 1
 
-    if debug:
-        print(f'Thread {thread_id} is done')
     return
 
 

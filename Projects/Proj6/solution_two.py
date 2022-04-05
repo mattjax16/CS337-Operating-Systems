@@ -1,7 +1,7 @@
 '''
 CS337 Spring 2022 - Operating Systems Prof. Al Madi
 Project 6 - Software Synchronization Solutions
-solution_2.py
+solution_two.py
 Matthew Bass
 04/05/2022
 
@@ -25,27 +25,20 @@ from dataclasses import dataclass, field
 import time
 from sync_solution import SyncSolution
 
-
+@dataclass
 class Solution2(SyncSolution):
     '''
     This is the second solution to the project.
     '''
 
-    def __init__(self) -> None:
-        '''
-        This method initializes the turn variable.
 
-        Returns:
-            None
-        '''
-
-        self.flags = [False] * 2
-        self.name = '2'
+    flags : int  = field(default_factory= lambda : [False] * 2)
+    name : str = field(default = "2")
 
 
     def lock(self, thread_id : int, debug : bool = True) -> None:
         '''
-        This method implements the first synchronization attempt from lecture slides
+        This method implements the second synchronization attempt from lecture slides
         (lecture 13).
 
         The method takes a thread_id as an argument. The method should behave
@@ -81,7 +74,7 @@ class Solution2(SyncSolution):
 
         # IF DEBUG PRINT THAT THE THREAD HAS LOCKED
         if debug:
-            print(f'Thread {thread_id} has locked')
+            print(f'Thread {thread_id+1} has locked')
 
 
     def lockSleep(self, thread_id : int, debug : bool = True) -> None:
@@ -115,13 +108,13 @@ class Solution2(SyncSolution):
         while self.flags[other_thread]:
             pass
         if debug:
-            print(f'Thread {thread_id} has locked')
+            print(f'Thread {thread_id+1} has locked')
 
 
 
     def unlock(self, thread_id : int, debug : bool = True) -> None:
         '''
-        This method implements the first synchronization attempt from lecture slides
+        This method implements the second synchronization attempt from lecture slides
         (lecture 13).
 
         The method takes a thread_id as an argument. The method should behave
@@ -138,7 +131,7 @@ class Solution2(SyncSolution):
 
 
         if debug:
-            print(f"Thread {thread_id} released the lock.")
+            print(f"Thread {thread_id+1} released the lock.")
 
 
 

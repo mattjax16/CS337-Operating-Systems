@@ -23,7 +23,7 @@ NUM_THREADS = 2
 T1_AMT = INCREMENT
 T2_AMT = INCREMENT * 2
 
-SOLUTION = "2"
+SYNCSOLUTION = sync_solutions.Solution2()
 
 
 def increment():
@@ -48,22 +48,19 @@ def thread1_task(lock: SyncSolution, thread_id: int, debug: bool = True):
         thread_id (int): The number that will be used to synchronize (the thread number)
         debug (bool): If the debug flag is set to True, then the debug
     '''
-    if lock.name == SOLUTION:
 
+    for _ in range(T1_AMT):
 
+        lock.lock(thread_id, False)
 
-        for _ in range(T1_AMT):
+        if debug:
+            print(f'Thread {thread_id} is incrementing x ({x})')
 
-            lock.lock(thread_id, False)
+        increment()
 
-            if debug:
-                print(f'Thread {thread_id} is incrementing x ({x})')
-
-            increment()
-
-            if debug:
-                print(f'Thread {thread_id} is unlocking')
-            lock.unlock(thread_id,False)
+        if debug:
+            print(f'Thread {thread_id} is unlocking')
+        lock.unlock(thread_id,False)
 
     prog_check = 0
     for _ in range(T2_AMT * 10):
@@ -86,27 +83,26 @@ def thread2_task(lock: SyncSolution, thread_id: int, debug: bool = True):
         debug (bool): If the debug flag is set to True, then the debug
     '''
 
-    if lock.name == SOLUTION:
 
-        for _ in range(T2_AMT):
+    for _ in range(T2_AMT):
 
-            lock.lock(thread_id, False)
+        lock.lock(thread_id, False)
 
-            if debug:
-                print(f'Thread {thread_id} is incrementing x ({x})')
-            increment()
+        if debug:
+            print(f'Thread {thread_id} is incrementing x ({x})')
+        increment()
 
 
-            if debug:
-                print(f'Thread {thread_id} is unlocking')
+        if debug:
+            print(f'Thread {thread_id} is unlocking')
 
-            lock.unlock(thread_id, False)
+        lock.unlock(thread_id, False)
 
-        prog_check = 0
-        for _ in range(T2_AMT*10):
-            prog_check += 1
+    prog_check = 0
+    for _ in range(T2_AMT*10):
+        prog_check += 1
 
-        return
+    return
 
 
 
@@ -185,7 +181,7 @@ def main_task(debug: bool = False) -> int:
 
     # Create threads based on the info
     # create a lock
-    lock = sync_solutions.Solution2()
+    lock = SYNCSOLUTION
 
     # Create threads
     t1 = threading.Thread(target=thread1_task, args=(lock, 1, debug))
