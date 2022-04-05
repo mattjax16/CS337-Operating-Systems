@@ -1,14 +1,16 @@
 '''
 CS337 Spring 2022 - Operating Systems Prof. Al Madi
 Project 6 - Software Synchronization Solutions
-race_condition_sol2_me.py
+race_condition_sol2_bwt.py
 Matthew Bass
 04/05/2022
 
-This is to make a race condition that will be used
-to test mutual exclusion for solution 2
+This is to make a race condition that will be used to test for bounded wait
+time for solution 2. To do this I will induce a context switch by using
+time.sleep(0.0001)
 '''
 import threading
+import time
 import sync_solutions
 
 from sync_solution import SyncSolution
@@ -17,11 +19,10 @@ from sync_solution import SyncSolution
 # Setting global var x to 0
 x = 0
 
-INCREMENT = 500000
+INCREMENT = 10
 NUM_THREADS = 2
-
 T1_AMT = INCREMENT
-T2_AMT = INCREMENT
+T2_AMT = INCREMENT * 2
 
 SOLUTION = "2"
 
@@ -48,12 +49,13 @@ def thread1_task(lock: SyncSolution, thread_id: int, debug: bool = True):
         thread_id (int): The number that will be used to synchronize (the thread number)
         debug (bool): If the debug flag is set to True, then the debug
     '''
-
     if lock.name == SOLUTION:
 
-        lock.lock(thread_id, False)
+        lock.lockSleep(thread_id, True)
 
-        for _ in range(INCREMENT):
+        for _ in range(T1_AMT):
+
+
 
             if debug:
                 print(f'Thread {thread_id} is incrementing x ({x})')
@@ -64,6 +66,10 @@ def thread1_task(lock: SyncSolution, thread_id: int, debug: bool = True):
             print(f'Thread {thread_id} is unlocking')
         lock.unlock(thread_id,False)
 
+    prog_check = 0
+    for _ in range(T1_AMT * 10):
+        prog_check += 1
+
     if debug:
         print(f'Thread {thread_id} is done')
     return
@@ -72,9 +78,8 @@ def thread1_task(lock: SyncSolution, thread_id: int, debug: bool = True):
 def thread2_task(lock: SyncSolution, thread_id: int, debug: bool = True):
     '''
     This is the second thread that will be used to test the
-    software synchronization solutions. This will be the thread that
-    has the extreme amount of time to run. This will be used to test progression
-    of the software synchronization solutions.
+    software synchronization solutions. To test for progress, this function locks
+    and unlocks the thread multiple times so the lock is placed within the loop.
 
     Args:
         lock (SyncSolution): The lock that will be used to synchronize
@@ -84,17 +89,27 @@ def thread2_task(lock: SyncSolution, thread_id: int, debug: bool = True):
 
     if lock.name == SOLUTION:
 
-        lock.lock(thread_id, False)
+        lock.lock(thread_id, True)
 
-        for _ in range(INCREMENT):
+        for _ in range(T2_AMT):
+
             if debug:
                 print(f'Thread {thread_id} is incrementing x ({x})')
-            increment()
 
+            increment()
 
         if debug:
             print(f'Thread {thread_id} is unlocking')
         lock.unlock(thread_id, False)
+
+    prog_check = 0
+    for _ in range(T2_AMT * 10):
+        prog_check += 1
+
+    if debug:
+        print(f'Thread {thread_id} is done')
+    return
+
 
 
 ################################################################################
@@ -111,7 +126,7 @@ def check_result(result: int) -> bool:
     Returns:
         bool: True if the result is correct, False otherwise
     '''
-    if result == INCREMENT * NUM_THREADS:
+    if result == T1_AMT + T2_AMT:
         return True
     else:
         return False

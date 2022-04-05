@@ -53,7 +53,7 @@ class Solution1(SyncSolution):
 
         # IF DEBUG PRINT THAT THE THREAD IS SPINNING
         if debug:
-            print(f'Thread {thread_id} is spinning')
+            print(f'\nThread {thread_id} is spinning')
         while self.turn != thread_id:
             pass
 

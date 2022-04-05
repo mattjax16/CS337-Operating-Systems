@@ -10,6 +10,7 @@ to outline the abstraction class that will be used for all the "locks"
 '''
 
 from solution_1 import Solution1
+from solution_2 import Solution2
 
 
 
