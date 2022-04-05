@@ -1,12 +1,12 @@
 '''
 CS337 Spring 2022 - Operating Systems Prof. Al Madi
 Project 6 - Software Synchronization Solutions
-race_condition_sol1_me.py
+race_condition_sol2_me.py
 Matthew Bass
-03/29/2022
+04/05/2022
 
 This is to make a race condition that will be used
-to test mutual exclusion for solution 1
+to test mutual exclusion for solution 2
 '''
 import threading
 import sync_solutions
@@ -22,6 +22,8 @@ NUM_THREADS = 2
 
 T1_AMT = INCREMENT
 T2_AMT = INCREMENT
+
+SOLUTION = "2"
 
 
 def increment():
@@ -48,7 +50,7 @@ def thread1_task(lock: SyncSolution, thread_id: int, debug: bool = True):
     '''
     global turn
 
-    if lock.name == '1':
+    if lock.name == SOLUTION:
 
         lock.lock(thread_id, False)
 
@@ -83,7 +85,7 @@ def thread2_task(lock: SyncSolution, thread_id: int, debug: bool = True):
     global turn
 
 
-    if lock.name == '1':
+    if lock.name == SOLUTION:
 
         lock.lock(thread_id, False)
 
