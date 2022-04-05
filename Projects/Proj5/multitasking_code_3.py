@@ -143,7 +143,7 @@ Functions to create word maps and analize
 
 
 def createWordCountDictMultiProcess(
-        data: list, process_count: int, debug: bool = False) -> dict:
+        data: list, process_count: int) -> dict:
     '''
     Create a word count dict from the data. usinf mutli processing
 

@@ -5,8 +5,8 @@ race_condition.py
 Matthew Bass
 03/29/2022
 
-This is the base code to make a race condition that will be used
-to test all the different software synchronization solutions
+This is to make a race condition that will be used
+to see what happens when no synchronization happens
 '''
 import threading
 import sync_solutions
@@ -21,7 +21,6 @@ x = 0
 
 INCREMENT = 500000
 NUM_THREADS = 2
-
 
 T1_AMT = INCREMENT
 T2_AMT = INCREMENT
@@ -52,35 +51,8 @@ def thread1_task(lock: SyncSolution, thread_id: int, debug: bool = True):
     global turn
 
     # If there is no lock, then just increment the global x variable
-    if lock is None:
-        for _ in range(INCREMENT):
-            if debug:
-                print(f'Thread {thread_id} is incrementing x ({x})')
-            increment()
-    elif lock.name == '1':
-
-        lock.lock(thread_id,debug)
-
-        # for _ in range(INCREMENT):
-        #     if debug:
-        #         print(f'Thread {thread_id} is incrementing x ({x})')
-        #
-        #     increment()
-
-        turn = lock.turn
-
-        while turn != thread_id:
-            for _ in range(INCREMENT):
-                if turn == thread_id:
-                    if debug:
-                        print(f'Thread {thread_id} is incrementing x ({x})')
-                    increment()
-
-
-
-        if debug:
-            print(f'Thread {thread_id} is unlocking')
-        lock.unlock(thread_id,debug)
+    for _ in range(T1_AMT):
+        increment()
 
     if debug:
         print(f'Thread {thread_id} is done')
@@ -100,32 +72,12 @@ def thread2_task(lock: SyncSolution, thread_id: int, debug: bool = True):
     global turn
 
     # If there is no lock, then just increment the global x variable
-    if lock is None:
-        for _ in range(INCREMENT):
-            increment()
-    elif lock.name == '1':
+    for _ in range(T2_AMT):
+        increment()
 
-        lock.lock(thread_id, debug)
-
-        # for _ in range(INCREMENT):
-        #     if debug:
-        #         print(f'Thread {thread_id} is incrementing x ({x})')
-        #     increment()
-
-        turn = lock.turn
-
-        while turn != thread_id:
-            for _ in range(INCREMENT):
-                if turn == thread_id:
-                    if debug:
-                        print(f'Thread {thread_id} is incrementing x ({x})')
-                    increment()
-
-        if debug:
-            print(f'Thread {thread_id} is unlocking')
-        lock.unlock(thread_id, debug)
-
-
+    if debug:
+        print(f'Thread {thread_id} is done')
+    return
 ################################################################################
 # Functions to check the different solutions for correctness
 ################################################################################
@@ -140,7 +92,7 @@ def check_result(result: int) -> bool:
     Returns:
         bool: True if the result is correct, False otherwise
     '''
-    if result == INCREMENT * NUM_THREADS:
+    if result == T1_AMT + T2_AMT:
         return True
     else:
         return False
@@ -170,7 +122,7 @@ def check_global_x() ->bool:
     '''
     global x
 
-    if x == INCREMENT * NUM_THREADS:
+    if x == T1_AMT + T2_AMT:
         return True
     else:
         return False
@@ -182,15 +134,12 @@ def check_global_x() ->bool:
 
 
 
-def main_task(solution: str, debug: bool = False) -> int:
+def main_task(debug: bool = False) -> int:
     '''
     This is the main task that will be used to test the
     software synchronization solutions.
 
     Args:
-        solution: The solution that the user wants to test.
-            Valid solutions are:
-                none, 1, 2, peterson, bakery, builtin
         debug (bool): If the debug flag is set to True, then the debug
 
     Returns:
@@ -201,18 +150,13 @@ def main_task(solution: str, debug: bool = False) -> int:
     global x
     x = 0
 
-    # Create threads based on the solution
-    if solution == 'none':
-        t1 = threading.Thread(target=thread1_task, args=(None, 1, debug))
-        t2 = threading.Thread(target=thread2_task, args=(None, 2, debug))
-    else:
-        if solution == '1':
-            # create a lock
-            lock = sync_solutions.Solution1()
+    # Create threads based on the info
+    # create a lock
+    lock = sync_solutions.Solution1()
 
-        # Create threads
-        t1 = threading.Thread(target=thread1_task, args=(lock, 1, debug))
-        t2 = threading.Thread(target=thread2_task, args=(lock, 2, debug))
+    # Create threads
+    t1 = threading.Thread(target=thread1_task, args=(lock, 1, debug))
+    t2 = threading.Thread(target=thread2_task, args=(lock, 2, debug))
 
     # start the threads
     t1.start()
@@ -222,34 +166,23 @@ def main_task(solution: str, debug: bool = False) -> int:
     t1.join()
     t2.join()
 
-def main(solution: str = None, debug: bool = False) -> None:
+def main(debug: bool = False) -> None:
     '''
     This is the main function that will be used to test the
     software synchronization solutions.
 
     Args:
-        solution (str): The solution that the user wants to test.
-            Valid solutions are:
-                none, 1, 2, peterson, bakery, builtin
+
         debug (bool): If the debug flag is set to True, then the debug
     Returns:
 
     '''
-    if solution is None:
-        # Get a valid solution from the user
-        solution = input('Enter a valid solution: ')
-        solution = solution.lower()
-
-        # Check if the solution is valid
-        if solution not in VALID_SOLUTIONS:
-            print(f'\nError {solution} is an Invalid solution!!!' + f'\nValid solutions are: {VALID_SOLUTIONS}!!!' + f'\nSetting solution to none')
-            solution = 'none'
 
     # Run the main task 10 times
     main_task_results = []
     for i in range(10):
         # Run the main task
-        main_task(solution, debug)
+        main_task(debug)
 
         # Print the results
         print("Iteration {0}: x = {1}".format(i, x))
@@ -283,4 +216,4 @@ def main(solution: str = None, debug: bool = False) -> None:
     return
 
 if __name__ == "__main__":
-    main()
+    main(debug= False)

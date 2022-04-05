@@ -9,7 +9,7 @@ This is the code to hold all the solutions to the project and also
 to outline the abstraction class that will be used for all the "locks"
 '''
 
-from solution_1 import SolutionOne
+from solution_1 import Solution1
 
 
 
