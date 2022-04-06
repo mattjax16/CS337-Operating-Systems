@@ -12,8 +12,9 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 
 # Abstract class for all the solutions
-class SyncSolution(ABC):
 
+
+class SyncSolution(ABC):
 
     def __init__(self) -> None:
         self.name = None
@@ -26,7 +27,6 @@ class SyncSolution(ABC):
     @abstractmethod
     def unlock(self) -> None:
         pass
-
 
 
 def main():

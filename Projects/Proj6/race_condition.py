@@ -59,7 +59,7 @@ def thread1_task(lock: SyncSolution, thread_id: int, debug: bool = True):
             increment()
     elif lock.name == '1':
 
-        lock.lock(thread_id,debug)
+        lock.lock(thread_id, debug)
 
         # for _ in range(INCREMENT):
         #     if debug:
@@ -76,11 +76,9 @@ def thread1_task(lock: SyncSolution, thread_id: int, debug: bool = True):
                         print(f'Thread {thread_id} is incrementing x ({x})')
                     increment()
 
-
-
         if debug:
             print(f'Thread {thread_id} is unlocking')
-        lock.unlock(thread_id,debug)
+        lock.unlock(thread_id, debug)
 
     if debug:
         print(f'Thread {thread_id} is done')
@@ -126,9 +124,9 @@ def thread2_task(lock: SyncSolution, thread_id: int, debug: bool = True):
         lock.unlock(thread_id, debug)
 
 
-################################################################################
+##########################################################################
 # Functions to check the different solutions for correctness
-################################################################################
+##########################################################################
 
 def check_result(result: int) -> bool:
     '''
@@ -144,6 +142,7 @@ def check_result(result: int) -> bool:
         return True
     else:
         return False
+
 
 def check_results(results: list) -> bool:
     '''
@@ -161,7 +160,7 @@ def check_results(results: list) -> bool:
     return True
 
 
-def check_global_x() ->bool:
+def check_global_x() -> bool:
     '''
     This function will check the global x variable
 
@@ -176,10 +175,9 @@ def check_global_x() ->bool:
         return False
 
 
-################################################################################
+##########################################################################
 #  Main test functions
-################################################################################
-
+##########################################################################
 
 
 def main_task(solution: str, debug: bool = False) -> int:
@@ -222,6 +220,7 @@ def main_task(solution: str, debug: bool = False) -> int:
     t1.join()
     t2.join()
 
+
 def main(solution: str = None, debug: bool = False) -> None:
     '''
     This is the main function that will be used to test the
@@ -242,7 +241,10 @@ def main(solution: str = None, debug: bool = False) -> None:
 
         # Check if the solution is valid
         if solution not in VALID_SOLUTIONS:
-            print(f'\nError {solution} is an Invalid solution!!!' + f'\nValid solutions are: {VALID_SOLUTIONS}!!!' + f'\nSetting solution to none')
+            print(
+                f'\nError {solution} is an Invalid solution!!!' +
+                f'\nValid solutions are: {VALID_SOLUTIONS}!!!' +
+                f'\nSetting solution to none')
             solution = 'none'
 
     # Run the main task 10 times
@@ -257,7 +259,6 @@ def main(solution: str = None, debug: bool = False) -> None:
         # Append the results to the list
         main_task_results.append({'iteration': i, 'x': x})
 
-
     # Check the results
     if check_results(main_task_results):
         print('\nAll results are correct!')
@@ -269,8 +270,6 @@ def main(solution: str = None, debug: bool = False) -> None:
         for result in main_task_results:
             print(f'Iteration {result["iteration"]}: x = {result["x"]}')
 
-
-
     # Check the global x variable
     if check_global_x():
         print('\nThe global x variable is correct!')
@@ -279,8 +278,8 @@ def main(solution: str = None, debug: bool = False) -> None:
         print(f'\nThe global x variable should be {INCREMENT * NUM_THREADS}')
         print(f'\nThe global x variable is {x}')
 
-
     return
+
 
 if __name__ == "__main__":
     main()

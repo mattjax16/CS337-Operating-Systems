@@ -22,6 +22,7 @@ I will will implement the first synchronization attempt from lecture slides
 from dataclasses import dataclass, field
 from sync_solution import SyncSolution
 
+
 @dataclass
 class Solution1(SyncSolution):
     '''
@@ -36,7 +37,7 @@ class Solution1(SyncSolution):
     turn: int = field(default=1)
     name: str = '1'
 
-    def lock(self, thread_id : int, debug : bool = True) -> None:
+    def lock(self, thread_id: int, debug: bool = True) -> None:
         '''
         This method implements the first synchronization attempt from lecture slides
         (lecture 12).
@@ -61,7 +62,7 @@ class Solution1(SyncSolution):
             print(f'Thread {thread_id} acquired the lock.')
             print(f'Turn is {self.turn}')
 
-    def unlock(self, thread_id : int, debug : bool = True) -> None:
+    def unlock(self, thread_id: int, debug: bool = True) -> None:
         '''
         This method implements the first synchronization attempt from lecture slides
         (lecture 12).
@@ -81,8 +82,6 @@ class Solution1(SyncSolution):
 
         if debug:
             print(f"Thread {thread_id} released the lock.")
-
-
 
 
 def main():

@@ -16,10 +16,6 @@ from bakery_solution import SolutionBakery
 from filter_solution import SolutionFilter
 
 
-
-
-
-
 def main():
     return
 

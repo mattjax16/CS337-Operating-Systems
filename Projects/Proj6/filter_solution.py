@@ -49,11 +49,14 @@ class SolutionFilter(SyncSolution):
         '''
         self.name = 'filter'
         self.levels = np.zeros(thread_count, dtype=int)
-        self.last_to_enter = np.zeros(thread_count-1, dtype=bool)
+        self.last_to_enter = np.zeros(thread_count - 1, dtype=bool)
         self.thread_count = thread_count
 
-
-    def noConflict(self, thread_idx : int, thread_pos : int ,debug : bool = True) -> bool:
+    def noConflict(
+            self,
+            thread_idx: int,
+            thread_pos: int,
+            debug: bool = True) -> bool:
         '''
         This is a helper function for lock to make sure no threads are in the same position in the queue
 
@@ -73,8 +76,7 @@ class SolutionFilter(SyncSolution):
                 break
         return conflict
 
-
-    def lock(self, thread_id : int, debug : bool = True) -> None:
+    def lock(self, thread_id: int, debug: bool = True) -> None:
         '''
         This method implements the lock method for the Filter Solution. It
         runs a thread once it reaches the end of the levels queue.
@@ -93,7 +95,7 @@ class SolutionFilter(SyncSolution):
         thread_idx = thread_id - 1
 
         # Loop through all the queues minus th last
-        for pos in range(0, self.last_to_enter.size-1):
+        for pos in range(0, self.last_to_enter.size - 1):
 
             # Set the thread to the pos position of the wait queue
             self.levels[thread_idx] = pos
@@ -105,14 +107,13 @@ class SolutionFilter(SyncSolution):
             # until there is no other processes entered in that position of
             # the queue.
             while self.last_to_enter[pos] == thread_idx and \
-                self.noConflict(thread_idx, pos):
-                    pass
+                    self.noConflict(thread_idx, pos):
+                pass
 
         if debug:
             print(f'Thread {thread_id} has locked')
 
-
-    def lockSleep(self, thread_id : int, debug : bool = True) -> None:
+    def lockSleep(self, thread_id: int, debug: bool = True) -> None:
         '''
         This method is the same as lock but used to force a contex switch by having
         time.sleep() in the lock method.
@@ -153,34 +154,31 @@ class SolutionFilter(SyncSolution):
             # until there is no other processes entered in that position of
             # the queue.
             while self.last_to_enter[pos] == thread_idx or self.noConflict(
-                thread_idx,
-                pos):
+                    thread_idx,
+                    pos):
                 pass
 
         if debug:
             print(f'Thread {thread_id} has locked')
 
+    def unlock(self, thread_id: int, debug: bool = True) -> None:
+        '''
+        This method implements the Peterson's synchronization attempt from lecture slides
+        (lecture 13).
 
-    def unlock(self, thread_id : int, debug : bool = True) -> None:
-                '''
-                This method implements the Peterson's synchronization attempt from lecture slides
-                (lecture 13).
+        The method takes a thread_id as an argument. The method should behave
+        according to the pseudocode in lecture slides. All it does is change the
+        value of turn according to thread_id being unlocked.
 
-                The method takes a thread_id as an argument. The method should behave
-                according to the pseudocode in lecture slides. All it does is change the
-                value of turn according to thread_id being unlocked.
-
-                Args:
-                    thread_id (int): The thread_id of the thread that is trying to
-                    release the lock of.
-                    debug (bool): If True, print the value of turn after the unlock.
-                '''
-                thread_idx = thread_id - 1
-                self.levels[thread_idx] = -1
-                if debug:
-                    print(f"Thread {thread_id} released the lock.")
-
-
+        Args:
+            thread_id (int): The thread_id of the thread that is trying to
+            release the lock of.
+            debug (bool): If True, print the value of turn after the unlock.
+        '''
+        thread_idx = thread_id - 1
+        self.levels[thread_idx] = -1
+        if debug:
+            print(f"Thread {thread_id} released the lock.")
 
 
 def main():

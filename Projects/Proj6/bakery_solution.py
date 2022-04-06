@@ -34,7 +34,7 @@ class SolutionBakery(SyncSolution):
     tickets array.
     '''
 
-    def __init__(self, thread_count : int) -> None:
+    def __init__(self, thread_count: int) -> None:
         '''
         This method initializes a choosing array and a tickets array.
 
@@ -54,8 +54,7 @@ class SolutionBakery(SyncSolution):
         # Initialize tickets array
         self.tickets = np.zeros(thread_count, dtype=int)
 
-
-    def lock(self, thread_id : int, debug : bool = True) -> None:
+    def lock(self, thread_id: int, debug: bool = True) -> None:
         '''
         This method implement Bakery’s synchronization solution from lecture
         slides (lecture 14)
@@ -74,18 +73,20 @@ class SolutionBakery(SyncSolution):
         if debug:
             print(f'\nThread {thread_id} is spinning')
 
-        thread_idx = thread_id-1
+        thread_idx = thread_id - 1
 
-        ### The Doorway
+        # The Doorway
 
-
-        # Choosing variable to be TRUE indicating its intent to enter critical section.
+        # Choosing variable to be TRUE indicating its intent to enter critical
+        # section.
         self.choosing[thread_idx] = True
 
-        # Set tickets array to the highest ticket number corresponding to other processes.
+        # Set tickets array to the highest ticket number corresponding to other
+        # processes.
         self.tickets[thread_idx] = np.max(self.tickets) + 1
 
-        # Set the choosing variable is set to FALSE indicating that it now has a new ticket number.
+        # Set the choosing variable is set to FALSE indicating that it now has
+        # a new ticket number.
         self.choosing[thread_idx] = False
 
         # The entry part of the lock
@@ -98,16 +99,14 @@ class SolutionBakery(SyncSolution):
             # Then first the ticket number is compared. If they are the same
             # then the thread id is compared next
             while (self.tickets[p] != 0) and \
-                    ((self.tickets[p],p) <
-                     (self.tickets[thread_idx],thread_idx)):
+                    ((self.tickets[p], p) <
+                     (self.tickets[thread_idx], thread_idx)):
                 pass
-
 
         if debug:
             print(f'Thread {thread_id} has locked')
 
-
-    def lockSleep(self, thread_id : int, debug : bool = True) -> None:
+    def lockSleep(self, thread_id: int, debug: bool = True) -> None:
         '''
         This method implement Bakery’s synchronization solution from lecture
         slides (lecture 14)
@@ -132,7 +131,7 @@ class SolutionBakery(SyncSolution):
 
         thread_idx = thread_id - 1
 
-        ### The Doorway
+        # The Doorway
 
         # Set the choosing array to True at the thread_id index
         self.choosing[thread_idx] = True
@@ -157,37 +156,33 @@ class SolutionBakery(SyncSolution):
             while self.choosing[p]:
                 pass
             while (self.tickets[p] != 0) and ((self.tickets[p], p) < (
-            self.tickets[thread_idx], thread_idx)):
+                    self.tickets[thread_idx], thread_idx)):
                 pass
 
         if debug:
             print(f'Thread {thread_id} has locked')
 
-
-    def unlock(self, thread_id : int, debug : bool = True) -> None:
-            '''
-            This method implement Bakery’s synchronization solution from lecture
-            slides (lecture 14)
-
-
-            The method takes a thread_id as an argument. The method should behave
-            according to the pseudocode in lecture slides. All it does is change the
-            value of turn according to thread_id being unlocked.
-
-            Args:
-                thread_id (int): The thread_id of the thread that is trying to
-                release the lock of.
-                debug (bool): If True, print the value of turn after the unlock.
-            '''
-            thread_idx = thread_id - 1
-
-            self.tickets[thread_idx] = 0
+    def unlock(self, thread_id: int, debug: bool = True) -> None:
+        '''
+        This method implement Bakery’s synchronization solution from lecture
+        slides (lecture 14)
 
 
-            if debug:
-                print(f"Thread {thread_id} released the lock.")
+        The method takes a thread_id as an argument. The method should behave
+        according to the pseudocode in lecture slides. All it does is change the
+        value of turn according to thread_id being unlocked.
 
+        Args:
+            thread_id (int): The thread_id of the thread that is trying to
+            release the lock of.
+            debug (bool): If True, print the value of turn after the unlock.
+        '''
+        thread_idx = thread_id - 1
 
+        self.tickets[thread_idx] = 0
+
+        if debug:
+            print(f"Thread {thread_id} released the lock.")
 
 
 def main():

@@ -48,8 +48,6 @@ def thread1_task(lock: threading.Lock, thread_id: int, debug: bool = True):
     '''
     global turn
 
-
-
     lock.acquire()
 
     for _ in range(INCREMENT):
@@ -82,9 +80,6 @@ def thread2_task(lock: threading.Lock, thread_id: int, debug: bool = True):
     '''
     global turn
 
-
-
-
     lock.acquire()
 
     for _ in range(INCREMENT):
@@ -92,15 +87,14 @@ def thread2_task(lock: threading.Lock, thread_id: int, debug: bool = True):
             print(f'Thread {thread_id} is incrementing x ({x})')
         increment()
 
-
     if debug:
         print(f'Thread {thread_id} is unlocking')
     lock.release()
 
 
-################################################################################
+##########################################################################
 # Functions to check the different solutions for correctness
-################################################################################
+##########################################################################
 
 def check_result(result: int) -> bool:
     '''
@@ -116,6 +110,7 @@ def check_result(result: int) -> bool:
         return True
     else:
         return False
+
 
 def check_results(results: list) -> bool:
     '''
@@ -133,7 +128,7 @@ def check_results(results: list) -> bool:
     return True
 
 
-def check_global_x() ->bool:
+def check_global_x() -> bool:
     '''
     This function will check the global x variable
 
@@ -148,10 +143,9 @@ def check_global_x() ->bool:
         return False
 
 
-################################################################################
+##########################################################################
 #  Main test functions
-################################################################################
-
+##########################################################################
 
 
 def main_task(debug: bool = False) -> int:
@@ -187,7 +181,8 @@ def main_task(debug: bool = False) -> int:
     t1.join()
     t2.join()
 
-def main( debug: bool = False) -> None:
+
+def main(debug: bool = False) -> None:
     '''
     This is the main function that will be used to test the
     software synchronization solutions.
@@ -197,7 +192,6 @@ def main( debug: bool = False) -> None:
     Returns:
 
     '''
-
 
     # Run the main task 10 times
     main_task_results = []
@@ -211,7 +205,6 @@ def main( debug: bool = False) -> None:
         # Append the results to the list
         main_task_results.append({'iteration': i, 'x': x})
 
-
     # Check the results
     if check_results(main_task_results):
         print('\nAll results are correct!')
@@ -223,8 +216,6 @@ def main( debug: bool = False) -> None:
         for result in main_task_results:
             print(f'Iteration {result["iteration"]}: x = {result["x"]}')
 
-
-
     # Check the global x variable
     if check_global_x():
         print('\nThe global x variable is correct!')
@@ -233,8 +224,8 @@ def main( debug: bool = False) -> None:
         print(f'\nThe global x variable should be {INCREMENT * NUM_THREADS}')
         print(f'\nThe global x variable is {x}')
 
-
     return
+
 
 if __name__ == "__main__":
     main()

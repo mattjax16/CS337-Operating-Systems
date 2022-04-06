@@ -76,9 +76,9 @@ def thread_task(lock: SyncSolution, thread_id: int, inc_amt: int,
     return
 
 
-################################################################################
+##########################################################################
 # Functions to check the different solutions for correctness
-################################################################################
+##########################################################################
 
 def check_result(result: int) -> bool:
     '''
@@ -127,9 +127,9 @@ def check_global_x() -> bool:
         return False
 
 
-################################################################################
+##########################################################################
 #  Main test functions
-################################################################################
+##########################################################################
 
 
 def main_task(debug: bool = False) -> int:
@@ -156,10 +156,8 @@ def main_task(debug: bool = False) -> int:
     # Create threads
     threads = []
     for thread_num in range(1, NUM_THREADS + 1):
-        thread = threading.Thread(target=thread_task,
-                                  args=(
-                                  lock, thread_num, INC_AMTS[thread_num - 1],
-                                  debug))
+        thread = threading.Thread(target=thread_task, args=(
+            lock, thread_num, INC_AMTS[thread_num - 1], debug))
         threads.append(thread)
 
     # Start threads

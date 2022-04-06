@@ -25,18 +25,18 @@ from dataclasses import dataclass, field
 import time
 from sync_solution import SyncSolution
 
+
 @dataclass
 class Solution2(SyncSolution):
     '''
     This is the second solution to the project.
     '''
 
+    flags: int = field(default_factory=lambda: [False] * 2)
+    name: str = field(default="2")
+    thread_count: int = field(default=2)
 
-    flags : int  = field(default_factory= lambda : [False] * 2)
-    name : str = field(default = "2")
-
-
-    def lock(self, thread_id : int, debug : bool = True) -> None:
+    def lock(self, thread_id: int, debug: bool = True) -> None:
         '''
         This method implements the second synchronization attempt from lecture slides
         (lecture 13).
@@ -55,29 +55,18 @@ class Solution2(SyncSolution):
         if debug:
             print(f'\nThread {thread_id} is spinning')
 
-        thread_id -= 1
-        other_thread = thread_id ^ 1
+        thread_idx = thread_id - 1
+        other_thread = thread_idx ^ 1
 
-        self.flags[thread_id] = True
+        self.flags[thread_idx] = True
         while self.flags[other_thread]:
             pass
 
-        # operate lock based off thread_id
-        # if thread_id == 1:
-        #     self.flags[0] = True
-        #     while self.flags[1]:
-        #         pass
-        # else:
-        #     self.flags[1] = True
-        #     while self.flags[0]:
-        #         pass
-
         # IF DEBUG PRINT THAT THE THREAD HAS LOCKED
         if debug:
-            print(f'Thread {thread_id+1} has locked')
+            print(f'Thread {thread_id} has locked')
 
-
-    def lockSleep(self, thread_id : int, debug : bool = True) -> None:
+    def lockSleep(self, thread_id: int, debug: bool = True) -> None:
         '''
         This method is the same as lock but used to force a contex switch by having
         time.sleep() in the lock method.
@@ -97,10 +86,10 @@ class Solution2(SyncSolution):
         if debug:
             print(f'\nThread {thread_id} is spinning')
 
-        thread_id -= 1
-        other_thread = thread_id ^ 1
+        thread_idx = thread_id - 1
+        other_thread = thread_idx ^ 1
 
-        self.flags[thread_id] = True
+        self.flags[thread_idx] = True
 
         # FORCE A CONTEXT SWITCH
         time.sleep(0.0001)
@@ -108,11 +97,9 @@ class Solution2(SyncSolution):
         while self.flags[other_thread]:
             pass
         if debug:
-            print(f'Thread {thread_id+1} has locked')
+            print(f'Thread {thread_id} has locked')
 
-
-
-    def unlock(self, thread_id : int, debug : bool = True) -> None:
+    def unlock(self, thread_id: int, debug: bool = True) -> None:
         '''
         This method implements the second synchronization attempt from lecture slides
         (lecture 13).
@@ -126,14 +113,11 @@ class Solution2(SyncSolution):
             release the lock of.
             debug (bool): If True, print the value of turn after the unlock.
         '''
-        thread_id -= 1
-        self.flags[thread_id] = False
-
+        thread_idx = thread_id - 1
+        self.flags[thread_idx] = False
 
         if debug:
-            print(f"Thread {thread_id+1} released the lock.")
-
-
+            print(f"Thread {thread_id} released the lock.")
 
 
 def main():

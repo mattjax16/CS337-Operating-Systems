@@ -47,9 +47,7 @@ class SolutionPeterson(SyncSolution):
         self.flags = np.zeros(thread_count, dtype=bool)
         self.thread_count = thread_count
 
-
-
-    def lock(self, thread_id : int, debug : bool = True) -> None:
+    def lock(self, thread_id: int, debug: bool = True) -> None:
         '''
         This method implements the Petersons synchronization attempt from lecture slides
         (lecture 13).
@@ -90,7 +88,6 @@ class SolutionPeterson(SyncSolution):
             other_thread_r = (thread_idx + 1) % self.thread_count
             other_thread_l = (thread_idx + 1) % self.thread_count
 
-
             # Set flag
             self.flags[thread_idx] = True
 
@@ -102,12 +99,10 @@ class SolutionPeterson(SyncSolution):
                     self.turn == other_thread_r:
                 pass
 
-
         if debug:
             print(f'Thread {thread_id} has locked')
 
-
-    def lockSleep(self, thread_id : int, debug : bool = True) -> None:
+    def lockSleep(self, thread_id: int, debug: bool = True) -> None:
         '''
         This method is the same as lock but used to force a contex switch by having
         time.sleep() in the lock method.
@@ -169,35 +164,31 @@ class SolutionPeterson(SyncSolution):
 
             # Wait for other thread to release lock
             while self.flags[other_thread_r] and self.flags[
-                other_thread_l] and self.turn == other_thread_r:
+                    other_thread_l] and self.turn == other_thread_r:
                 pass
 
         if debug:
             print(f'Thread {thread_id} has locked')
 
+    def unlock(self, thread_id: int, debug: bool = True) -> None:
+        '''
+        This method implements the Peterson's synchronization attempt from lecture slides
+        (lecture 13).
 
-    def unlock(self, thread_id : int, debug : bool = True) -> None:
-            '''
-            This method implements the Peterson's synchronization attempt from lecture slides
-            (lecture 13).
+        The method takes a thread_id as an argument. The method should behave
+        according to the pseudocode in lecture slides. All it does is change the
+        value of turn according to thread_id being unlocked.
 
-            The method takes a thread_id as an argument. The method should behave
-            according to the pseudocode in lecture slides. All it does is change the
-            value of turn according to thread_id being unlocked.
+        Args:
+            thread_id (int): The thread_id of the thread that is trying to
+            release the lock of.
+            debug (bool): If True, print the value of turn after the unlock.
+        '''
+        thread_id -= 1
+        self.flags[thread_id] = False
 
-            Args:
-                thread_id (int): The thread_id of the thread that is trying to
-                release the lock of.
-                debug (bool): If True, print the value of turn after the unlock.
-            '''
-            thread_id -= 1
-            self.flags[thread_id] = False
-
-
-            if debug:
-                print(f"Thread {thread_id+1} released the lock.")
-
-
+        if debug:
+            print(f"Thread {thread_id+1} released the lock.")
 
 
 def main():
