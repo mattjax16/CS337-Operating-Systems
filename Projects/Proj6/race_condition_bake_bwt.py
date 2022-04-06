@@ -1,12 +1,12 @@
 '''
 CS337 Spring 2022 - Operating Systems Prof. Al Madi
 Project 6 - Software Synchronization Solutions
-race_condition_pete_bwt.py
+race_condition_bake_bwt.py
 Matthew Bass
 04/05/2022
 
 This is to make a race condition that will be used to test for bounded wait
-time for peterson's solution. To do this I will induce a context switch by using
+time for baker's solution. To do this I will induce a context switch by using
 time.sleep(0.0001)
 '''
 import threading
@@ -25,7 +25,7 @@ T1_AMT = INCREMENT
 T2_AMT = INCREMENT * 5
 
 
-SYNCSOLUTION = sync_solutions.SolutionPeterson()
+SYNCSOLUTION = sync_solutions.SolutionBakery(NUM_THREADS)
 
 def increment():
     '''

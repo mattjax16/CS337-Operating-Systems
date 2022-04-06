@@ -18,10 +18,10 @@ from sync_solution import SyncSolution
 # Setting global var x to 0
 x = 0
 
-INCREMENT = 10
+INCREMENT = 10000
 NUM_THREADS = 2
 T1_AMT = INCREMENT
-T2_AMT = INCREMENT * 2
+T2_AMT = INCREMENT * 5
 
 SYNCSOLUTION = sync_solutions.Solution1()
 
@@ -94,7 +94,7 @@ def thread2_task(lock: SyncSolution, thread_id: int, debug: bool = True):
         lock.unlock(thread_id, True)
 
     prog_check = 0
-    for _ in range(T2_AMT*10):
+    for _ in range(T1_AMT*10):
         prog_check += 1
 
     return

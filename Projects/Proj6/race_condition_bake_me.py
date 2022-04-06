@@ -1,12 +1,12 @@
 '''
 CS337 Spring 2022 - Operating Systems Prof. Al Madi
 Project 6 - Software Synchronization Solutions
-race_condition_pete_me.py
+race_condition_bake_me.py
 Matthew Bass
 04/05/2022
 
 This is to make a race condition that will be used
-to test mutual exclusion for Peterson's solution
+to test mutual exclusion for baker's solution
 '''
 import threading
 import sync_solutions
@@ -23,7 +23,7 @@ NUM_THREADS = 2
 T1_AMT = INCREMENT
 T2_AMT = INCREMENT
 
-SYNCSOLUTION = sync_solutions.SolutionPeterson()
+SYNCSOLUTION = sync_solutions.SolutionBakery(NUM_THREADS)
 
 
 def increment():

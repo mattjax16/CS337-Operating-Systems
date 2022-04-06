@@ -1,12 +1,12 @@
 '''
 CS337 Spring 2022 - Operating Systems Prof. Al Madi
 Project 6 - Software Synchronization Solutions
-race_condition_sol2_prog.py
+race_condition_bake_prog.py
 Matthew Bass
 04/05/2022
 
 This is to make a race condition that will be used to test progress for
-solution 2 (if this doesnt work I know bounded wait time fails because
+baker's solution (if this doesnt work I know bounded wait time fails because
 bounded wait time relies on progress)
 '''
 import threading
@@ -21,9 +21,9 @@ x = 0
 INCREMENT = 10000
 NUM_THREADS = 2
 T1_AMT = INCREMENT
-T2_AMT = INCREMENT * 2
+T2_AMT = INCREMENT * 5
 
-SYNCSOLUTION = sync_solutions.Solution2()
+SYNCSOLUTION = sync_solutions.SolutionBakery()
 
 
 def increment():

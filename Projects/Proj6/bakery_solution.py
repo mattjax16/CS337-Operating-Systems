@@ -23,7 +23,6 @@ implements the following:
 
 '''
 
-from dataclasses import dataclass, field
 import time
 import numpy as np
 from sync_solution import SyncSolution
@@ -79,19 +78,25 @@ class SolutionBakery(SyncSolution):
 
         ### The Doorway
 
-        # Set the choosing array to True at the thread_id index
+
+        # Choosing variable to be TRUE indicating its intent to enter critical section.
         self.choosing[thread_idx] = True
 
-        # Set tickers array
+        # Set tickets array to the highest ticket number corresponding to other processes.
         self.tickets[thread_idx] = np.max(self.tickets) + 1
 
-        # Set the choosing array to False at the thread_id index
+        # Set the choosing variable is set to FALSE indicating that it now has a new ticket number.
         self.choosing[thread_idx] = False
 
-        # Second part of the lock
+        # The entry part of the lock
         for p in range(self.thread_count):
+
+            # Wait until thread p receives its number:
             while self.choosing[p]:
                 pass
+
+            # Then first the ticket number is compared. If they are the same
+            # then the thread id is compared next
             while (self.tickets[p] != 0) and \
                     ((self.tickets[p],p) <
                      (self.tickets[thread_idx],thread_idx)):
@@ -159,28 +164,28 @@ class SolutionBakery(SyncSolution):
             print(f'Thread {thread_id} has locked')
 
 
-def unlock(self, thread_id : int, debug : bool = True) -> None:
-        '''
-        This method implement Bakery’s synchronization solution from lecture
-        slides (lecture 14)
+    def unlock(self, thread_id : int, debug : bool = True) -> None:
+            '''
+            This method implement Bakery’s synchronization solution from lecture
+            slides (lecture 14)
 
 
-        The method takes a thread_id as an argument. The method should behave
-        according to the pseudocode in lecture slides. All it does is change the
-        value of turn according to thread_id being unlocked.
+            The method takes a thread_id as an argument. The method should behave
+            according to the pseudocode in lecture slides. All it does is change the
+            value of turn according to thread_id being unlocked.
 
-        Args:
-            thread_id (int): The thread_id of the thread that is trying to
-            release the lock of.
-            debug (bool): If True, print the value of turn after the unlock.
-        '''
-        thread_idx = thread_id - 1
+            Args:
+                thread_id (int): The thread_id of the thread that is trying to
+                release the lock of.
+                debug (bool): If True, print the value of turn after the unlock.
+            '''
+            thread_idx = thread_id - 1
 
-        self.tickets[thread_idx] = 0
+            self.tickets[thread_idx] = 0
 
 
-        if debug:
-            print(f"Thread {thread_id} released the lock.")
+            if debug:
+                print(f"Thread {thread_id} released the lock.")
 
 
 
