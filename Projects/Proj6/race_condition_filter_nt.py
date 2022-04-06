@@ -40,7 +40,7 @@ def increment():
     x += 1
 
 
-def thread_task(lock: SyncSolution, thread_id: int, inc_amt: int,
+def thread_task(lock: SyncSolution, thread_id: int, inc_amt: int, test: str = "me",
                 debug: bool = True):
     '''
     This is the thread task that will be used to test the software
@@ -50,28 +50,66 @@ def thread_task(lock: SyncSolution, thread_id: int, inc_amt: int,
         lock (SyncSolution): The lock that will be used to synchronize
         thread_id (int): The number that will be used to synchronize (the thread number)
         inc_amt (int): The amount that will be used to increment the global variable x
+        test (str): The test that we will be doing to determine what code to run
         debug (bool): If the debug flag is set to True, then the debug
     '''
 
-    lock.lock(thread_id, False)
+    # If the test is me, then we will run the main_task
+    if test == "me":
+        lock.lock(thread_id, False)
 
-    for _ in range(inc_amt):
+        for _ in range(inc_amt):
+
+            if debug:
+                print(f'Thread {thread_id} is incrementing x ({x})')
+
+            increment()
 
         if debug:
-            print(f'Thread {thread_id} is incrementing x ({x})')
+            print(f'Thread {thread_id} is unlocking')
+        lock.unlock(thread_id, False)
 
-        increment()
+    # If not mutual exclusion but is progress check do more thread switching
+    # (and locked and unlocking) for each increment so they have to rely on
+    # each other .
+    elif test == "prog":
+        for _ in range(inc_amt):
 
-    if debug:
-        print(f'Thread {thread_id} is unlocking')
-    lock.unlock(thread_id, False)
+            lock.lock(thread_id, False)
 
-    prog_check = 0
-    for _ in range(inc_amt * 10):
-        prog_check += 1
+            if debug:
+                print(f'Thread {thread_id} is incrementing x ({x})')
 
-    if debug:
-        print(f'Thread {thread_id} is done')
+            increment()
+
+        prog_check = 0
+        for _ in range(inc_amt * 10):
+            prog_check += 1
+
+        if debug:
+            print(f'Thread {thread_id} is done')
+
+    # If testing for bounded wait time use the lockSleep method which is the
+    # same as the lock method but induces contex switches by calling
+    # time.sleep(0.0001)
+    elif test == "bwt":
+        for _ in range(inc_amt):
+
+            lock.lockSleep(thread_id, False)
+
+            if debug:
+                print(f'Thread {thread_id} is incrementing x ({x})')
+
+            increment()
+
+        prog_check = 0
+        for _ in range(inc_amt * 10):
+            prog_check += 1
+
+        if debug:
+            print(f'Thread {thread_id} is done')
+
+        lock.unlock(thread_id, False)
     return
 
 
