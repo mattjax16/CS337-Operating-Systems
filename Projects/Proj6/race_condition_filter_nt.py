@@ -1,29 +1,31 @@
 '''
 CS337 Spring 2022 - Operating Systems Prof. Al Madi
 Project 6 - Software Synchronization Solutions
-race_condition_filter_me.py
+race_condition_filter_ntt.py
 Matthew Bass
 04/05/2022
 
-This is to make a race condition that will be used
-to test mutual exclusion for filter solution
+This is to make a race condition that will be used to test for use of any
+number off threads for filter solution. (FOR TESTING NUMBER OF THREADS WILL BE 3)
+
 '''
 import threading
 import sync_solutions
 
 from sync_solution import SyncSolution
 
-
 # Setting global var x to 0
 x = 0
 
-INCREMENT = 500000
-NUM_THREADS = 2
-
+INCREMENT = 50000
+NUM_THREADS = 3
 T1_AMT = INCREMENT
-T2_AMT = INCREMENT
+T2_AMT = INCREMENT * 5
+T3_AMT = INCREMENT * 3
 
-SYNCSOLUTION = sync_solutions.SolutionBakery(NUM_THREADS)
+INC_AMTS = [T1_AMT, T2_AMT, T3_AMT]
+
+SYNCSOLUTION = sync_solutions.SolutionFilter(thread_count=NUM_THREADS)
 
 
 def increment():
@@ -38,61 +40,39 @@ def increment():
     x += 1
 
 
-def thread1_task(lock: SyncSolution, thread_id: int, debug: bool = True):
+def thread_task(lock: SyncSolution, thread_id: int, inc_amt: int,
+                debug: bool = True):
     '''
-    This is the first thread that will be used to test the software
+    This is the thread task that will be used to test the software
     synchronization solutions.
 
     Args:
         lock (SyncSolution): The lock that will be used to synchronize
         thread_id (int): The number that will be used to synchronize (the thread number)
+        inc_amt (int): The amount that will be used to increment the global variable x
         debug (bool): If the debug flag is set to True, then the debug
     '''
 
-
     lock.lock(thread_id, False)
 
-    for _ in range(INCREMENT):
+    for _ in range(inc_amt):
 
         if debug:
             print(f'Thread {thread_id} is incrementing x ({x})')
 
         increment()
-
-    if debug:
-        print(f'Thread {thread_id} is unlocking')
-    lock.unlock(thread_id,False)
-
-    if debug:
-        print(f'Thread {thread_id} is done')
-    return
-
-
-def thread2_task(lock: SyncSolution, thread_id: int, debug: bool = True):
-    '''
-    This is the second thread that will be used to test the
-    software synchronization solutions. This will be the thread that
-    has the extreme amount of time to run. This will be used to test progression
-    of the software synchronization solutions.
-
-    Args:
-        lock (SyncSolution): The lock that will be used to synchronize
-        thread_id (int): The number that will be used to synchronize (the thread number)
-        debug (bool): If the debug flag is set to True, then the debug
-    '''
-
-
-    lock.lock(thread_id, False)
-
-    for _ in range(INCREMENT):
-        if debug:
-            print(f'Thread {thread_id} is incrementing x ({x})')
-        increment()
-
 
     if debug:
         print(f'Thread {thread_id} is unlocking')
     lock.unlock(thread_id, False)
+
+    prog_check = 0
+    for _ in range(inc_amt * 10):
+        prog_check += 1
+
+    if debug:
+        print(f'Thread {thread_id} is done')
+    return
 
 
 ################################################################################
@@ -109,10 +89,12 @@ def check_result(result: int) -> bool:
     Returns:
         bool: True if the result is correct, False otherwise
     '''
-    if result == INCREMENT * NUM_THREADS:
+    if result == sum(INC_AMTS):
         return True
     else:
         return False
+
+
 
 def check_results(results: list) -> bool:
     '''
@@ -130,7 +112,7 @@ def check_results(results: list) -> bool:
     return True
 
 
-def check_global_x() ->bool:
+def check_global_x() -> bool:
     '''
     This function will check the global x variable
 
@@ -148,7 +130,6 @@ def check_global_x() ->bool:
 ################################################################################
 #  Main test functions
 ################################################################################
-
 
 
 def main_task(debug: bool = False) -> int:
@@ -173,18 +154,24 @@ def main_task(debug: bool = False) -> int:
     lock = SYNCSOLUTION
 
     # Create threads
-    t1 = threading.Thread(target=thread1_task, args=(lock, 1, debug))
-    t2 = threading.Thread(target=thread2_task, args=(lock, 2, debug))
+    threads = []
+    for thread_num in range(1, NUM_THREADS + 1):
+        thread = threading.Thread(target=thread_task,
+                                  args=(
+                                  lock, thread_num, INC_AMTS[thread_num - 1],
+                                  debug))
+        threads.append(thread)
 
-    # start the threads
-    t1.start()
-    t2.start()
+    # Start threads
+    for thread in threads:
+        thread.start()
 
-    # wait for threads to finish
-    t1.join()
-    t2.join()
+    # Wait for threads to finish
+    for thread in threads:
+        thread.join()
 
-def main( debug: bool = False) -> None:
+
+def main(debug: bool = False) -> None:
     '''
     This is the main function that will be used to test the
     software synchronization solutions.
@@ -194,7 +181,6 @@ def main( debug: bool = False) -> None:
     Returns:
 
     '''
-
 
     # Run the main task 10 times
     main_task_results = []
@@ -208,7 +194,6 @@ def main( debug: bool = False) -> None:
         # Append the results to the list
         main_task_results.append({'iteration': i, 'x': x})
 
-
     # Check the results
     if check_results(main_task_results):
         print('\nAll results are correct!')
@@ -220,18 +205,6 @@ def main( debug: bool = False) -> None:
         for result in main_task_results:
             print(f'Iteration {result["iteration"]}: x = {result["x"]}')
 
-
-
-    # Check the global x variable
-    if check_global_x():
-        print('\nThe global x variable is correct!')
-    else:
-        print('\nThe global x variable is incorrect!')
-        print(f'\nThe global x variable should be {INCREMENT * NUM_THREADS}')
-        print(f'\nThe global x variable is {x}')
-
-
-    return
 
 if __name__ == "__main__":
     main()

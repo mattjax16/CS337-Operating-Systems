@@ -8,22 +8,23 @@ Matthew Bass
 This is the filter solution which is the n+threads Peterson solution basically.
 
 Here the flags are instead called levels, are a numpy array of integers (
-representing each thread process) that is thread_count in size and it
-acts as the queue representation for the threads, think of this as a waiting room (level). A thread
-must wait until it is at the end of the waiting queue to run its critical
-section.To indicate the position of each thread turns will instead be will be
-made into a thread_count - 1 sized array and called last_to_enter because it is
-used mainly to keep track of the last thread to enter so that position in the
-levels queue, this is to make sure there are not 2 threads running at the
-same time (end of the queue). This helps with mutal exclusion because `pos`
-exits the inner loop when there is either no process with a higher level than
-`level[thread_idx]`, so the next waiting room is free; or, when `thread_idx !=
-last_to_enter[pos]`, so another process joined its waiting room. At
-level zero, then, even if all thread_count processes were to enter waiting
-room zero at the same time, no more than thread_count − 1 will proceed to the
-next room, the final one finding itself the last to enter the room. This then
-goes on recursively for all the threads. If it is easier to think of the levels and last to enter
-can be thought almost as a 2d matrix that is thread_count - 1 by thread_count.
+representing each thread process) that is thread_count in size and it acts as
+the queue representation for the threads, it is used to indicate the position
+of each thread (which queue it is in) . A thread must wait until it is at the
+end of the waiting queue to run its critical section.T turns instead be will
+be made into a thread_count - 1 sized array and called last_to_enter because
+it is used mainly to keep track of the last thread to enter the queue at each
+level, this is to make sure there are not 2 threads running at the same time
+(end of the queue). This helps with mutal exclusion because `pos` exits the
+inner loop when there is either no process with a higher level than `level[
+thread_idx]`, so the next waiting room is free; or, when `thread_idx !=
+last_to_enter[pos]`, so another process joined its waiting room. At level
+zero, then, even if all thread_count processes were to enter waiting room
+zero at the same time, no more than thread_count − 1 will proceed to the next
+room, the final one finding itself the last to enter the room. This then goes
+on recursively for all the threads. If it is easier to think of the levels
+and last to enter can be thought almost as a 2d matrix that is thread_count -
+1 by thread_count.
 
 '''
 import time
@@ -67,7 +68,7 @@ class SolutionFilter(SyncSolution):
 
         conflict = False
         for idx, pos in enumerate(self.levels):
-            if idx != thread_idx and pos < thread_pos:
+            if idx != thread_idx and pos >= thread_pos:
                 conflict = True
                 break
         return conflict
@@ -91,8 +92,8 @@ class SolutionFilter(SyncSolution):
 
         thread_idx = thread_id - 1
 
-        # Loop through all the positions of the last_to_enter
-        for pos in range(0, self.last_to_enter.size):
+        # Loop through all the queues minus th last
+        for pos in range(0, self.last_to_enter.size-1):
 
             # Set the thread to the pos position of the wait queue
             self.levels[thread_idx] = pos
@@ -103,7 +104,7 @@ class SolutionFilter(SyncSolution):
             # Wait till either there is no process at the top of queue or
             # until there is no other processes entered in that position of
             # the queue.
-            while self.last_to_enter[pos] == thread_idx or \
+            while self.last_to_enter[pos] == thread_idx and \
                 self.noConflict(thread_idx, pos):
                     pass
 
@@ -174,12 +175,10 @@ class SolutionFilter(SyncSolution):
                     release the lock of.
                     debug (bool): If True, print the value of turn after the unlock.
                 '''
-                thread_id -= 1
-                self.flags[thread_id] = False
-
-
+                thread_idx = thread_id - 1
+                self.levels[thread_idx] = -1
                 if debug:
-                    print(f"Thread {thread_id+1} released the lock.")
+                    print(f"Thread {thread_id} released the lock.")
 
 
 
