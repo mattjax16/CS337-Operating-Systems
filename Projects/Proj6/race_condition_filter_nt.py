@@ -239,9 +239,11 @@ def main(debug: bool = False) -> None:
     # Else print the results that are incorrect
     else:
         print('\nThe results are incorrect!')
-        print('\nThe results are:')
-        for result in main_task_results:
-            print(f'Iteration {result["iteration"]}: x = {result["x"]}')
+
+    # Print the results
+    print('\nThe results are:')
+    for result in main_task_results:
+        print(f'Iteration {result["iteration"]}: x = {result["x"]}')
 
 
 if __name__ == "__main__":
