@@ -5,28 +5,26 @@ race_condition_pete_bwt.py
 Matthew Bass
 04/05/2022
 
-This is to make a race condition that will be used to test for use of any
-number off threads for peterson's solution. (FOR TESTING NUMBER OF THREADS WILL BE 3)
-
+This is to make a race condition that will be used to test for bounded wait
+time for peterson's solution. To do this I will induce a context switch by using
+time.sleep(0.0001)
 '''
 import threading
-import time
 import sync_solutions
 
 from sync_solution import SyncSolution
+
 
 # Setting global var x to 0
 x = 0
 
 INCREMENT = 50000
-NUM_THREADS = 3
+NUM_THREADS = 2
 T1_AMT = INCREMENT
 T2_AMT = INCREMENT * 5
-T3_AMT = INCREMENT * 3
 
-INC_AMTS = [T1_AMT, T2_AMT, T3_AMT]
 
-SYNCSOLUTION = sync_solutions.SolutionPeterson(thread_count=NUM_THREADS)
+SYNCSOLUTION = sync_solutions.SolutionPeterson()
 
 
 def increment():
@@ -41,22 +39,20 @@ def increment():
     x += 1
 
 
-def thread_task(lock: SyncSolution, thread_id: int, inc_amt: int,
-                debug: bool = True):
+def thread1_task(lock: SyncSolution, thread_id: int, debug: bool = True):
     '''
-    This is the thread task that will be used to test the software
+    This is the first thread that will be used to test the software
     synchronization solutions.
 
     Args:
         lock (SyncSolution): The lock that will be used to synchronize
         thread_id (int): The number that will be used to synchronize (the thread number)
-        inc_amt (int): The amount that will be used to increment the global variable x
         debug (bool): If the debug flag is set to True, then the debug
     '''
 
     lock.lockSleep(thread_id, False)
 
-    for _ in range(inc_amt):
+    for _ in range(T1_AMT):
 
         if debug:
             print(f'Thread {thread_id} is incrementing x ({x})')
@@ -67,9 +63,43 @@ def thread_task(lock: SyncSolution, thread_id: int, inc_amt: int,
         print(f'Thread {thread_id} is unlocking')
     lock.unlock(thread_id, False)
 
-    # prog_check = 0
-    # for _ in range(inc_amt * 10):
-    #     prog_check += 1
+    prog_check = 0
+    for _ in range(T1_AMT * 10):
+        prog_check += 1
+
+    if debug:
+        print(f'Thread {thread_id} is done')
+    return
+
+
+def thread2_task(lock: SyncSolution, thread_id: int, debug: bool = True):
+    '''
+    This is the second thread that will be used to test the
+    software synchronization solutions. To test for progress, this function locks
+    and unlocks the thread multiple times so the lock is placed within the loop.
+
+    Args:
+        lock (SyncSolution): The lock that will be used to synchronize
+        thread_id (int): The number that will be used to synchronize (the thread number)
+        debug (bool): If the debug flag is set to True, then the debug
+    '''
+
+    lock.lock(thread_id, False)
+
+    for _ in range(T2_AMT):
+
+        if debug:
+            print(f'Thread {thread_id} is incrementing x ({x})')
+
+        increment()
+
+    if debug:
+        print(f'Thread {thread_id} is unlocking')
+    lock.unlock(thread_id, False)
+
+    prog_check = 0
+    for _ in range(T2_AMT * 10):
+        prog_check += 1
 
     if debug:
         print(f'Thread {thread_id} is done')
@@ -90,7 +120,7 @@ def check_result(result: int) -> bool:
     Returns:
         bool: True if the result is correct, False otherwise
     '''
-    if result == sum(INC_AMTS):
+    if result == T1_AMT + T2_AMT:
         return True
     else:
         return False
@@ -154,19 +184,16 @@ def main_task(debug: bool = False) -> int:
     lock = SYNCSOLUTION
 
     # Create threads
-    threads = []
-    for thread_num in range(1, NUM_THREADS + 1):
-        thread = threading.Thread(target=thread_task, args=(
-            lock, thread_num, INC_AMTS[thread_num - 1], debug))
-        threads.append(thread)
+    t1 = threading.Thread(target=thread1_task, args=(lock, 1, debug))
+    t2 = threading.Thread(target=thread2_task, args=(lock, 2, debug))
 
-    # Start threads
-    for thread in threads:
-        thread.start()
+    # start the threads
+    t1.start()
+    t2.start()
 
-    # Wait for threads to finish
-    for thread in threads:
-        thread.join()
+    # wait for threads to finish
+    t1.join()
+    t2.join()
 
 
 def main(debug: bool = False) -> None:

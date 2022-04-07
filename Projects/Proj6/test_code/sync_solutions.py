@@ -9,12 +9,6 @@ This is the code to hold all the solutions to the project and also
 to outline the abstraction class that will be used for all the "locks"
 '''
 
-from solution_one import Solution1
-from solution_two import Solution2
-from petersons_solution import SolutionPeterson
-from bakery_solution import SolutionBakery
-from filter_solution import SolutionFilter
-
 
 def main():
     return
