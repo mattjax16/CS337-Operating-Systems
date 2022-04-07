@@ -437,10 +437,162 @@ class Solution1(SyncSolution):
         if debug:
             print(f"Thread {thread_id} released the lock.")
 
+
+class SolutionFilter(SyncSolution):
+    '''
+    This is the Filter's solution to the project.(uses flags and turn)
+    '''
+
+    def __init__(self, thread_count: int = 2) -> None:
+        '''
+        This method initializes the name turn and flags array
+
+        Args: thread_count (int): The number of threads that will be using the
+        Filter Solution.
+
+        Returns:
+            None
+        '''
+        self.name = 'filter'
+        self.levels = np.zeros(thread_count, dtype=int)
+        self.last_to_enter = np.zeros(thread_count - 1, dtype=bool)
+        self.thread_count = thread_count
+
+    def noConflict(
+            self,
+            thread_idx: int,
+            thread_pos: int,
+            debug: bool = True) -> bool:
+        '''
+        This is a helper function for lock to make sure no threads are in the same position in the queue
+
+        Args:
+            thread_idx (int): The id of the thread that is trying to enter the critical section.(tid - 1)
+            pos (int): The position of the thread in the queue
+            debug (bool): If True, print the value of turn after the unlock.
+
+        Returns:
+            conflict (bool): True if there is a conflict, False if not.
+        '''
+
+        conflict = False
+        for idx, pos in enumerate(self.levels):
+            if idx != thread_idx and pos >= thread_pos:
+                conflict = True
+                break
+        return conflict
+
+    def lock(self, thread_id: int, debug: bool = True) -> None:
+        '''
+        This method implements the lock method for the Filter Solution. It
+        runs a thread once it reaches the end of the levels queue.
+
+        Args: thread_id (int): The thread_id of the thread that is trying to
+        acquire the lock.
+
+        Returns:
+            None
+        '''
+
+        # IF DEBUG PRINT THAT THE THREAD IS SPINNING
+        if debug:
+            print(f'\nThread {thread_id} is spinning')
+
+        thread_idx = thread_id - 1
+
+        # Loop through all the queues minus th last
+        for pos in range(0, self.thread_count - 1):
+
+            # Set the thread to the pos position of the wait queue
+            self.levels[thread_idx] = pos
+
+            # Show that the
+            self.last_to_enter[pos] = thread_idx
+
+            # Wait till either there is no process at the top of queue or
+            # until there is no other processes entered in that position of
+            # the queue.
+            while self.last_to_enter[pos] == thread_idx and \
+                    self.noConflict(thread_idx, pos):
+                pass
+
+        if debug:
+            print(f'Thread {thread_id} has locked')
+
+    def lockSleep(self, thread_id: int, debug: bool = True) -> None:
+        '''
+        This method is the same as lock but used to force a contex switch by having
+        time.sleep() in the lock method.
+
+
+        The method takes a thread_id as an argument. The method should behave
+        according to the pseudocode in lecture slides.
+
+        Args: thread_id (int): The thread_id of the thread that is trying to
+        acquire the lock.
+
+        Returns:
+            None
+        '''
+
+        # IF DEBUG PRINT THAT THE THREAD IS SPINNING
+        if debug:
+            print(f'\nThread {thread_id} is spinning')
+
+        thread_idx = thread_id - 1
+
+        # Loop through all the positions of the last_to_enter
+        for pos in range(0, self.thread_count - 1):
+
+            # Set the thread to the pos position of the wait queue
+            self.levels[thread_idx] = pos
+
+            # Force a context switch
+            time.sleep(0.0001)
+
+            # Show which queue the thread is in (last to enter)
+            self.last_to_enter[pos] = thread_idx
+
+            # Force a context switch
+            time.sleep(0.0001)
+
+            # Wait till either there is no process at the top of queue or
+            # until there is no other processes entered in that position of
+            # the queue.
+            while self.last_to_enter[pos] == thread_idx or self.noConflict(
+                    thread_idx,
+                    pos):
+                pass
+
+        if debug:
+            print(f'Thread {thread_id} has locked')
+
+    def unlock(self, thread_id: int, debug: bool = True) -> None:
+        '''
+        This method implements the Peterson's synchronization attempt from lecture slides
+        (lecture 13).
+
+        The method takes a thread_id as an argument. The method should behave
+        according to the pseudocode in lecture slides. All it does is change the
+        value of turn according to thread_id being unlocked.
+
+        Args:
+            thread_id (int): The thread_id of the thread that is trying to
+            release the lock of.
+            debug (bool): If True, print the value of turn after the unlock.
+        '''
+        thread_idx = thread_id - 1
+        self.levels[thread_idx] = -1
+        if debug:
+            print(f"Thread {thread_id} released the lock.")
+
+
 def main():
 
 
-    main_simulations(inc_amt=500000, thread_multiplier=[1,5],solution=Solution1)
+    main_simulations(inc_amt=500000, thread_multiplier=[1,5],
+                     solution=SolutionFilter,
+                     debug=False)
     return
 
 
