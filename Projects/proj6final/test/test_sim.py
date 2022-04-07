@@ -429,11 +429,13 @@ class Solution1(SyncSolution):
         '''
 
         # Change self.turn to the next thread_id (between 1 or 2)
-        self.turn = thread_id % 2 + 1
+        if self.turn == 1:
+            self.turn = 2
+        else:
+            self.turn == 2
 
         if debug:
             print(f"Thread {thread_id} released the lock.")
-
 
 def main():
 

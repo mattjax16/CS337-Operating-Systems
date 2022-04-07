@@ -67,9 +67,9 @@ def thread_task(lock: SyncSolution, thread_id: int, inc_amt: int,
         print(f'Thread {thread_id} is unlocking')
     lock.unlock(thread_id, False)
 
-    prog_check = 0
-    for _ in range(inc_amt * 10):
-        prog_check += 1
+    # prog_check = 0
+    # for _ in range(inc_amt * 10):
+    #     prog_check += 1
 
     if debug:
         print(f'Thread {thread_id} is done')
