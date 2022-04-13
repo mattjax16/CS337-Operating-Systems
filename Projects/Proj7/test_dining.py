@@ -17,7 +17,9 @@ from dataclasses import dataclass, field
 class Semaphore():
     '''
     A Semaphore class that allows for the use of a counter and a condition
-    variable.
+    variable. It has a counter that is used to determine if the semaphore is
+    available or not.  It also has a condition variable that is used to make
+    incrementing and decrementing the counter thread safe (an atomic operation).
 
     Attributes:
 
@@ -291,21 +293,7 @@ class PhilosopherAsym(Philosopher):
 
 
 class PhilosopherEatCS(Philosopher):
-    '''
-    This is a class that represents a PhilosopherEatCS (a critical section
-    where the philosopher waits for both forks to be avalible before eating).
-    It inherits from the Philosopher. It has a philosopher_id, a left_fork,
-    and a right_fork.
 
-    This is the PhilosopherEatCS class that is used to create a more complex
-    solution to the dining philosophers problem. In this solution the
-    philosopher waits for both forks to be avalible before eating. This is
-    done in a critical section. It allow philosopher to pick up forks if both
-    are available (needs to pick up both in critical section)
-
-
-
-    '''
 
     def __init__(self, philosopher_id: int, left_fork: Fork, right_fork: Fork,
                  left_eating: threading.Condition,
@@ -357,14 +345,14 @@ class PhilosopherEatCS(Philosopher):
         return
 
 
-def diningPhilosophers(num_philosophers: int = 5, simulation_time: int = 20,
+def diningPhilosophers(philosopher_amt: int = 5, simulation_time: int = 20,
                         fork_pause_time: float = 0.5,
                         sim_type: str = 'deadlock'):
     '''
     This method simulates the dining philosophers problem.
     
     Args:
-         num_philosophers: The number of philosophers to simulate.
+         philosopher_amt: The number of philosophers to simulate.
 
         simulation_time: The number of seconds to simulate. sim_type: The type
                 of simulation to run.  Can be 'deadlock', 'asymetric' or 'complex'.
@@ -381,23 +369,23 @@ def diningPhilosophers(num_philosophers: int = 5, simulation_time: int = 20,
         philosopher_obj = PhilosopherEatCS
 
     # create the forks
-    left_forks = [Fork(i) for i in range(num_philosophers)]
-    right_forks = [left_forks[(i + 1) % num_philosophers] for i in
-                   range(num_philosophers)]
+    left_forks = [Fork(i) for i in range(philosopher_amt)]
+    right_forks = [left_forks[(i + 1) % philosopher_amt] for i in
+                   range(philosopher_amt)]
 
     # Create a list of philosophers
     if sim_type != 'complex':
 
         philosophers = [
             philosopher_obj(i, left_forks[i], right_forks[i], fork_pause_time)
-            for i in range(num_philosophers)]
+            for i in range(philosopher_amt)]
 
     # If sim
     else:
         # Make eating locks
-        left_eating = [threading.Condition() for _ in range(num_philosophers)]
-        right_eating = [left_eating[(i + 1) % num_philosophers] for i in
-                         range(num_philosophers)]
+        left_eating = [threading.Condition() for _ in range(philosopher_amt)]
+        right_eating = [left_eating[(i + 1) % philosopher_amt] for i in
+                         range(philosopher_amt)]
 
         # Create philosophers
         philosophers = [philosopher_obj(i,
@@ -406,7 +394,7 @@ def diningPhilosophers(num_philosophers: int = 5, simulation_time: int = 20,
                                         left_eating[i],
                                         right_eating[i],
                                         fork_pause_time) for i in
-                        range(num_philosophers)]
+                        range(philosopher_amt)]
 
     print("\nStarting the Dining Philosophers Simulation...")
 
@@ -419,7 +407,7 @@ def diningPhilosophers(num_philosophers: int = 5, simulation_time: int = 20,
     philosopher_obj.is_running = False
     print("\nEnding the Dining Philosophers Simulation...")
 
-    # time.sleep(num_philosophers*2.5)
+    # time.sleep(philosopher_amt*2.5)
 
     if sim_type != 'deadlock':
         for philosopher in philosophers:
@@ -559,7 +547,7 @@ def createGraphs(sim_output: list, resource_graph: nx.DiGraph) -> tuple:
     return (directed_resource_graphs, wait_for_graphs)
 
 
-def diningPhilosophersGraphAfter(num_philosophers: int = 5,
+def diningPhilosophersGraphAfter(philosopher_amt: int = 5,
                               simulation_time: int = 20,
                               fork_pause_time: float = 0.5,
                               sim_type: str = 'deadlock'):
@@ -569,7 +557,7 @@ def diningPhilosophersGraphAfter(num_philosophers: int = 5,
     after the simulation has finished.
 
     Args:
-         num_philosophers: The number of philosophers to simulate.
+         philosopher_amt: The number of philosophers to simulate.
 
         simulation_time: The number of seconds to simulate. sim_type: The type
                 of simulation to run.  Can be 'deadlock', 'asymetric' or 'complex'.
@@ -586,23 +574,23 @@ def diningPhilosophersGraphAfter(num_philosophers: int = 5,
         philosopher_obj = PhilosopherEatCS
 
     # create the forks
-    left_forks = [Fork(i) for i in range(num_philosophers)]
-    right_forks = [left_forks[(i + 1) % num_philosophers] for i in
-                   range(num_philosophers)]
+    left_forks = [Fork(i) for i in range(philosopher_amt)]
+    right_forks = [left_forks[(i + 1) % philosopher_amt] for i in
+                   range(philosopher_amt)]
 
     # Create a list of philosophers
     if sim_type != 'complex':
 
         philosophers = [
             philosopher_obj(i, left_forks[i], right_forks[i], fork_pause_time)
-            for i in range(num_philosophers)]
+            for i in range(philosopher_amt)]
 
     # If sim
     else:
         # Make eating locks
-        left_eating = [threading.Condition() for _ in range(num_philosophers)]
-        right_eating = [left_eating[(i + 1) % num_philosophers] for i in
-                         range(num_philosophers)]
+        left_eating = [threading.Condition() for _ in range(philosopher_amt)]
+        right_eating = [left_eating[(i + 1) % philosopher_amt] for i in
+                         range(philosopher_amt)]
 
         # Create philosophers
         philosophers = [philosopher_obj(i,
@@ -611,11 +599,11 @@ def diningPhilosophersGraphAfter(num_philosophers: int = 5,
                                         left_eating[i],
                                         right_eating[i],
                                         fork_pause_time) for i in
-                        range(num_philosophers)]
+                        range(philosopher_amt)]
 
     # Create directed resource graph base
     directed_resource_graph = nx.DiGraph()
-    for i in range(num_philosophers):
+    for i in range(philosopher_amt):
         directed_resource_graph.add_node(f"P {philosophers[i].philosopher_id}")
         directed_resource_graph.add_node(f"F {i}")
 
@@ -856,7 +844,7 @@ class DeadlockHandler(threading.Thread):
 
         return
 
-def diningPhilosophersCatchDeadlock(num_philosophers: int = 5,
+def diningPhilosophersCatchDeadlock(philosopher_amt: int = 5,
                               simulation_time: int = 20,
                               fork_pause_time: float = 0.5,
                               sim_type: str = 'deadlock'):
@@ -868,7 +856,7 @@ def diningPhilosophersCatchDeadlock(num_philosophers: int = 5,
     graph, a solution to fix the deadlock is used
 
     Args:
-         num_philosophers: The number of philosophers to simulate.
+         philosopher_amt: The number of philosophers to simulate.
 
         simulation_time: The number of seconds to simulate. sim_type: The type
                 of simulation to run.  Can be 'deadlock', 'asymetric' or 'complex'.
@@ -885,23 +873,23 @@ def diningPhilosophersCatchDeadlock(num_philosophers: int = 5,
         philosopher_obj = PhilosopherEatCS
 
     # create the forks
-    left_forks = [Fork(i) for i in range(num_philosophers)]
-    right_forks = [left_forks[(i + 1) % num_philosophers] for i in
-                   range(num_philosophers)]
+    left_forks = [Fork(i) for i in range(philosopher_amt)]
+    right_forks = [left_forks[(i + 1) % philosopher_amt] for i in
+                   range(philosopher_amt)]
 
     # Create a list of philosophers
     if sim_type != 'complex':
 
         philosophers = [
             philosopher_obj(i, left_forks[i], right_forks[i], fork_pause_time)
-            for i in range(num_philosophers)]
+            for i in range(philosopher_amt)]
 
     # If sim
     else:
         # Make eating locks
-        left_eating = [threading.Condition() for _ in range(num_philosophers)]
-        right_eating = [left_eating[(i + 1) % num_philosophers] for i in
-                         range(num_philosophers)]
+        left_eating = [threading.Condition() for _ in range(philosopher_amt)]
+        right_eating = [left_eating[(i + 1) % philosopher_amt] for i in
+                         range(philosopher_amt)]
 
         # Create philosophers
         philosophers = [philosopher_obj(i,
@@ -910,11 +898,11 @@ def diningPhilosophersCatchDeadlock(num_philosophers: int = 5,
                                         left_eating[i],
                                         right_eating[i],
                                         fork_pause_time) for i in
-                        range(num_philosophers)]
+                        range(philosopher_amt)]
 
     # Create directed resource graph base
     directed_resource_graph = nx.DiGraph()
-    for i in range(num_philosophers):
+    for i in range(philosopher_amt):
         directed_resource_graph.add_node(f"P {philosophers[i].philosopher_id}")
         directed_resource_graph.add_node(f"F {i}")
 
