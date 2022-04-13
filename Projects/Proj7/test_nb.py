@@ -100,21 +100,7 @@ class Semaphore():
 
 
 
-# Buffer Variables
-BUFFER_SIZE = 10
-BUFFER = []
 
-# The Number of Items each producer will put into the buffer
-NUM_PRODUCE = 20
-
-# The number of producer and consumer threads
-NUM_PRODUCERS = 1
-NUM_CONSUMERS = 1
-
-# Semaphores
-ACCESS = Semaphore(counter=1)
-EMPTY = Semaphore(counter=BUFFER_SIZE)
-FULL = Semaphore(counter=0)
 #
 # ACCESS = Semaphore2(counter=1)
 # EMPTY = Semaphore2(counter=BUFFER_SIZE)
@@ -127,15 +113,10 @@ FULL = Semaphore(counter=0)
 # FULL = threading.Semaphore(0)
 
 
-class Producer(threading.Thread):
-    '''
-    A Producer class that inherits from the threading.Thread class.  This
-    class will produce numbers 0 + (producer_num * NUM_PRODUCE) -
-    NUM_PRODUCE + (producer_num * NUM_PRODUCE) and put them into the BUFFER.
-    '''
 
+class Producer(threading.Thread):
     def __init__(self,
-                 producer_num: int ,
+                 producer_id: int ,
                  num_produce: int,
                  buffer: list,
                  access: Semaphore,
@@ -147,18 +128,20 @@ class Producer(threading.Thread):
         The constructor for the Producer class.
 
         Args:
-            producer_num: An integer that represents the producer number.
+            producer_id: An integer that represents the producer number.
             num_produce: An integer that represents the number of items that
                 each producer will put into the buffer.
             buffer: A list that represents the buffer.
             access: A Semaphore that represents the access lock for the buffer.
             empty: A Semaphore that represents the empty lock for the buffer.
-            full: A Semaphore that represents the full lock for the buffer.
+            full: A `Semaphore` object that represents if the buffer is full or not
+                (starts at 0 to represent not full and is incremented by 1
+                every time the buffer is full).
             sleep_amt: A float that represents the amount of time the thread
             debug: A boolean that represents whether or not the debug mode is
         '''
-        threading.Thread.__init__(self)
-        self.producer_num = producer_num
+        threading.Thread.__init__(self, name=f'Producer {producer_id}')
+        self.producer_id = producer_id
         self.num_produce = num_produce
         self.buffer = buffer
         self.access = access
@@ -172,11 +155,11 @@ class Producer(threading.Thread):
         '''
         The run method for the Producer class.  This method will produce
         numbers 0 + (producer_num * NUM_PRODUCE) - NUM_PRODUCE + (producer_num *
-        NUM_PRODUCE) and put them into the BUFFER.
+        NUM_PRODUCE) and put them into the buffer.
         '''
         # Make a unique data array
         data_array = np.arange(self.num_produce) + \
-                     (self.producer_num * self.num_produce)
+                     (self.producer_id * self.num_produce)
 
         for data in data_array:
 
@@ -190,7 +173,7 @@ class Producer(threading.Thread):
             self.buffer.append(data)
 
             if self.debug:
-                print(f'Producer {self.producer_num} ({threading.current_thread().name}) added {data} to the buffer')
+                print(f'Producer {self.producer_id} ({threading.current_thread().name}) added {data} to the buffer')
                 print(f'Buffer Size: {len(self.buffer)}')
 
             # Release the access semaphore
@@ -199,66 +182,23 @@ class Producer(threading.Thread):
             # Release the full semaphore
             self.full.release()
 
-            # Sleep for a random amount of time
-            # time.sleep(random.randint(1,3))
-            time.sleep(self.sleep_amt)
+            # Sleep for the amount of time specified
+            if self.sleep_amt != -1:
+                time.sleep(self.sleep_amt)
+            else:
+                time.sleep(random.random() * 3)
 
         return
 
 
 
-def producerFunc(debug: bool = True, producerNum: int = 0):
-    '''
-    This function will put a unique number into the buffer.
 
-    args:
-        debug: A boolean that will print debug statements if true.
-        producerNum: The number of the producer thread.
-    '''
-
-    # Get thr global variables
-    global BUFFER, ACCESS, EMPTY, FULL
-
-    # Make a unique data array
-    data_array = np.arange(NUM_PRODUCE) + (producerNum * NUM_PRODUCE)
-
-    for data in data_array:
-
-
-        # Acquire the empty semaphore
-        EMPTY.acquire()
-
-        # Acquire the access semaphore
-        ACCESS.acquire()
-
-        # Add the data to the buffer
-        BUFFER.append(data)
-
-        if debug:
-            print(f'Producer {producerNum} ({threading.current_thread().name}) added {data} to the buffer')
-            print(f'Buffer Size: {len(BUFFER)}')
-
-        # Release the access semaphore
-        ACCESS.release()
-
-        # Release the full semaphore
-        FULL.release()
-
-        # Sleep for set sleep amount
-        time.sleep(1)
-
-    return
 
 
 class Consumer(threading.Thread):
-    '''
-    This is a Consumer class that inherits from the threading.Thread class.
-    This class will consume NUM_PRODUCE/consumer_amt = num_consumed numbers from
-    the BUFFER and print them out.
-    '''
 
     def __init__(self,
-                 consumer_num: int,
+                 consumer_id: int,
                  num_consume: int,
                  buffer: list,
                  access: Semaphore,
@@ -270,19 +210,25 @@ class Consumer(threading.Thread):
         The constructor for the Consumer class.
 
         Args:
-            consumer_num: An integer that represents the consumer number.
+            consumer_id: An integer that represents the consumer number.
             num_consume: An integer that represents the number of items that
                 each consumer will consume from the buffer.
             buffer: A list that represents the buffer.
-            access: A Semaphore that represents the access lock for the buffer.
+            access: A `Semaphore` object that represents the number of
+                    threads that can access the buffer at a time (starts at 1
+                     to represent only one thread can access the buffer at a
+                     time).
+
             empty: A Semaphore that represents the empty lock for the buffer.
-            full: A Semaphore that represents the full lock for the buffer.
+            full: A `Semaphore` object that represents tif the buffer is full or not
+                    (starts at 0 to represent not full and is incremented by
+                    1 every time the buffer is full).
             sleep_amt: A float that represents the amount of time that the
                 consumer will sleep for.
             debug: A boolean that represents whether or not the debug mode is
         '''
         threading.Thread.__init__(self)
-        self.consumer_num = consumer_num
+        self.consumer_id = consumer_id
         self.num_consume = num_consume
         self.buffer = buffer
         self.access = access
@@ -295,7 +241,7 @@ class Consumer(threading.Thread):
     def run(self):
         '''
         The run method for the Consumer class.  This method will consume
-        numbers from the BUFFER and print them out.
+        numbers from the buffer and print them out.
         '''
         for _ in range(self.num_consume):
 
@@ -309,7 +255,7 @@ class Consumer(threading.Thread):
             data = self.buffer.pop(0)
 
             if self.debug:
-                print(f'Consumer {self.consumer_num} ({threading.current_thread().name}) popped {data} from the buffer')
+                print(f'Consumer {self.consumer_id} ({threading.current_thread().name}) popped {data} from the buffer')
                 print(f'Buffer Size: {len(self.buffer)}')
 
             # Release the access semaphore
@@ -319,50 +265,14 @@ class Consumer(threading.Thread):
             self.empty.release()
 
             # Sleep for set sleep amount
-            time.sleep(self.sleep_amt)
+            if self.sleep_amt != -1:
+                time.sleep(self.sleep_amt)
+            else:
+                time.sleep(random.random() * 3)
+
 
         return
 
-def consumerFunc(debug: bool = True, consumerNum: int = 0):
-    '''
-    This function will put a unique number into the buffer.
-
-    Args:
-        debug:  If true, will print debug statements.
-    '''
-
-    # Get thr global variables
-    global BUFFER, ACCESS, EMPTY, FULL
-
-    for _ in range(NUM_PRODUCE):
-
-
-
-        # Acquire the full semaphore
-        FULL.acquire()
-
-        # Acquire the access semaphore
-        ACCESS.acquire()
-
-        # get the data from the buffer
-        data = BUFFER.pop()
-
-        if debug:
-            print(f'Consumer {consumerNum} {threading.current_thread().name}'
-                f' poped {data} from the buffer')
-            print(f'Buffer Size: {len(BUFFER)}')
-
-
-        # Release the access semaphore
-        ACCESS.release()
-
-        # Release the empty semaphore
-        EMPTY.release()
-
-        # Sleep for a random amount of time
-        time.sleep(3)
-
-    return
 
 
 
