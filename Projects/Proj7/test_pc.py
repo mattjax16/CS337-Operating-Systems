@@ -136,7 +136,7 @@ class Producer(threading.Thread):
 
     def __init__(self,
                  producer_num: int ,
-                 data_amt: int,
+                 num_produce: int,
                  buffer: list,
                  access: Semaphore,
                  empty: Semaphore,
@@ -148,7 +148,7 @@ class Producer(threading.Thread):
 
         Args:
             producer_num: An integer that represents the producer number.
-            data_amt: An integer that represents the number of items that
+            num_produce: An integer that represents the number of items that
                 each producer will put into the buffer.
             buffer: A list that represents the buffer.
             access: A Semaphore that represents the access lock for the buffer.
@@ -159,7 +159,7 @@ class Producer(threading.Thread):
         '''
         threading.Thread.__init__(self)
         self.producer_num = producer_num
-        self.data_amt = data_amt
+        self.num_produce = num_produce
         self.buffer = buffer
         self.access = access
         self.empty = empty
@@ -175,8 +175,8 @@ class Producer(threading.Thread):
         NUM_PRODUCE) and put them into the BUFFER.
         '''
         # Make a unique data array
-        data_array = np.arange(self.data_amt) + \
-                     (self.producer_num * self.data_amt)
+        data_array = np.arange(self.num_produce) + \
+                     (self.producer_num * self.num_produce)
 
         for data in data_array:
 
@@ -253,7 +253,7 @@ def producerFunc(debug: bool = True, producerNum: int = 0):
 class Consumer(threading.Thread):
     '''
     This is a Consumer class that inherits from the threading.Thread class.
-    This class will consume NUM_PRODUCE/NUM_CONSUMERS = num_consumed numbers from
+    This class will consume NUM_PRODUCE/consumer_amt = num_consumed numbers from
     the BUFFER and print them out.
     '''
 
@@ -366,18 +366,18 @@ def consumerFunc(debug: bool = True, consumerNum: int = 0):
 
 
 
-def bufferSimulation(num_consumers: int = 1, num_producers: int = 1,
+def bufferSimulation(consumer_amt: int = 1, producer_amt: int = 1,
                      consumer_sleep: float = 1, producer_sleep: float = 1,
-                     data_amt : int = 50, buffer_size = 10,
+                     num_produce : int = 50, buffer_size = 10,
                      debug: bool = True):
     '''
     This function will simulate a buffer with a producer and consumers.
     Args:
-        num_consumers (int): The number of consumers to create.
-        num_producers (int): The number of producers to create.
+        consumer_amt (int): The number of consumers to create.
+        producer_amt (int): The number of producers to create.
         consumer_sleep (float): The amount of time that each consumer will sleep.
         producer_sleep (float): The amount of time that each producer will sleep.
-        data_amt (int): The number of items that each producer will produce.
+        num_produce (int): The number of items that each producer will produce.
         buffer_size (int): The size of the buffer.
         debug (bool): If true, will print debug statements.
 
@@ -396,18 +396,18 @@ def bufferSimulation(num_consumers: int = 1, num_producers: int = 1,
     full = Semaphore(counter=0)
 
     # Calculate the consumer amount
-    num_consume = data_amt // num_consumers
+    num_consume = num_produce // consumer_amt
 
     # Create the consumers
     consumers = []
-    for i in range(num_consumers):
+    for i in range(consumer_amt):
         consumers.append(Consumer(i, num_consume, buffer, access, empty, full,
                                   consumer_sleep, debug))
 
     # Create the producers
     producers = []
-    for i in range(num_producers):
-        producers.append(Producer(i, data_amt, buffer, access, empty, full,
+    for i in range(producer_amt):
+        producers.append(Producer(i, num_produce, buffer, access, empty, full,
                                   producer_sleep, debug))
 
 
@@ -435,8 +435,8 @@ def bufferSimulation(num_consumers: int = 1, num_producers: int = 1,
 
 
 def main():
-    bufferSimulation(num_consumers=1, num_producers=1, consumer_sleep=1,
-                     producer_sleep=3, data_amt=50, buffer_size=10, debug=True)
+    bufferSimulation(consumer_amt=1, producer_amt=1, consumer_sleep=1,
+                     producer_sleep=3, num_produce=50, buffer_size=10, debug=True)
     return
 
 
