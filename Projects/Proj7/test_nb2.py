@@ -3,15 +3,20 @@ import random
 import time
 import contextlib
 import io
+import matplotlib
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 import multiprocessing
 import warnings
 import re
 import sys
 import numpy as np
-import matplotlib.animation as animation
 import networkx as nx
 from dataclasses import dataclass, field
+
+# plt.rcParams["figure.autolayout"] = True
+
+
 
 
 @dataclass
@@ -76,6 +81,7 @@ class Semaphore():
     # Make the Semaphore class a context manager
     __enter__ = acquire
     __exit__ = release
+
 
 
 class Fork(Semaphore):
@@ -346,94 +352,6 @@ class PhilosopherEatCS(Philosopher):
         return
 
 
-def diningPhilosophers(philosopher_amt: int = 5, simulation_time: int = 20,
-                        fork_pause_time: float = 0.5,
-                        sim_type: str = 'deadlock'):
-    '''
-    This method simulates the dining philosophers problem.
-    
-    Args:
-         philosopher_amt: The number of philosophers to simulate.
-
-        simulation_time: The number of seconds to simulate. sim_type: The type
-                of simulation to run.  Can be 'deadlock', 'asymetric' or 'complex'.
-
-        fork_pause_time: The time that the philosopher will pause between
-    '''
-
-    # Get correct philosopher object
-    if sim_type == 'deadlock':
-        philosopher_obj = Philosopher
-    elif sim_type == 'asymetric':
-        philosopher_obj = PhilosopherAsym
-    elif sim_type == 'complex':
-        philosopher_obj = PhilosopherEatCS
-
-    # create the forks
-    left_forks = [Fork(i) for i in range(philosopher_amt)]
-    right_forks = [left_forks[(i + 1) % philosopher_amt] for i in
-                   range(philosopher_amt)]
-
-    # Create a list of philosophers
-    if sim_type != 'complex':
-
-        philosophers = [
-            philosopher_obj(i, left_forks[i], right_forks[i], fork_pause_time)
-            for i in range(philosopher_amt)]
-
-    # If sim
-    else:
-        # Make eating locks
-        left_eating = [threading.Condition() for _ in range(philosopher_amt)]
-        right_eating = [left_eating[(i + 1) % philosopher_amt] for i in
-                         range(philosopher_amt)]
-
-        # Create philosophers
-        philosophers = [philosopher_obj(i,
-                                        left_forks[i],
-                                        right_forks[i],
-                                        left_eating[i],
-                                        right_eating[i],
-                                        fork_pause_time) for i in
-                        range(philosopher_amt)]
-
-    print("\nStarting the Dining Philosophers Simulation...")
-
-    # Start the philosophers
-    for philosopher in philosophers:
-        philosopher.start()
-
-    # Wait for the simulation_time
-    time.sleep(simulation_time)
-    philosopher_obj.is_running = False
-    print("\nEnding the Dining Philosophers Simulation...")
-
-    # time.sleep(philosopher_amt*2.5)
-
-    if sim_type != 'deadlock':
-        for philosopher in philosophers:
-            philosopher.join()
-
-
-    print("The Dining Philosophers Simulation has ended.")
-
-
-    # See if all philosophers have eaten the correct number of times
-    all_eaten = True
-    for philosopher in philosophers:
-        if philosopher.times_eaten != philosopher.times_to_eat:
-            print(f"\n{philosopher.name} has eaten {philosopher.times_eaten} times instead of {philosopher.times_to_eat} times.")
-            all_eaten = False
-
-
-    if all_eaten:
-        print("\nAll philosophers have eaten the correct number of times.")
-
-
-    return
-
-
-
 
 def createWaitForGraph(resource_graph: nx.DiGraph):
     '''
@@ -469,7 +387,6 @@ def createWaitForGraph(resource_graph: nx.DiGraph):
 
     return wait_for_graph
 
-
 def createGraphs(sim_output: list, resource_graph: nx.DiGraph) -> tuple:
     '''
     Function to create a list of directed resource graphs for each step in
@@ -483,9 +400,10 @@ def createGraphs(sim_output: list, resource_graph: nx.DiGraph) -> tuple:
         A list of directed resource graphs
     '''
 
-    # Create a list of graphs
+    # Create a list of graphs and used lines
     directed_resource_graphs = []
     wait_for_graphs = []
+    graph_lines = []
 
     # Create a new graph
     new_graph = resource_graph.copy()
@@ -493,7 +411,7 @@ def createGraphs(sim_output: list, resource_graph: nx.DiGraph) -> tuple:
     for line in sim_output:
 
         # If has is in the line continue
-        if ' has ' in line:
+        if ' has' in line:
             continue
 
         split_line = line.split(' is')
@@ -523,7 +441,6 @@ def createGraphs(sim_output: list, resource_graph: nx.DiGraph) -> tuple:
                 pass
 
             # add to new graph based on philosopher id , action and fork id
-            ## TODO: add atributes to the graph edge
             if action == 'taking':
                 new_graph.add_edge(philosopher_id, fork_id)
             elif action == 'using':
@@ -532,15 +449,12 @@ def createGraphs(sim_output: list, resource_graph: nx.DiGraph) -> tuple:
                 # that are going into it
                 edges = list(new_graph.edges(fork_id))
 
-                #flip the edges that are "using"
+                # flip the edges that are "using"
                 for edge in edges:
                     new_graph.remove_edge(edge[0], edge[1])
                     new_graph.add_edge(edge[1], edge[0])
 
-
                 new_graph.add_edge(fork_id, philosopher_id)
-            # elif action == 'done':
-            #     graph.remove_edge(philosopher_id, fork_id)
 
             # Create wait-for graph
             wait_for_graph = createWaitForGraph(new_graph)
@@ -548,10 +462,12 @@ def createGraphs(sim_output: list, resource_graph: nx.DiGraph) -> tuple:
             wait_for_graphs.append(wait_for_graph)
             directed_resource_graphs.append(new_graph)
 
+            # add line to graph_lines list
+            graph_lines.append(line)
+
             new_graph = new_graph.copy()
 
-    return (directed_resource_graphs, wait_for_graphs)
-
+    return (directed_resource_graphs, wait_for_graphs, graph_lines)
 
 def diningPhilosophersGraphAfter(philosopher_amt: int = 5,
                               simulation_time: int = 20,
@@ -633,11 +549,6 @@ def diningPhilosophersGraphAfter(philosopher_amt: int = 5,
         print("\nEnding the Dining Philosophers Simulation...")
 
 
-    # # Set directed resource graph maker to not running
-    # directed_resource_graph_maker.is_running = False
-    #
-    # # Wait for the directed resource graph maker to finish
-    # directed_resource_graph_maker.join()
 
     print("\nThe Dining Philosophers Simulation has ended.")
 
@@ -648,367 +559,93 @@ def diningPhilosophersGraphAfter(philosopher_amt: int = 5,
     for line_num, line in enumerate(lines):
         print(f"{line_num} {line}")
 
-
-    # Filter output
-
-    # filtered_lines = []
-    # for line in lines:
-    #     split_line = line.split(' is')
-    #
-    #     if len(split_line) > 1 and "thinking" not in split_line[1] and "eating" not in split_line[1] and "putting" not in split_line[1]:
-    #         filtered_lines.append(line)
-
-    # Create a list of graphs
-
     di_graphs = createGraphs(lines, directed_resource_graph)
-    return di_graphs
+
+
+    return  di_graphs
+
+
+
+# Make graph function
+def plotGraphs(frame, ax, directed_resource_graphs, wait_for_graphs, graph_lines,
+               color_map):
+
+        # Clear all axes
+        for a in ax:
+            a.clear()
+
+        ax[0].set_title("Directed Resource Graph")
+        ax[1].set_title("Wait-for Graph")
+
+        # Plot the directed resource graph
+        nx.draw_circular(directed_resource_graphs[frame],
+                ax=ax[0],
+                node_color=color_map,
+                with_labels=True)
+
+        # Plot the wait-for graph
+        nx.draw_circular(wait_for_graphs[frame],
+                ax=ax[1],
+                node_color="red",
+                with_labels=True)
+
+        # Clean the line
+        clean_line = re.sub(r'[\n\t\s]*', ' ', graph_lines[frame])
+        # add the action that cause each graph to change
+        ax[0].text(0.65, -1.2, f"Action {frame}.     {clean_line}", fontsize=8)
+
+        # call tight layout
+        plt.tight_layout()
+
+        new_ax = ax.copy()
+
+
+        return new_ax
+
+def makeGraphsGif(di_graphs: list, gif_name: str = "animation") -> None:
+
+
+    # # initialize fig and axis
+    # fig, ax = plt.subplots(1, 2, figsize=(10, 5))
+    fig = plt.figure(figsize=(10, 5))
     #
-    # # define color map. philosopher = red, fork = green
-    # color_map_resources = ["red"  if "P" in node else "green" for node in directed_resource_graph]
-    #
-    # directed_resource_graphs = di_graphs[0]
-    # wait_for_graphs = di_graphs[1]
-    #
-    # # Plot the graphs
-    # for graph_resource, wait_for_graph in zip(directed_resource_graphs,
-    #                                           wait_for_graphs):
-    #
-    #     # Plot directed resource graph
-    #     nx.draw_circular(graph_resource, with_labels=True, node_color = color_map_resources)
-    #     plt.show()
-    #
-    #     # Clear the plot
-    #     plt.clf()
-    #
-    #     # Plot wait for graph.
-    #     nx.draw_circular(wait_for_graph,
-    #                      with_labels=True,
-    #                      node_color="red")
-    #     plt.show()
-    #     # time.sleep(0.001)
-    #
-    # # find all cycles in wait for graphs
-    # graph_cycles = []
-    # for wait_for_graph in wait_for_graphs:
-    #     cycles = list(nx.simple_cycles(wait_for_graph))
-    #     graph_cycles.append(cycles)
+    # get the subplots to update when generating the animation
+    ax1 = fig.add_subplot(121)
+    ax2 = fig.add_subplot(122)
+    ax = [ax1, ax2]
+
+
+
+     # define color map. philosopher = red, fork = green
+    color_map_resources = ["red" if "P" in node else "green" for node in
+                           di_graphs[0][0].nodes]
+
+
+    # get the graphs
+    directed_resource_graphs = di_graphs[0]
+    wait_for_graphs = di_graphs[1]
+
+    # get the graph lines
+    graph_lines = di_graphs[2]
+
+
+    ani = animation.FuncAnimation(fig, plotGraphs, frames=np.arange(len(di_graphs[0])),
+                                             interval=1000, repeat=True,
+                                  fargs=(ax, directed_resource_graphs, wait_for_graphs, graph_lines, color_map_resources))
+
+    writergif = animation.PillowWriter(fps=1.5)
+    ani.save(f"{gif_name}.gif", writer=writergif)
 
     return
-
-
-def detectDeadlock(wait_for_graphs: list) -> bool:
-    '''
-    Detects deadlock in the wait for graphs
-    Args:
-        wait_for_graphs (list): list of wait for graphs
-
-    Returns:
-        bool: True if deadlock detected, False otherwise
-
-    '''
-    # find all cycles in wait for graphs
-    graph_cycles = []
-    for wait_for_graph in wait_for_graphs:
-        cycles = list(nx.simple_cycles(wait_for_graph))
-        graph_cycles.append(cycles)
-
-    # If any cycles exist, then there is a deadlock
-    if any(cycles for cycles in graph_cycles):
-        return True
-
-    return False
-
-class GraphMakerProcess(multiprocessing.Process):
-    '''
-    Process to create directed resource graph
-    '''
-
-    def __init__(self, directed_resource_graph, moves_queue, deadlock_queue):
-        multiprocessing.Process.__init__(self, name="GraphMakerProcess")
-        self.directed_resource_graph = directed_resource_graph
-        self.is_running = True
-        self.moves_queue = moves_queue
-        self.deadlock_queue = deadlock_queue
-
-    def run(self):
-
-        current_moves = []
-        while self.is_running:
-
-            # get moves from the moves queue
-            moves_list = self.moves_queue.get()
-
-            if len(moves_list) > 1 and moves_list != current_moves:
-                current_moves = moves_list
-                di_graphs = createGraphs(current_moves, self.directed_resource_graph)
-
-
-                wait_for_graphs = di_graphs[1]
-
-                # Check for deadlock
-                if detectDeadlock(wait_for_graphs):
-                    self.deadlock_queue.put(True)
-
-            pass
-
-
-class GraphMakerThread(threading.Thread):
-    '''
-    This class is used to create a directed graph of resources and wait-for graph
-    '''
-
-    # Create running class attribute
-    is_running = True
-
-    def __init__(self, resource_graph: nx.DiGraph, moves_queue:multiprocessing.Queue):
-        '''
-        This method initializes a DirectedResourceGraphMaker object.
-
-        Parameters:
-            resource_graph: The graph to add the resources to.
-            queue: The queue to add sys.out to.
-        '''
-        super().__init__(name=f"GraphMakerThread")
-        self.resource_graph = resource_graph
-        self.moves_queue = moves_queue
-        return
-
-    def run(self):
-        '''
-        This method runs the DirectedResourceGraphMaker object.
-        '''
-
-        captured_output = io.StringIO()  # Create StringIO object
-        while self.is_running:
-            with contextlib.redirect_stdout(captured_output):
-
-                time.sleep(0.001)
-
-            lines = captured_output.getvalue().split('\n')
-
-            # Add the lines to the queue
-            self.moves_queue.put(lines)
-
-        return
-
-
-class DeadlockHandler(threading.Thread):
-    '''
-    This class is used to handle deadlock
-    '''
-
-    # Create running class attribute
-    is_running = True
-
-    def __init__(self, deadlock_queue:multiprocessing.Queue,
-                 forks: list,
-                 philosophers: list):
-        '''
-        This method initializes a DeadlockHandler object.
-
-        Parameters:
-            deadlock_queue: The queue to add sys.out to.
-            forks: The forks to use.
-        '''
-        super().__init__(name=f"DeadlockHandler")
-        self.deadlock_queue = deadlock_queue
-        self.forks = forks
-        self.philosophers = philosophers
-        return
-
-    def run(self):
-        '''
-        This method runs the DeadlockHandler object.
-        '''
-
-        while self.is_running:
-
-            # get data from deadlock queue
-            if not self.deadlock_queue.empty():
-                deadlock_signal = self.deadlock_queue.get()
-                if deadlock_signal:
-
-                    # Raise warning about deadlock
-                    warnings.warn("Deadlock detected")
-
-                    # turn off all philosophers
-                    for philosopher in self.philosophers:
-                        philosopher.philosopher_running = False
-
-                    # release all forks
-                    for fork in self.forks:
-                        fork.release()
-
-                    # Randomly start all philosophers
-                    random.shuffle(self.philosophers)
-
-                    for philosopher in self.philosophers:
-
-                        time.sleep(random.uniform(3,6))
-                        philosopher.philosopher_running= True
-
-
-
-        return
-
-def diningPhilosophersCatchDeadlock(philosopher_amt: int = 5,
-                              simulation_time: int = 20,
-                              fork_pause_time: float = 0.5,
-                              sim_type: str = 'deadlock'):
-    '''
-    This method simulates the dining philosophers problem and graphs it with
-    a wait-for or directed resource graph using networknx. The graphs are
-    produced during the simulation in the GraphMaker thread and process then
-    if there is a deadlock detected when there is a cylce in the wait-for
-    graph, a solution to fix the deadlock is used
-
-    Args:
-         philosopher_amt: The number of philosophers to simulate.
-
-        simulation_time: The number of seconds to simulate. sim_type: The type
-                of simulation to run.  Can be 'deadlock', 'asymetric' or 'complex'.
-
-        fork_pause_time: The time that the philosopher will pause between
-    '''
-
-    # Get correct philosopher object
-    if sim_type == 'deadlock':
-        philosopher_obj = Philosopher
-    elif sim_type == 'asymetric':
-        philosopher_obj = PhilosopherAsym
-    elif sim_type == 'complex':
-        philosopher_obj = PhilosopherEatCS
-
-    # create the forks
-    left_forks = [Fork(i) for i in range(philosopher_amt)]
-    right_forks = [left_forks[(i + 1) % philosopher_amt] for i in
-                   range(philosopher_amt)]
-
-    # Create a list of philosophers
-    if sim_type != 'complex':
-
-        philosophers = [
-            philosopher_obj(i, left_forks[i], right_forks[i], fork_pause_time)
-            for i in range(philosopher_amt)]
-
-    # If sim
-    else:
-        # Make eating locks
-        left_eating = [threading.Condition() for _ in range(philosopher_amt)]
-        right_eating = [left_eating[(i + 1) % philosopher_amt] for i in
-                         range(philosopher_amt)]
-
-        # Create philosophers
-        philosophers = [philosopher_obj(i,
-                                        left_forks[i],
-                                        right_forks[i],
-                                        left_eating[i],
-                                        right_eating[i],
-                                        fork_pause_time) for i in
-                        range(philosopher_amt)]
-
-    # Create directed resource graph base
-    directed_resource_graph = nx.DiGraph()
-    for i in range(philosopher_amt):
-        directed_resource_graph.add_node(f"P {philosophers[i].philosopher_id}")
-        directed_resource_graph.add_node(f"F {i}")
-
-    # Initialize the multiprocessing queues
-    moves_queue = multiprocessing.Queue()
-    deadlock_queue = multiprocessing.Queue()
-
-    # Create graph Maker thread
-    graph_maker_thread = GraphMakerThread(directed_resource_graph,
-                                          moves_queue = moves_queue)
-
-    # Create the graph maker process
-    graph_maker_process = GraphMakerProcess(directed_resource_graph,
-                                            moves_queue = moves_queue,
-                                            deadlock_queue = deadlock_queue)
-
-    # Create the deadlock handler thread
-    deadlock_handler_thread = DeadlockHandler(deadlock_queue, forks = left_forks, philosophers=philosophers)
-
-
-
-
-
-    print("\nStarting the Dining Philosophers Simulation...")
-
-
-
-
-
-    # Start the graph maker
-    graph_maker_thread.start()
-
-    # Start the graph maker process
-    graph_maker_process.start()
-
-    deadlock_handler_thread.start()
-
-    time.sleep(2)
-
-
-    # Start the philosophers
-    for philosopher in philosophers:
-        philosopher.start()
-
-    # Wait for the simulation_time
-    time.sleep(simulation_time)
-    philosopher_obj.is_running = False
-    print("\nEnding the Dining Philosophers Simulation...")
-
-    time.sleep(5)
-
-
-    # Setgraph maker to not running
-    graph_maker_thread.is_running = False
-
-    # Wait for the graph maker to finish
-    graph_maker_thread.join()
-
-
-
-    # Set graph maker to not running
-    graph_maker_process.is_running = False
-
-    print("Setting graph maker pros to not running")
-
-    # Wait for the graph maker process to finish
-    # graph_maker_process.join()
-
-    # Set deadlock handler to not running
-    deadlock_handler_thread.is_running = False
-    print("Setting graph maker thread to not running")
-
-    # Wait for the deadlock handler to finish
-    # deadlock_handler_thread.join()
-
-
-    # Close the queue
-    moves_queue.close()
-    deadlock_queue.close()
-
-    print("\nThe Dining Philosophers Simulation has ended.")
-
-    # See if all philosophers have eaten the correct number of times
-    all_eaten = True
-    for philosopher in philosophers:
-        if philosopher.times_eaten != philosopher.times_to_eat:
-            print(f"\n{philosopher.name} has eaten {philosopher.times_eaten} times instead of {philosopher.times_to_eat} times.")
-            all_eaten = False
-
-    if all_eaten:
-        print("\nAll philosophers have eaten the correct number of times.")
-
-
-    return
-
 
 def main():
-    # diningPhilosophers(5, 20, 1.6, 'asymetric')
-    tttt = diningPhilosophersGraphAfter(5, 10, 1.6, 'deadlock')
+    deadlock_graphs = diningPhilosophersGraphAfter(philosopher_amt=5,
+                                                   simulation_time=15,
+                                                   fork_pause_time=0.6,
+                                                   sim_type='deadlock')
+
+    makeGraphsGif(deadlock_graphs)
+    # showAnimation(deadlock_graphs)
     return
 
 
