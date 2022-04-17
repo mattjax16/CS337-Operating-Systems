@@ -43,7 +43,6 @@ class Semaphore():
 
         '''
 
-
         # acquire the lock for the condition variable with the context manager
         with self.condition:
             # decrement the counter
@@ -144,7 +143,6 @@ class Philosopher(threading.Thread):
         self.times_to_eat = times_to_eat
         self.times_eaten = 0
 
-
         # A bool to be used to toggle the philosopher running per instance
         self.philosopher_running = True
 
@@ -170,7 +168,8 @@ class Philosopher(threading.Thread):
         '''
         This method takes the left fork of the philosopher.
         '''
-        print(f"\t\t{self.name} is taking left fork  {self.left_fork.fork_id} ...")
+        print(
+            f"\t\t{self.name} is taking left fork  {self.left_fork.fork_id} ...")
         self.left_fork.acquire()
         print(f"\t\t{self.name} is using left fork {self.left_fork.fork_id} ...")
 
@@ -183,9 +182,11 @@ class Philosopher(threading.Thread):
         '''
         This method takes the right fork of the philosopher.
         '''
-        print(f"\t\t{self.name} is taking right fork {self.right_fork.fork_id} ...")
+        print(
+            f"\t\t{self.name} is taking right fork {self.right_fork.fork_id} ...")
         self.right_fork.acquire()
-        print(f"\t\t{self.name} is using right fork {self.right_fork.fork_id} ...")
+        print(
+            f"\t\t{self.name} is using right fork {self.right_fork.fork_id} ...")
 
         # Pause for fork_pause_time seconds
         time.sleep(self.fork_pause_time)
@@ -196,9 +197,11 @@ class Philosopher(threading.Thread):
         '''
         This method puts the left fork of the philosopher.
         '''
-        print(f"\t\t{self.name} is putting left fork {self.left_fork.fork_id} down ...")
+        print(
+            f"\t\t{self.name} is putting left fork {self.left_fork.fork_id} down ...")
         self.left_fork.release()
-        print(f"\t\t{self.name} is done with left fork {self.left_fork.fork_id} ...")
+        print(
+            f"\t\t{self.name} is done with left fork {self.left_fork.fork_id} ...")
 
         return
 
@@ -206,9 +209,11 @@ class Philosopher(threading.Thread):
         '''
         This method puts the right fork of the philosopher.
         '''
-        print(f"\t\t{self.name} is putting right fork {self.right_fork.fork_id} down ...")
+        print(
+            f"\t\t{self.name} is putting right fork {self.right_fork.fork_id} down ...")
         self.right_fork.release()
-        print(f"\t\t{self.name} is done with right fork {self.right_fork.fork_id} ...")
+        print(
+            f"\t\t{self.name} is done with right fork {self.right_fork.fork_id} ...")
 
         return
 
@@ -284,8 +289,6 @@ class PhilosopherAsym(Philosopher):
                 self.put_left_fork()
                 self.put_right_fork()
 
-
-
             print(f"\t{self.name} is done eating and thinking...")
 
             self.times_eaten += 1
@@ -294,7 +297,6 @@ class PhilosopherAsym(Philosopher):
 
 
 class PhilosopherEatCS(Philosopher):
-
 
     def __init__(self, philosopher_id: int, left_fork: Fork, right_fork: Fork,
                  left_eating: threading.Condition,
@@ -336,22 +338,19 @@ class PhilosopherEatCS(Philosopher):
                     self.put_right_fork()
                     self.put_left_fork()
 
-
             self.times_eaten += 1
 
             print(f"\t{self.name} is done eating and thinking...")
-
-
 
         return
 
 
 def diningPhilosophers(philosopher_amt: int = 5, simulation_time: int = 20,
-                        fork_pause_time: float = 0.5,
-                        sim_type: str = 'deadlock'):
+                       fork_pause_time: float = 0.5,
+                       sim_type: str = 'deadlock'):
     '''
     This method simulates the dining philosophers problem.
-    
+
     Args:
          philosopher_amt: The number of philosophers to simulate.
 
@@ -386,7 +385,7 @@ def diningPhilosophers(philosopher_amt: int = 5, simulation_time: int = 20,
         # Make eating locks
         left_eating = [threading.Condition() for _ in range(philosopher_amt)]
         right_eating = [left_eating[(i + 1) % philosopher_amt] for i in
-                         range(philosopher_amt)]
+                        range(philosopher_amt)]
 
         # Create philosophers
         philosophers = [philosopher_obj(i,
@@ -414,25 +413,20 @@ def diningPhilosophers(philosopher_amt: int = 5, simulation_time: int = 20,
         for philosopher in philosophers:
             philosopher.join()
 
-
     print("The Dining Philosophers Simulation has ended.")
-
 
     # See if all philosophers have eaten the correct number of times
     all_eaten = True
     for philosopher in philosophers:
         if philosopher.times_eaten != philosopher.times_to_eat:
-            print(f"\n{philosopher.name} has eaten {philosopher.times_eaten} times instead of {philosopher.times_to_eat} times.")
+            print(
+                f"\n{philosopher.name} has eaten {philosopher.times_eaten} times instead of {philosopher.times_to_eat} times.")
             all_eaten = False
-
 
     if all_eaten:
         print("\nAll philosophers have eaten the correct number of times.")
 
-
     return
-
-
 
 
 def createWaitForGraph(resource_graph: nx.DiGraph):
@@ -465,7 +459,6 @@ def createWaitForGraph(resource_graph: nx.DiGraph):
 
         # Remove the fork node
         wait_for_graph.remove_node(node)
-
 
     return wait_for_graph
 
@@ -523,7 +516,7 @@ def createGraphs(sim_output: list, resource_graph: nx.DiGraph) -> tuple:
                 pass
 
             # add to new graph based on philosopher id , action and fork id
-            ## TODO: add atributes to the graph edge
+            # TODO: add atributes to the graph edge
             if action == 'taking':
                 new_graph.add_edge(philosopher_id, fork_id)
             elif action == 'using':
@@ -532,11 +525,10 @@ def createGraphs(sim_output: list, resource_graph: nx.DiGraph) -> tuple:
                 # that are going into it
                 edges = list(new_graph.edges(fork_id))
 
-                #flip the edges that are "using"
+                # flip the edges that are "using"
                 for edge in edges:
                     new_graph.remove_edge(edge[0], edge[1])
                     new_graph.add_edge(edge[1], edge[0])
-
 
                 new_graph.add_edge(fork_id, philosopher_id)
             # elif action == 'done':
@@ -554,9 +546,9 @@ def createGraphs(sim_output: list, resource_graph: nx.DiGraph) -> tuple:
 
 
 def diningPhilosophersGraphAfter(philosopher_amt: int = 5,
-                              simulation_time: int = 20,
-                              fork_pause_time: float = 0.5,
-                              sim_type: str = 'deadlock'):
+                                 simulation_time: int = 20,
+                                 fork_pause_time: float = 0.5,
+                                 sim_type: str = 'deadlock'):
     '''
     This method simulates the dining philosophers problem and graphs it with
     a wait-for or directed resource graph using networknx. The graphs are produced
@@ -596,7 +588,7 @@ def diningPhilosophersGraphAfter(philosopher_amt: int = 5,
         # Make eating locks
         left_eating = [threading.Condition() for _ in range(philosopher_amt)]
         right_eating = [left_eating[(i + 1) % philosopher_amt] for i in
-                         range(philosopher_amt)]
+                        range(philosopher_amt)]
 
         # Create philosophers
         philosophers = [philosopher_obj(i,
@@ -632,7 +624,6 @@ def diningPhilosophersGraphAfter(philosopher_amt: int = 5,
         philosopher_obj.is_running = False
         print("\nEnding the Dining Philosophers Simulation...")
 
-
     # # Set directed resource graph maker to not running
     # directed_resource_graph_maker.is_running = False
     #
@@ -647,7 +638,6 @@ def diningPhilosophersGraphAfter(philosopher_amt: int = 5,
     # Print the lines
     for line_num, line in enumerate(lines):
         print(f"{line_num} {line}")
-
 
     # Filter output
 
@@ -718,6 +708,7 @@ def detectDeadlock(wait_for_graphs: list) -> bool:
 
     return False
 
+
 class GraphMakerProcess(multiprocessing.Process):
     '''
     Process to create directed resource graph
@@ -740,8 +731,8 @@ class GraphMakerProcess(multiprocessing.Process):
 
             if len(moves_list) > 1 and moves_list != current_moves:
                 current_moves = moves_list
-                di_graphs = createGraphs(current_moves, self.directed_resource_graph)
-
+                di_graphs = createGraphs(
+                    current_moves, self.directed_resource_graph)
 
                 wait_for_graphs = di_graphs[1]
 
@@ -760,7 +751,8 @@ class GraphMakerThread(threading.Thread):
     # Create running class attribute
     is_running = True
 
-    def __init__(self, resource_graph: nx.DiGraph, moves_queue:multiprocessing.Queue):
+    def __init__(self, resource_graph: nx.DiGraph,
+                 moves_queue: multiprocessing.Queue):
         '''
         This method initializes a DirectedResourceGraphMaker object.
 
@@ -794,11 +786,10 @@ class GraphMakerThread(threading.Thread):
 
 class DeadlockHandler(threading.Thread):
 
-
     # Create running class attribute
     is_running = True
 
-    def __init__(self, deadlock_queue:multiprocessing.Queue,
+    def __init__(self, deadlock_queue: multiprocessing.Queue,
                  forks: list,
                  philosophers: list,
                  deadlock_sleep_time: int):
@@ -812,12 +803,11 @@ class DeadlockHandler(threading.Thread):
 
     def run(self):
 
-
         while self.is_running:
 
             # get data from deadlock queue
             if not self.deadlock_queue.empty():
-                deadlock_signal = self.deadlock_queue.get( )
+                deadlock_signal = self.deadlock_queue.get()
                 if deadlock_signal:
 
                     # Raise warning about deadlock
@@ -831,17 +821,14 @@ class DeadlockHandler(threading.Thread):
 
                     random_philosopher.is_running = True
 
-
-
-
         return
 
-def diningPhilosophersCatchDeadlock(philosopher_amt: int = 5,
-                              simulation_time: int = 20,
-                              fork_pause_time: float = 0.5,
-                              sim_type: str = 'deadlock',
-                                    deadlock_sleep_time: float = 5):
 
+def diningPhilosophersCatchDeadlock(philosopher_amt: int = 5,
+                                    simulation_time: int = 20,
+                                    fork_pause_time: float = 0.5,
+                                    sim_type: str = 'deadlock',
+                                    deadlock_sleep_time: float = 5):
 
     # Get correct philosopher object
     if sim_type == 'deadlock':
@@ -868,7 +855,7 @@ def diningPhilosophersCatchDeadlock(philosopher_amt: int = 5,
         # Make eating locks
         left_eating = [threading.Condition() for _ in range(philosopher_amt)]
         right_eating = [left_eating[(i + 1) % philosopher_amt] for i in
-                         range(philosopher_amt)]
+                        range(philosopher_amt)]
 
         # Create philosophers
         philosophers = [philosopher_obj(i,
@@ -891,25 +878,21 @@ def diningPhilosophersCatchDeadlock(philosopher_amt: int = 5,
 
     # Create graph Maker thread
     graph_maker_thread = GraphMakerThread(directed_resource_graph,
-                                          moves_queue = moves_queue)
+                                          moves_queue=moves_queue)
 
     # Create the graph maker process
     graph_maker_process = GraphMakerProcess(directed_resource_graph,
-                                            moves_queue = moves_queue,
-                                            deadlock_queue = deadlock_queue)
+                                            moves_queue=moves_queue,
+                                            deadlock_queue=deadlock_queue)
 
     # Create the deadlock handler thread
-    deadlock_handler_thread = DeadlockHandler(deadlock_queue, forks = left_forks, philosophers=philosophers, deadlock_sleep_time=deadlock_sleep_time)
-
-
-
-
+    deadlock_handler_thread = DeadlockHandler(
+        deadlock_queue,
+        forks=left_forks,
+        philosophers=philosophers,
+        deadlock_sleep_time=deadlock_sleep_time)
 
     print("\nStarting the Dining Philosophers Simulation...")
-
-
-
-
 
     # Start the graph maker
     graph_maker_thread.start()
@@ -920,7 +903,6 @@ def diningPhilosophersCatchDeadlock(philosopher_amt: int = 5,
     deadlock_handler_thread.start()
 
     time.sleep(2)
-
 
     # Start the philosophers
     for philosopher in philosophers:
@@ -933,14 +915,11 @@ def diningPhilosophersCatchDeadlock(philosopher_amt: int = 5,
 
     time.sleep(5)
 
-
     # Setgraph maker to not running
     graph_maker_thread.is_running = False
 
     # Wait for the graph maker to finish
     graph_maker_thread.join()
-
-
 
     # Set graph maker to not running
     graph_maker_process.is_running = False
@@ -957,7 +936,6 @@ def diningPhilosophersCatchDeadlock(philosopher_amt: int = 5,
     # Wait for the deadlock handler to finish
     # deadlock_handler_thread.join()
 
-
     # Close the queue
     moves_queue.close()
     deadlock_queue.close()
@@ -968,12 +946,12 @@ def diningPhilosophersCatchDeadlock(philosopher_amt: int = 5,
     all_eaten = True
     for philosopher in philosophers:
         if philosopher.times_eaten != philosopher.times_to_eat:
-            print(f"\n{philosopher.name} has eaten {philosopher.times_eaten} times instead of {philosopher.times_to_eat} times.")
+            print(
+                f"\n{philosopher.name} has eaten {philosopher.times_eaten} times instead of {philosopher.times_to_eat} times.")
             all_eaten = False
 
     if all_eaten:
         print("\nAll philosophers have eaten the correct number of times.")
-
 
     return
 

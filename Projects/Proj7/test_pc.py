@@ -5,7 +5,6 @@ import numpy as np
 from dataclasses import dataclass, field
 
 
-
 @dataclass
 class Semaphore():
     '''
@@ -19,7 +18,7 @@ class Semaphore():
             the counter is 0.
     '''
     counter: int = field(default=1)
-    condition: threading.Condition = field(default = threading.Condition(),
+    condition: threading.Condition = field(default=threading.Condition(),
                                            init=False)
 
     def acquire(self):
@@ -31,7 +30,7 @@ class Semaphore():
 
         '''
 
-        ### TODO: Question why does not work without the context manager
+        # TODO: Question why does not work without the context manager
         # # acquire the lock
         # self.condition.acquire()
         #
@@ -58,9 +57,6 @@ class Semaphore():
                 self.condition.wait()
 
         return
-
-
-
 
     def release(self):
         '''
@@ -93,11 +89,6 @@ class Semaphore():
     # Make the Semaphore class a context manager
     __enter__ = acquire
     __exit__ = release
-
-
-
-
-
 
 
 # Buffer Variables
@@ -135,7 +126,7 @@ class Producer(threading.Thread):
     '''
 
     def __init__(self,
-                 producer_num: int ,
+                 producer_num: int,
                  num_produce: int,
                  buffer: list,
                  access: Semaphore,
@@ -176,7 +167,7 @@ class Producer(threading.Thread):
         '''
         # Make a unique data array
         data_array = np.arange(self.num_produce) + \
-                     (self.producer_num * self.num_produce)
+            (self.producer_num * self.num_produce)
 
         for data in data_array:
 
@@ -190,7 +181,8 @@ class Producer(threading.Thread):
             self.buffer.append(data)
 
             if self.debug:
-                print(f'Producer {self.producer_num} ({threading.current_thread().name}) added {data} to the buffer')
+                print(
+                    f'Producer {self.producer_num} ({threading.current_thread().name}) added {data} to the buffer')
                 print(f'Buffer Size: {len(self.buffer)}')
 
             # Release the access semaphore
@@ -204,7 +196,6 @@ class Producer(threading.Thread):
             time.sleep(self.sleep_amt)
 
         return
-
 
 
 def producerFunc(debug: bool = True, producerNum: int = 0):
@@ -224,7 +215,6 @@ def producerFunc(debug: bool = True, producerNum: int = 0):
 
     for data in data_array:
 
-
         # Acquire the empty semaphore
         EMPTY.acquire()
 
@@ -235,7 +225,8 @@ def producerFunc(debug: bool = True, producerNum: int = 0):
         BUFFER.append(data)
 
         if debug:
-            print(f'Producer {producerNum} ({threading.current_thread().name}) added {data} to the buffer')
+            print(
+                f'Producer {producerNum} ({threading.current_thread().name}) added {data} to the buffer')
             print(f'Buffer Size: {len(BUFFER)}')
 
         # Release the access semaphore
@@ -309,7 +300,8 @@ class Consumer(threading.Thread):
             data = self.buffer.pop(0)
 
             if self.debug:
-                print(f'Consumer {self.consumer_num} ({threading.current_thread().name}) popped {data} from the buffer')
+                print(
+                    f'Consumer {self.consumer_num} ({threading.current_thread().name}) popped {data} from the buffer')
                 print(f'Buffer Size: {len(self.buffer)}')
 
             # Release the access semaphore
@@ -322,6 +314,7 @@ class Consumer(threading.Thread):
             time.sleep(self.sleep_amt)
 
         return
+
 
 def consumerFunc(debug: bool = True, consumerNum: int = 0):
     '''
@@ -336,8 +329,6 @@ def consumerFunc(debug: bool = True, consumerNum: int = 0):
 
     for _ in range(NUM_PRODUCE):
 
-
-
         # Acquire the full semaphore
         FULL.acquire()
 
@@ -349,9 +340,8 @@ def consumerFunc(debug: bool = True, consumerNum: int = 0):
 
         if debug:
             print(f'Consumer {consumerNum} {threading.current_thread().name}'
-                f' poped {data} from the buffer')
+                  f' poped {data} from the buffer')
             print(f'Buffer Size: {len(BUFFER)}')
-
 
         # Release the access semaphore
         ACCESS.release()
@@ -365,11 +355,9 @@ def consumerFunc(debug: bool = True, consumerNum: int = 0):
     return
 
 
-
-
 def bufferSimulation(consumer_amt: int = 1, producer_amt: int = 1,
                      consumer_sleep: float = 1, producer_sleep: float = 1,
-                     data_amt : int = 50, buffer_size = 10,
+                     data_amt: int = 50, buffer_size=10,
                      debug: bool = True):
     '''
     This function will simulate a buffer with a producer and consumers.
@@ -389,7 +377,6 @@ def bufferSimulation(consumer_amt: int = 1, producer_amt: int = 1,
     # Make the variables that will be shared among the threads
 
     buffer = []
-
 
     # Semaphores
     access = Semaphore(counter=1)
@@ -411,7 +398,6 @@ def bufferSimulation(consumer_amt: int = 1, producer_amt: int = 1,
         producers.append(Producer(i, data_amt, buffer, access, empty, full,
                                   producer_sleep, debug))
 
-
     # Start the producer and consumer threads
     for producer in producers:
         producer.start()
@@ -424,7 +410,6 @@ def bufferSimulation(consumer_amt: int = 1, producer_amt: int = 1,
     for consumer in consumers:
         consumer.join()
 
-
     if len(buffer) == 0:
         print('The buffer is empty after all the producers and consumers have '
               'finished')
@@ -434,7 +419,6 @@ def bufferSimulation(consumer_amt: int = 1, producer_amt: int = 1,
 
     print(f'Done with the simulation')
     return
-
 
 
 def main():

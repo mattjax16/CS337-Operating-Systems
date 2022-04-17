@@ -17,8 +17,6 @@ from dataclasses import dataclass, field
 # plt.rcParams["figure.autolayout"] = True
 
 
-
-
 @dataclass
 class Semaphore():
     '''
@@ -47,7 +45,6 @@ class Semaphore():
         releases the lock.
 
         '''
-
 
         # acquire the lock for the condition variable with the context manager
         with self.condition:
@@ -81,7 +78,6 @@ class Semaphore():
     # Make the Semaphore class a context manager
     __enter__ = acquire
     __exit__ = release
-
 
 
 class Fork(Semaphore):
@@ -150,7 +146,6 @@ class Philosopher(threading.Thread):
         self.times_to_eat = times_to_eat
         self.times_eaten = 0
 
-
         # A bool to be used to toggle the philosopher running per instance
         self.philosopher_running = True
 
@@ -176,7 +171,8 @@ class Philosopher(threading.Thread):
         '''
         This method takes the left fork of the philosopher.
         '''
-        print(f"\t\t{self.name} is taking left fork  {self.left_fork.fork_id} ...")
+        print(
+            f"\t\t{self.name} is taking left fork  {self.left_fork.fork_id} ...")
         self.left_fork.acquire()
         print(f"\t\t{self.name} is using left fork {self.left_fork.fork_id} ...")
 
@@ -189,9 +185,11 @@ class Philosopher(threading.Thread):
         '''
         This method takes the right fork of the philosopher.
         '''
-        print(f"\t\t{self.name} is taking right fork {self.right_fork.fork_id} ...")
+        print(
+            f"\t\t{self.name} is taking right fork {self.right_fork.fork_id} ...")
         self.right_fork.acquire()
-        print(f"\t\t{self.name} is using right fork {self.right_fork.fork_id} ...")
+        print(
+            f"\t\t{self.name} is using right fork {self.right_fork.fork_id} ...")
 
         # Pause for fork_pause_time seconds
         time.sleep(self.fork_pause_time)
@@ -202,9 +200,11 @@ class Philosopher(threading.Thread):
         '''
         This method puts the left fork of the philosopher.
         '''
-        print(f"\t\t{self.name} is putting left fork {self.left_fork.fork_id} down ...")
+        print(
+            f"\t\t{self.name} is putting left fork {self.left_fork.fork_id} down ...")
         self.left_fork.release()
-        print(f"\t\t{self.name} is done with left fork {self.left_fork.fork_id} ...")
+        print(
+            f"\t\t{self.name} is done with left fork {self.left_fork.fork_id} ...")
 
         return
 
@@ -212,9 +212,11 @@ class Philosopher(threading.Thread):
         '''
         This method puts the right fork of the philosopher.
         '''
-        print(f"\t\t{self.name} is putting right fork {self.right_fork.fork_id} down ...")
+        print(
+            f"\t\t{self.name} is putting right fork {self.right_fork.fork_id} down ...")
         self.right_fork.release()
-        print(f"\t\t{self.name} is done with right fork {self.right_fork.fork_id} ...")
+        print(
+            f"\t\t{self.name} is done with right fork {self.right_fork.fork_id} ...")
 
         return
 
@@ -290,8 +292,6 @@ class PhilosopherAsym(Philosopher):
                 self.put_left_fork()
                 self.put_right_fork()
 
-
-
             print(f"\t{self.name} is done eating and thinking...")
 
             self.times_eaten += 1
@@ -300,7 +300,6 @@ class PhilosopherAsym(Philosopher):
 
 
 class PhilosopherEatCS(Philosopher):
-
 
     def __init__(self, philosopher_id: int, left_fork: Fork, right_fork: Fork,
                  left_eating: threading.Condition,
@@ -342,15 +341,11 @@ class PhilosopherEatCS(Philosopher):
                     self.put_right_fork()
                     self.put_left_fork()
 
-
             self.times_eaten += 1
 
             print(f"\t{self.name} is done eating and thinking...")
 
-
-
         return
-
 
 
 def createWaitForGraph(resource_graph: nx.DiGraph):
@@ -384,8 +379,8 @@ def createWaitForGraph(resource_graph: nx.DiGraph):
         # Remove the fork node
         wait_for_graph.remove_node(node)
 
-
     return wait_for_graph
+
 
 def createGraphs(sim_output: list, resource_graph: nx.DiGraph) -> tuple:
     '''
@@ -469,10 +464,11 @@ def createGraphs(sim_output: list, resource_graph: nx.DiGraph) -> tuple:
 
     return (directed_resource_graphs, wait_for_graphs, graph_lines)
 
+
 def diningPhilosophersGraphAfter(philosopher_amt: int = 5,
-                              simulation_time: int = 20,
-                              fork_pause_time: float = 0.5,
-                              sim_type: str = 'deadlock'):
+                                 simulation_time: int = 20,
+                                 fork_pause_time: float = 0.5,
+                                 sim_type: str = 'deadlock'):
     '''
     This method simulates the dining philosophers problem and graphs it with
     a wait-for or directed resource graph using networknx. The graphs are produced
@@ -512,7 +508,7 @@ def diningPhilosophersGraphAfter(philosopher_amt: int = 5,
         # Make eating locks
         left_eating = [threading.Condition() for _ in range(philosopher_amt)]
         right_eating = [left_eating[(i + 1) % philosopher_amt] for i in
-                         range(philosopher_amt)]
+                        range(philosopher_amt)]
 
         # Create philosophers
         philosophers = [philosopher_obj(i,
@@ -548,8 +544,6 @@ def diningPhilosophersGraphAfter(philosopher_amt: int = 5,
         philosopher_obj.is_running = False
         print("\nEnding the Dining Philosophers Simulation...")
 
-
-
     print("\nThe Dining Philosophers Simulation has ended.")
 
     # Split the output into lines
@@ -561,49 +555,51 @@ def diningPhilosophersGraphAfter(philosopher_amt: int = 5,
 
     di_graphs = createGraphs(lines, directed_resource_graph)
 
-
-    return  di_graphs
-
+    return di_graphs
 
 
 # Make graph function
-def plotGraphs(frame, ax, directed_resource_graphs, wait_for_graphs, graph_lines,
-               color_map):
+def plotGraphs(
+        frame,
+        ax,
+        directed_resource_graphs,
+        wait_for_graphs,
+        graph_lines,
+        color_map):
 
-        # Clear all axes
-        for a in ax:
-            a.clear()
+    # Clear all axes
+    for a in ax:
+        a.clear()
 
-        ax[0].set_title("Directed Resource Graph")
-        ax[1].set_title("Wait-for Graph")
+    ax[0].set_title("Directed Resource Graph")
+    ax[1].set_title("Wait-for Graph")
 
-        # Plot the directed resource graph
-        nx.draw_circular(directed_resource_graphs[frame],
-                ax=ax[0],
-                node_color=color_map,
-                with_labels=True)
+    # Plot the directed resource graph
+    nx.draw_circular(directed_resource_graphs[frame],
+                     ax=ax[0],
+                     node_color=color_map,
+                     with_labels=True)
 
-        # Plot the wait-for graph
-        nx.draw_circular(wait_for_graphs[frame],
-                ax=ax[1],
-                node_color="red",
-                with_labels=True)
+    # Plot the wait-for graph
+    nx.draw_circular(wait_for_graphs[frame],
+                     ax=ax[1],
+                     node_color="red",
+                     with_labels=True)
 
-        # Clean the line
-        clean_line = re.sub(r'[\n\t\s]*', ' ', graph_lines[frame])
-        # add the action that cause each graph to change
-        ax[0].text(0.65, -1.2, f"Action {frame}.     {clean_line}", fontsize=8)
+    # Clean the line
+    clean_line = re.sub(r'[\n\t\s]*', ' ', graph_lines[frame])
+    # add the action that cause each graph to change
+    ax[0].text(0.65, -1.2, f"Action {frame}.     {clean_line}", fontsize=8)
 
-        # call tight layout
-        plt.tight_layout()
+    # call tight layout
+    plt.tight_layout()
 
-        new_ax = ax.copy()
+    new_ax = ax.copy()
 
+    return new_ax
 
-        return new_ax
 
 def makeGraphsGif(di_graphs: list, gif_name: str = "animation") -> None:
-
 
     # # initialize fig and axis
     # fig, ax = plt.subplots(1, 2, figsize=(10, 5))
@@ -614,12 +610,9 @@ def makeGraphsGif(di_graphs: list, gif_name: str = "animation") -> None:
     ax2 = fig.add_subplot(122)
     ax = [ax1, ax2]
 
-
-
-     # define color map. philosopher = red, fork = green
+    # define color map. philosopher = red, fork = green
     color_map_resources = ["red" if "P" in node else "green" for node in
                            di_graphs[0][0].nodes]
-
 
     # get the graphs
     directed_resource_graphs = di_graphs[0]
@@ -628,23 +621,30 @@ def makeGraphsGif(di_graphs: list, gif_name: str = "animation") -> None:
     # get the graph lines
     graph_lines = di_graphs[2]
 
-
-    ani = animation.FuncAnimation(fig, plotGraphs, frames=np.arange(len(di_graphs[0])),
-                                             interval=1000, repeat=True,
-                                  fargs=(ax, directed_resource_graphs, wait_for_graphs, graph_lines, color_map_resources))
+    ani = animation.FuncAnimation(fig,
+                                  plotGraphs,
+                                  frames=np.arange(len(di_graphs[0])),
+                                  interval=1000,
+                                  repeat=True,
+                                  fargs=(ax,
+                                         directed_resource_graphs,
+                                         wait_for_graphs,
+                                         graph_lines,
+                                         color_map_resources))
 
     writergif = animation.PillowWriter(fps=1.5)
     ani.save(f"Graph_Gifs/{gif_name}.gif", writer=writergif)
 
     return
 
+
 def main():
     sol2_graphs = diningPhilosophersGraphAfter(philosopher_amt=5,
-                                                   simulation_time=25,
-                                                   fork_pause_time=0.6,
-                                                   sim_type='complex')
+                                               simulation_time=25,
+                                               fork_pause_time=0.6,
+                                               sim_type='complex')
 
-    makeGraphsGif(sol2_graphs,"sol2_animation")
+    makeGraphsGif(sol2_graphs, "sol2_animation")
     # showAnimation(deadlock_graphs)
     return
 
