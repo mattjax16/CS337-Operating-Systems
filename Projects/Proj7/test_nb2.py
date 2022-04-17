@@ -634,17 +634,17 @@ def makeGraphsGif(di_graphs: list, gif_name: str = "animation") -> None:
                                   fargs=(ax, directed_resource_graphs, wait_for_graphs, graph_lines, color_map_resources))
 
     writergif = animation.PillowWriter(fps=1.5)
-    ani.save(f"{gif_name}.gif", writer=writergif)
+    ani.save(f"Graph_Gifs/{gif_name}.gif", writer=writergif)
 
     return
 
 def main():
-    deadlock_graphs = diningPhilosophersGraphAfter(philosopher_amt=5,
-                                                   simulation_time=15,
+    sol2_graphs = diningPhilosophersGraphAfter(philosopher_amt=5,
+                                                   simulation_time=25,
                                                    fork_pause_time=0.6,
-                                                   sim_type='deadlock')
+                                                   sim_type='complex')
 
-    makeGraphsGif(deadlock_graphs)
+    makeGraphsGif(sol2_graphs,"sol2_animation")
     # showAnimation(deadlock_graphs)
     return
 

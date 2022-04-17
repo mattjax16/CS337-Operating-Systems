@@ -793,59 +793,44 @@ class GraphMakerThread(threading.Thread):
 
 
 class DeadlockHandler(threading.Thread):
-    '''
-    This class is used to handle deadlock
-    '''
+
 
     # Create running class attribute
     is_running = True
 
     def __init__(self, deadlock_queue:multiprocessing.Queue,
                  forks: list,
-                 philosophers: list):
-        '''
-        This method initializes a DeadlockHandler object.
+                 philosophers: list,
+                 deadlock_sleep_time: int):
 
-        Parameters:
-            deadlock_queue: The queue to add sys.out to.
-            forks: The forks to use.
-        '''
         super().__init__(name=f"DeadlockHandler")
         self.deadlock_queue = deadlock_queue
         self.forks = forks
         self.philosophers = philosophers
+        self.deadlock_sleep_time = deadlock_sleep_time
         return
 
     def run(self):
-        '''
-        This method runs the DeadlockHandler object.
-        '''
+
 
         while self.is_running:
 
             # get data from deadlock queue
             if not self.deadlock_queue.empty():
-                deadlock_signal = self.deadlock_queue.get()
+                deadlock_signal = self.deadlock_queue.get( )
                 if deadlock_signal:
 
                     # Raise warning about deadlock
                     warnings.warn("Deadlock detected")
 
-                    # turn off all philosophers
-                    for philosopher in self.philosophers:
-                        philosopher.philosopher_running = False
+                    # Chose a random philosopher to turn off
+                    random_philosopher = random.choice(self.philosophers)
+                    random_philosopher.is_running = False
 
-                    # release all forks
-                    for fork in self.forks:
-                        fork.release()
+                    time.sleep(self.deadlock_sleep_time)
 
-                    # Randomly start all philosophers
-                    random.shuffle(self.philosophers)
+                    random_philosopher.is_running = True
 
-                    for philosopher in self.philosophers:
-
-                        time.sleep(random.uniform(3,6))
-                        philosopher.philosopher_running= True
 
 
 
@@ -854,22 +839,9 @@ class DeadlockHandler(threading.Thread):
 def diningPhilosophersCatchDeadlock(philosopher_amt: int = 5,
                               simulation_time: int = 20,
                               fork_pause_time: float = 0.5,
-                              sim_type: str = 'deadlock'):
-    '''
-    This method simulates the dining philosophers problem and graphs it with
-    a wait-for or directed resource graph using networknx. The graphs are
-    produced during the simulation in the GraphMaker thread and process then
-    if there is a deadlock detected when there is a cylce in the wait-for
-    graph, a solution to fix the deadlock is used
+                              sim_type: str = 'deadlock',
+                                    deadlock_sleep_time: float = 5):
 
-    Args:
-         philosopher_amt: The number of philosophers to simulate.
-
-        simulation_time: The number of seconds to simulate. sim_type: The type
-                of simulation to run.  Can be 'deadlock', 'asymetric' or 'complex'.
-
-        fork_pause_time: The time that the philosopher will pause between
-    '''
 
     # Get correct philosopher object
     if sim_type == 'deadlock':
@@ -927,7 +899,7 @@ def diningPhilosophersCatchDeadlock(philosopher_amt: int = 5,
                                             deadlock_queue = deadlock_queue)
 
     # Create the deadlock handler thread
-    deadlock_handler_thread = DeadlockHandler(deadlock_queue, forks = left_forks, philosophers=philosophers)
+    deadlock_handler_thread = DeadlockHandler(deadlock_queue, forks = left_forks, philosophers=philosophers, deadlock_sleep_time=deadlock_sleep_time)
 
 
 
@@ -1008,7 +980,7 @@ def diningPhilosophersCatchDeadlock(philosopher_amt: int = 5,
 
 def main():
     # diningPhilosophers(5, 20, 1.6, 'asymetric')
-    tttt = diningPhilosophersGraphAfter(5, 10, 1.6, 'deadlock')
+    tttt = diningPhilosophersCatchDeadlock(5, 15, 1.6, 'deadlock')
     return
 
 
