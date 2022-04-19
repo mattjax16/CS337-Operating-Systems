@@ -1,9 +1,16 @@
+#%% md
+
+### Test Notebook
+
+#%%
 
 import random
 import time
+import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import numpy as np
 
+#%%
 
 def makeReferenceStringWithoutLocality(length : int = 100) -> np.ndarray:
     '''
@@ -69,6 +76,9 @@ def makeReferenceStringWithLocality(length: int = 100) -> np.ndarray:
 
 
     return reference_string
+
+
+
 
 
 class PageReplacementAlg():
@@ -331,7 +341,11 @@ def makeTable(table: np.ndarray,
         updated_table_color_map[:, i:] = table_color_map[:, i:]
 
         # Find where the ref was inserted
-        insert_idx = list(np.where(table[:, i] == table[1, i])[0])[-1]
+        insert_idx = list(np.where(table[:, i] == table[1, i])[0])
+        if table[1, i] == '`':
+            insert_idx = insert_idx[-2]
+        else:
+            insert_idx = insert_idx[-1]
 
         # set if it had a fault
         # make it X and set cell to red
@@ -363,6 +377,8 @@ def makeTable(table: np.ndarray,
     return table_plots
 
 
+
+
 def plotTable(tables : tuple, alg_name: str):
     '''
     This is a function to plot the tables.
@@ -375,44 +391,84 @@ def plotTable(tables : tuple, alg_name: str):
         None.
 
     '''
-    for table in tables:
+    # for table in tables:
         # get the table and the color map
-        table, color_map = table
+    table = tables[-1]
 
-        # make figure and axes
-        fig, ax = plt.subplots(figsize=(30, 30))
+    table, color_map = table
 
-        # hide axes
-        fig.patch.set_visible(False)
-        ax.axis('off')
-        ax.axis('tight')
+    # make figure and axes
+    fig, ax = plt.subplots(figsize=(30, 30))
 
-        table_row_names = table[:,0]
+    # hide axes
+    fig.patch.set_visible(False)
+    ax.axis('off')
+    ax.axis('tight')
 
-        table = table[:,1:]
+    table_row_names = table[:,0]
 
-        row_colors = color_map[:,0]
-        color_map = color_map[:,1:]
+    table = table[:,1:]
 
-        # plot the table
-        ax.table(cellText=table,
-                 cellColours=color_map,
-                 rowLabels=table_row_names,
-                 rowColours=row_colors,
-                 cellLoc='center')
+    row_colors = color_map[:,0]
+    color_map = color_map[:,1:]
+
+    # plot the table
+    ax.table(cellText=table,
+             cellColours=color_map,
+             rowLabels=table_row_names,
+             rowColours=row_colors,
+             cellLoc='center')
 
 
-        # set the title
-        ax.set_title(alg_name)
+    # set the title
+    ax.set_title(alg_name)
 
-        fig.tight_layout()
+    # fig.tight_layout()
 
-        fig.show()
+
+
+    fig.show()
 
     return 1
 
 
-def plotTables(results: dict, col_amt: int = 25):
+
+
+def plotlyTable(tables : tuple, alg_name: str):
+    '''
+    This is a function to plot the tables.
+
+    Args:
+        tables (tuple): The table to be plotted.
+        alg_name (str): The name of the algorithm.
+
+    Returns:
+        None.
+
+    '''
+    # for table in tables:
+        # get the table and the color map
+    table = tables[-1]
+
+    table, color_map = table
+
+    # make the cells dict for the plotly table
+    cells = { }
+    cells['values'] = table
+    cells["fill"] = color_map
+    cells["line_color"] = 'darkslategray'
+    cells["align"] = ["left", "center"]
+
+
+    plot_table = go.Table(cells = cells)
+
+
+
+
+    return 1
+
+
+def plotTables(results: dict, col_amt: int = None):
     '''
     This function will plot the results of the page replacement algorithms.
     Args:
@@ -461,12 +517,15 @@ def plotTables(results: dict, col_amt: int = 25):
             # loop through each table in the results
             for table in tabels:
 
-                final_plots[alg_name].append(plotTable(table, alg_name))
+                final_plots[alg_name].append(plotlyTable(table, alg_name))
 
 
 
 
         print("fdfd")
+
+
+
 
 
 
@@ -537,21 +596,16 @@ def simulatePageReplacement(times_to_run: int = 5,
 
 
 
-
 def main():
 
-    # Run the simulation
+     # Run the simulation
     sim_results = simulatePageReplacement(times_to_run = 5,
-                                          frames = 3,
-                                          reference_string_length = 100,
-                                          locality = False,
-                                          algorithms = [FCFS])
+                                              frames = 3,
+                                              reference_string_length = 100,
+                                              locality = False,
+                                              algorithms = [FCFS])
 
 
-    print("done testing proj8")
 
-    return
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
