@@ -316,19 +316,19 @@ def makeTable(table: np.ndarray,
     updated_table_color_map = np.copy(table_color_map)
 
     # loop through each time step making an updated table
-    for i in range(1, table.shape[0]):
+    for i in range(1, table.shape[1]):
 
         # Make a copy of the base table
         updated_table = np.copy(updated_table)
 
         # Make the updated table
-        updated_table[i, 1:] = table[i, 1:]
+        updated_table[:, i:] = table[:, i:]
 
         # Copy the updated table color map
         updated_table_color_map = np.copy(updated_table_color_map)
 
         # Make the updated table color map
-        updated_table_color_map[i, 1:] = table_color_map[i, 1:]
+        updated_table_color_map[:, i:] = table_color_map[:, i:]
 
         # Find where the ref was inserted
         insert_idx = list(np.where(table[:, i] == table[1, i])[0])[-1]
