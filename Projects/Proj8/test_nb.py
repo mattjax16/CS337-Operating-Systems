@@ -330,18 +330,16 @@ def makeTable(table: np.ndarray,
         # Make the updated table color map
         updated_table_color_map[i, 1:] = table_color_map[i, 1:]
 
+        # Find where the ref was inserted
+        insert_idx = list(np.where(table[:, i] == table[1, i])[0])[-1]
 
         # set if it had a fault
         # make it X and set cell to red
         if table[table.shape[0] - 2, i] == '1':
             updated_table[table.shape[0] - 2, i] = 'X'
-            updated_table_color_map[table.shape[0] - 2, i] = '#ff002f'
 
-            # Find where the fault was
-            fault_idx = list(np.where(table[:, i] == table[1, i])[0])[-1]
-
-            # make the fault cell red
-            updated_table_color_map[fault_idx, i] = '#ff002f'
+            # make the  cell red
+            updated_table_color_map[insert_idx, i] = '#ff002f'
 
             # Handle the replacement cell
             if table[-1, i] == '-1':
@@ -354,7 +352,9 @@ def makeTable(table: np.ndarray,
         # make the sell blank and set it to green
         else:
             updated_table[table.shape[0] - 2, i] = ' '
-            updated_table_color_map[table.shape[0] - 2, i] = '#2deb56'
+
+            # make the  cell green
+            updated_table_color_map[insert_idx, i] = '#2deb56'
 
         # Add the updated table to the list of plots
         table_plots.append((updated_table, updated_table_color_map))
@@ -363,51 +363,51 @@ def makeTable(table: np.ndarray,
     return table_plots
 
 
-def plotTable(table : tuple, alg_name: str):
+def plotTable(tables : tuple, alg_name: str):
     '''
     This is a function to plot the tables.
 
     Args:
-        table (tuple): The table to be plotted.
+        tables (tuple): The table to be plotted.
         alg_name (str): The name of the algorithm.
 
     Returns:
         None.
 
     '''
+    for table in tables:
+        # get the table and the color map
+        table, color_map = table
 
-    # get the table and the color map
-    table, color_map = table[0]
+        # make figure and axes
+        fig, ax = plt.subplots(figsize=(30, 30))
 
-    # make figure and axes
-    fig, ax = plt.subplots(figsize=(30, 30))
+        # hide axes
+        fig.patch.set_visible(False)
+        ax.axis('off')
+        ax.axis('tight')
 
-    # hide axes
-    fig.patch.set_visible(False)
-    ax.axis('off')
-    ax.axis('tight')
+        table_row_names = table[:,0]
 
-    table_row_names = table[:,0]
+        table = table[:,1:]
 
-    table = table[:,1:]
+        row_colors = color_map[:,0]
+        color_map = color_map[:,1:]
 
-    row_colors = color_map[:,0]
-    color_map = color_map[:,1:]
-
-    # plot the table
-    ax.table(cellText=table,
-             cellColours=color_map,
-             rowLabels=table_row_names,
-             rowColours=row_colors,
-             cellLoc='center')
+        # plot the table
+        ax.table(cellText=table,
+                 cellColours=color_map,
+                 rowLabels=table_row_names,
+                 rowColours=row_colors,
+                 cellLoc='center')
 
 
-    # set the title
-    ax.set_title(alg_name)
+        # set the title
+        ax.set_title(alg_name)
 
-    fig.tight_layout()
+        fig.tight_layout()
 
-    fig.show()
+        fig.show()
 
     return 1
 
@@ -441,7 +441,15 @@ def plotTables(results: dict, col_amt: int = 25):
         # and plot them
         for table in alg_results:
 
-            result_plots[alg_name].append(makeTable(table, alg_name))
+            # If col_amt is not none
+            if col_amt is None:
+
+                result_plots[alg_name].append(makeTable(table, alg_name))
+
+            else:
+                cut_table = table[:,:col_amt+1]
+                result_plots[alg_name].append(makeTable( cut_table, alg_name))
+
 
 
         # Plot the results
@@ -453,14 +461,8 @@ def plotTables(results: dict, col_amt: int = 25):
             # loop through each table in the results
             for table in tabels:
 
-                # If col_amt is not none
-                if col_amt is not None:
+                final_plots[alg_name].append(plotTable(table, alg_name))
 
-                    final_plots[alg_name].append(plotTable(table, alg_name))
-
-                else:
-                    cut_table = table[: , :col_amt]
-                    final_plots[alg_name].append(plotTable(cut_table, alg_name))
 
 
 
