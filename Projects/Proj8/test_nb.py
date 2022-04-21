@@ -1,25 +1,18 @@
-#%% md
+# %% md
 
-### Test Notebook
+# Test Notebook
 
-#%%
+# %%
 
-import random
-import time
-import dash
-from dash import dash_table
-from dash import dcc
-from dash import html
+
 import plotly.graph_objects as go
 import plotly.express as px
-
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
 
-
-def makeReferenceStringWithoutLocality(length : int = 100) -> np.ndarray:
+def makeReferenceStringWithoutLocality(length: int = 100) -> np.ndarray:
     '''
     This is a function to make a reference string with random numbers 0 -
     length of size length.
@@ -37,13 +30,10 @@ def makeReferenceStringWithoutLocality(length : int = 100) -> np.ndarray:
     if length <= 0:
         raise ValueError("The length must be positive.")
 
-
-
-
     # Make the reference string
     reference_string = np.random.choice(np.arange(length),
-                                        size = length,
-                                        replace = True)
+                                        size=length,
+                                        replace=True)
 
     return reference_string
 
@@ -62,13 +52,12 @@ def makeReferenceStringWithLocality(length: int = 100) -> np.ndarray:
         reference_string (np.ndarray): The reference string.
     '''
 
-
     # Check that the length is positive
     if length <= 0:
         raise ValueError("The length must be positive.")
 
     # Make the reference string
-    reference_string = np.arange(length) + np.random.choice(np.arange(-3,4),
+    reference_string = np.arange(length) + np.random.choice(np.arange(-3, 4),
                                                             length,
                                                             True)
 
@@ -80,12 +69,7 @@ def makeReferenceStringWithLocality(length: int = 100) -> np.ndarray:
         elif reference_string[i] >= length:
             reference_string[i] = length - 1
 
-
-
     return reference_string
-
-
-
 
 
 class PageReplacementAlg():
@@ -97,14 +81,12 @@ class PageReplacementAlg():
 
         self.name = "Page Replacement Algorithm"
 
-
     def run(self,
             reference_string: np.ndarray,
-            frames: int =5) -> np.ndarray:
-
+            frames: int = 5) -> np.ndarray:
         '''
 
-        This is the base function fot any page replacement algorithm. The
+        This is the base function for any page replacement algorithm. The
         solutions are run with their own unique algorithm function
 
         Args:
@@ -122,9 +104,11 @@ class PageReplacementAlg():
         # Make the page table key
         page_table_key = ["Time Stamp", "Reference Sting"] + [
             "Frame " + str(i) for i in range(frames)] + ["Page Fault",
-                                                             "Removed Page"]
+                                                         "Removed Page"]
 
-        page_table_key = np.array(page_table_key, dtype = str).reshape((len(page_table_key), 1))
+        page_table_key = np.array(
+            page_table_key, dtype=str).reshape(
+            (len(page_table_key), 1))
 
         # Make the time stamps
         time_stamps = np.arange(len(reference_string))
@@ -139,7 +123,8 @@ class PageReplacementAlg():
         # loop through the reference string and run the FCFS algorithm
         for index, page in enumerate(reference_string):
 
-            # if the index is not 0 copy the precious frames to the current frame time stamp
+            # if the index is not 0 copy the precious frames to the current
+            # frame time stamp
             if index != 0:
                 frames_table[:, index] = frames_table[:, index - 1]
 
@@ -158,7 +143,8 @@ class PageReplacementAlg():
                 # Check if there is a free space in the frame table
                 if np.any(frames_table[:, index] == -1):
 
-                    # If there is, set the requested page to the first free space
+                    # If there is, set the requested page to the first free
+                    # space
                     free_space = np.where(frames_table[:, index] == -1)[0][0]
                     frames_table[free_space, index] = page
 
@@ -168,8 +154,8 @@ class PageReplacementAlg():
                 # If there is not, run the algorithm to find the page to remove
                 else:
                     remove_page_idx = self.algorithm(frames_table,
-                                                 reference_string,
-                                                 index)
+                                                     reference_string,
+                                                     index)
 
                     page_to_be_removed = frames_table[remove_page_idx, index]
 
@@ -181,12 +167,8 @@ class PageReplacementAlg():
                     else:
                         removed_page[index] = page_to_be_removed
 
-
                     # set the new page
                     frames_table[remove_page_idx, index] = page
-
-
-
 
         # Combine all the data into a table
         page_table = np.vstack((time_stamps, reference_string, frames_table,
@@ -194,32 +176,26 @@ class PageReplacementAlg():
 
         page_table = np.hstack((page_table_key, page_table))
 
-
-
         return page_table
 
-
     # Generic algorithm to find the page to remove
-    def algorithm(self, frames_table: np.ndarray,
-                    reference_string: np.ndarray,
-                    index: int) -> int:
 
+    def algorithm(self, frames_table: np.ndarray,
+                  reference_string: np.ndarray,
+                  index: int) -> int:
 
         return 0
 
 
-class FCFS(PageReplacementAlg):
+class FIFO(PageReplacementAlg):
 
     def __init__(self) -> None:
         super().__init__()
         self.name = "FCFS"
 
-
-
     def algorithm(self, frames_table: np.ndarray,
-                    reference_string: np.ndarray,
-                    index: int) -> int:
-
+                  reference_string: np.ndarray,
+                  index: int) -> int:
         '''
 
         This is the FCFS algorithm. It will find the first page in the
@@ -240,38 +216,35 @@ class FCFS(PageReplacementAlg):
 
         pages_added_queue = []
 
-        for i in range(index-1, -1, -1):
+        for i in range(index - 1, -1, -1):
 
-
-
-            # If the pages added queue is the size of frames break out of the loop
+            # If the pages added queue is the size of frames break out of the
+            # loop
             if len(pages_added_queue) >= frames_table.shape[0] and \
                     reference_string[i] not in pages_added_queue:
                 break
 
             if reference_string[i] not in pages_added_queue and \
-                 np.any(frames_table[:, index] == reference_string[i]):
+                    np.any(frames_table[:, index] == reference_string[i]):
 
                 pages_added_queue.append(reference_string[i])
 
-            # if it is in the queue remove it and append it to the end of the queue
-            elif reference_string[i]  in pages_added_queue and \
-                 np.any(frames_table[:, index] == reference_string[i]):
+            # if it is in the queue remove it and append it to the end of the
+            # queue
+            elif reference_string[i] in pages_added_queue and \
+                    np.any(frames_table[:, index] == reference_string[i]):
 
                 pages_added_queue.remove(reference_string[i])
                 pages_added_queue.append(reference_string[i])
-
-
-
 
         # pop the first page in the queue
         page_to_be_removed = pages_added_queue.pop(-1)
 
         # find the index of the page to be removed
-        remove_page_idx = list(np.where(frames_table[:, index] == page_to_be_removed)[0])
+        remove_page_idx = list(
+            np.where(frames_table[:, index] == page_to_be_removed)[0])
 
         rp1 = remove_page_idx[0]
-
 
         return rp1
 
@@ -282,12 +255,9 @@ class LRU(PageReplacementAlg):
         super().__init__()
         self.name = "LRU"
 
-
-
     def algorithm(self, frames_table: np.ndarray,
-                    reference_string: np.ndarray,
-                    index: int) -> int:
-
+                  reference_string: np.ndarray,
+                  index: int) -> int:
         '''
 
         This is the LRU algorithm. It will find the least recently used page in the
@@ -308,21 +278,21 @@ class LRU(PageReplacementAlg):
 
         time_last_used = np.array([-1] * frames_table.shape[0])
 
-
-        # for each page in the current pages find the last time step that it was used
+        # for each page in the current pages find the last time step that it
+        # was used
         for idx, page in enumerate(current_pages):
 
-            # loop backward through the reference string until the page is found
+            # loop backward through the reference string until the page is
+            # found
             for i in range(index - 1, -1, -1):
                 if reference_string[i] == page:
                     time_last_used[idx] = page
                     break
 
         # Get the least recently used page
-        remove_idx  = np.argmin(time_last_used)
+        remove_idx = np.argmin(time_last_used)
 
         return remove_idx
-
 
 
 class OPTIMAL(PageReplacementAlg):
@@ -331,16 +301,12 @@ class OPTIMAL(PageReplacementAlg):
         super().__init__()
         self.name = "OPT"
 
-
-
     def algorithm(self, frames_table: np.ndarray,
-                    reference_string: np.ndarray,
-                    index: int) -> int:
-
+                  reference_string: np.ndarray,
+                  index: int) -> int:
         '''
+        This is the Optimal page replacement algorithm.
 
-        This is the Optima algorithm. It does the theoretically optimal page replacement by
-        replacing the page that will no be used for the longest period of time.\
         Args:
             frames_table (np.ndarray): The frame table.
             reference_string (np.ndarray): The reference string.
@@ -348,23 +314,22 @@ class OPTIMAL(PageReplacementAlg):
 
         Returns:
             int: The index of the page to be removed
-
         '''
 
         # Get the current pages
         current_pages = frames_table[:, index]
 
-        time_next_used = np.array([ frames_table.shape[0] * 100] *
+        time_next_used = np.array([frames_table.shape[0] * 100] *
                                   frames_table.shape[0])
 
-
-        # for each page in the current pages find the last time step that it was used
+        # for each page in the current pages find the last time step that it
+        # was used
         for idx, page in enumerate(current_pages):
 
             # loop through the reference string until the next time the page
             # is used is found
 
-            for i in range(index+1, reference_string.size):
+            for i in range(index + 1, reference_string.size):
                 if reference_string[i] == page:
                     time_next_used[idx] = i
                     break
@@ -375,19 +340,15 @@ class OPTIMAL(PageReplacementAlg):
         return remove_idx
 
 
-
 class LFU(PageReplacementAlg):
 
     def __init__(self) -> None:
         super().__init__()
         self.name = "LFU"
 
-
-
     def algorithm(self, frames_table: np.ndarray,
-                    reference_string: np.ndarray,
-                    index: int) -> int:
-
+                  reference_string: np.ndarray,
+                  index: int) -> int:
         '''
 
         This is the LFU algorithm. It will find the least frequently used page in the
@@ -408,17 +369,15 @@ class LFU(PageReplacementAlg):
 
         times_used = np.array([0] * frames_table.shape[0])
 
-
         # for each page in the current pages and get the
         # count of the number of times the page was used
         for idx, page in enumerate(current_pages):
 
-            times_used[idx] = np.count_nonzero(reference_string[:index] == page)
-
-
+            times_used[idx] = np.count_nonzero(
+                reference_string[:index] == page)
 
         # Get the least recently used page
-        remove_idx  = np.argmin(times_used)
+        remove_idx = np.argmin(times_used)
 
         return remove_idx
 
@@ -454,7 +413,8 @@ class MFU(PageReplacementAlg):
         # for each page in the current pages and get the
         # count of the number of times the page was used
         for idx, page in enumerate(current_pages):
-            times_used[idx] = np.count_nonzero(reference_string[:index] == page)
+            times_used[idx] = np.count_nonzero(
+                reference_string[:index] == page)
 
         # Get the most recently used page
         remove_idx = np.argmax(times_used)
@@ -468,12 +428,9 @@ class LFUDA(PageReplacementAlg):
         super().__init__()
         self.name = "LFUDA"
 
-
-
     def algorithm(self, frames_table: np.ndarray,
-                    reference_string: np.ndarray,
-                    index: int) -> int:
-
+                  reference_string: np.ndarray,
+                  index: int) -> int:
         '''
 
         This is the LFUDA algorithm. It will find the least frequently used page in the
@@ -495,24 +452,23 @@ class LFUDA(PageReplacementAlg):
         times_used = np.array([0] * frames_table.shape[0])
         frame_ages = np.array([0] * frames_table.shape[0])
 
-
         # for each page in the current pages and get the
         # count of the number of times the page was used
         # and get the frame ages
         for idx, page in enumerate(current_pages):
 
-            times_used[idx] = np.count_nonzero(reference_string[:index] == page)
+            times_used[idx] = np.count_nonzero(
+                reference_string[:index] == page)
 
             # loop backwards through the frames to get the age
             # (how long page has been in the frame)
             age = 0
-            for i in range(index-1, -1, -1):
+            for i in range(index - 1, -1, -1):
                 if np.any(frames_table[:, i] == page):
                     age += 1
                 else:
                     break
             frame_ages[idx] = age
-
 
         aged_lfu = times_used + frame_ages
 
@@ -546,27 +502,27 @@ def makeTable(table: np.ndarray, only_final_table: bool = True) -> None:
     # replace all -1 with blank spaces
     table[table == '-1'] = ' '
 
-
     # Making the colors
     grey_background = np.array(["#D5D8D8"] * table.shape[1])
     white_background = np.array(["#FFFFFF"] * table.shape[1])
 
     # make base table color map
     table_color_top = np.vstack((white_background, grey_background))
-    frame_colors = np.repeat(white_background,
-                             table.shape[0] - 4, axis=0).reshape(table.shape[0] - 4,
-                                                                 table.shape[1])
+    frame_colors = np.repeat(
+        white_background,
+        table.shape[0] - 4,
+        axis=0).reshape(
+        table.shape[0] - 4,
+        table.shape[1])
     table_color_bottom = np.vstack((grey_background, white_background))
 
-    table_color_map = np.vstack((table_color_top, frame_colors, table_color_bottom))
-
-
+    table_color_map = np.vstack(
+        (table_color_top, frame_colors, table_color_bottom))
 
     # Make an empty base table for graphing
     base_table = np.copy(table)
 
-    base_table[2:,1:] = ' '
-
+    base_table[2:, 1:] = ' '
 
     table_plots.append((base_table, table_color_map))
 
@@ -612,7 +568,6 @@ def makeTable(table: np.ndarray, only_final_table: bool = True) -> None:
             else:
                 updated_table[-1, i] = table[-1, i]
 
-
         # set if it had not had a fault
         # make the sell blank and set it to green
         else:
@@ -622,7 +577,8 @@ def makeTable(table: np.ndarray, only_final_table: bool = True) -> None:
             updated_table_color_map[insert_idx, i] = '#2deb56'
 
         # Add the updated table to the list of plots
-        table_plots.append(dict([("table" , updated_table), ("cmap", updated_table_color_map)]))
+        table_plots.append(
+            dict([("table", updated_table), ("cmap", updated_table_color_map)]))
 
     if only_final_table:
         return table_plots[-1]
@@ -630,9 +586,7 @@ def makeTable(table: np.ndarray, only_final_table: bool = True) -> None:
     return table_plots
 
 
-
-
-def plotTable(tables : tuple, alg_name: str):
+def plotltTable(tables: tuple, alg_name: str):
     '''
     This is a function to plot the tables.
 
@@ -645,7 +599,7 @@ def plotTable(tables : tuple, alg_name: str):
 
     '''
     # for table in tables:
-        # get the table and the color map
+    # get the table and the color map
     table = tables[-1]
 
     table, color_map = table
@@ -658,12 +612,12 @@ def plotTable(tables : tuple, alg_name: str):
     ax.axis('off')
     ax.axis('tight')
 
-    table_row_names = table[:,0]
+    table_row_names = table[:, 0]
 
-    table = table[:,1:]
+    table = table[:, 1:]
 
-    row_colors = color_map[:,0]
-    color_map = color_map[:,1:]
+    row_colors = color_map[:, 0]
+    color_map = color_map[:, 1:]
 
     # plot the table
     ax.table(cellText=table,
@@ -672,22 +626,17 @@ def plotTable(tables : tuple, alg_name: str):
              rowColours=row_colors,
              cellLoc='center')
 
-
     # set the title
     ax.set_title(alg_name)
 
     # fig.tight_layout()
-
-
 
     fig.show()
 
     return 1
 
 
-
-
-def plotlyTable(tables : tuple, alg_name: str):
+def plotTable(tables: tuple, alg_name: str):
     '''
     This is a function to plot the tables.
 
@@ -700,39 +649,35 @@ def plotlyTable(tables : tuple, alg_name: str):
 
     '''
     # for table in tables:
-        # get the table and the color map
+    # get the table and the color map
 
-
-    table, color_map, stats  = tables.values()
+    table, color_map, stats = tables.values()
 
     # make the cells dict for the plotly table
-    cells = { }
-    cells['values'] = table[:,1:]
-    cells["fill_color"] = color_map[:,1:]
+    cells = {}
+    cells['values'] = table[:, 1:]
+    cells["fill_color"] = color_map[:, 1:]
     cells["line_color"] = 'darkslategray'
     cells["align"] = ["left", "center"]
     cells["font"] = dict(color="black", size=12)
     cells["height"] = 30
 
     # make the headers dict
-    headers = { }
+    headers = {}
     headers['values'] = [f"<b>{t}</b>" for t in table[:, 0]]
     headers["fill_color"] = color_map[:, 0]
     headers["line_color"] = 'darkslategray'
     headers["align"] = ["center"]
     headers["font"] = dict(color="black", size=12)
 
-
-
-    plot_table = go.Table(cells = cells,
-                          header = headers,
-                          columnwidth = 500)
-
+    plot_table = go.Table(cells=cells,
+                          header=headers,
+                          columnwidth=500)
 
     # Make the figure
-    fig = go.Figure(data = [plot_table],
-                    layout=dict(title = f"{alg_name} STATS: {stats}"
-                    ))
+    fig = go.Figure(data=[plot_table],
+                    layout=dict(title=f"{alg_name} STATS: {stats}"
+                                ))
 
     # Show the figure using dash
 
@@ -750,15 +695,8 @@ def plotlyTable(tables : tuple, alg_name: str):
     # #
     # app.run_server(debug=True, use_reloader=False)
 
-
     return 1
 
-
-def tp(tables, alg_name):
-
-
-
-    return
 
 
 def makeTables(results: dict, col_amt: int = None):
@@ -811,20 +749,12 @@ def plotTables(results: dict, col_amt: int = None):
 
     '''
 
-
-
     # Check that the results dictionary is not empty
     if not results:
         raise ValueError("The results dictionary is empty")
 
     # Make result plots dictionary
     result_plots = makeTables(results, col_amt)
-
-
-
-
-
-
 
     print("fdfd")
 
@@ -845,8 +775,6 @@ def calcTableStats(table: np.ndarray):
     page_faults = main_table[-2, 1:]
     reference_string = main_table[1, 1:]
 
-
-
     num_refrences = reference_string.size
     num_unique_references = np.unique(reference_string).size
     num_faults = np.count_nonzero(page_faults == "X")
@@ -865,15 +793,12 @@ def calcTableStats(table: np.ndarray):
         "hit_rate": hit_rate
     }
 
-
     return ("stats", stats_dict)
-
-
-
 
     print("fdfd")
 
-def calcTablesStats(results_tables : dict):
+
+def calcTablesStats(results_tables: dict):
     '''
     This function will calculate the stats of the tables.
 
@@ -907,14 +832,11 @@ def calcTablesStats(results_tables : dict):
     return results_tables
 
 
-
-def simulatePageReplacement(times_to_run: int = 5,
+def runPageReplacementSim(times_to_run: int = 5,
                             frames: int = 5,
                             reference_string_length: int = 100,
                             locality: bool = False,
-
                             algorithms: list = None) -> None:
-
     '''
     This is a function to simulate the page replacement algorithms.
 
@@ -939,12 +861,11 @@ def simulatePageReplacement(times_to_run: int = 5,
 
     # make the a reference string for each time to run
     if locality:
-        reference_strings = [makeReferenceStringWithLocality(reference_string_length)
-                             for i in range(times_to_run)]
+        reference_strings = [makeReferenceStringWithLocality(
+            reference_string_length) for i in range(times_to_run)]
     else:
-        reference_strings = [makeReferenceStringWithoutLocality(reference_string_length)
-                                     for i in range(times_to_run)]
-
+        reference_strings = [makeReferenceStringWithoutLocality(
+            reference_string_length) for i in range(times_to_run)]
 
     # Go through each algorithm and run it the set number of times to run
     sim_results = {}
@@ -955,34 +876,24 @@ def simulatePageReplacement(times_to_run: int = 5,
         sim_results[algorithm.name] = []
 
         for i in range(times_to_run):
-            sim_results[algorithm.name].append(algorithm.run(reference_strings[i], frames))
-
-
-
-
+            sim_results[algorithm.name].append(
+                algorithm.run(reference_strings[i], frames))
 
     table_results = makeTables(sim_results)
 
-
     table_results = calcTablesStats(table_results)
-
-
-
-
 
     print("Done With Simulation")
 
     return table_results
 
 
-
-def runPageReplacementSim(times_to_run: int = 5,
-                            frames: int = 5,
-                            reference_string_length: int = 100,
-                            locality_test: bool = True,
-                            plot_results: bool = True,
-                            algorithms: list = None) -> None:
-
+def ComparePageReplacementAlgs(times_to_run: int = 5,
+                          frames: int = 5,
+                          reference_string_length: int = 100,
+                          locality_test: bool = True,
+                          plot_results: bool = True,
+                          algorithms: list = None) -> None:
     '''
     This is a function to run the simulatePAgeReplacement Function
     and plot the results if set to true
@@ -1001,34 +912,32 @@ def runPageReplacementSim(times_to_run: int = 5,
         algorithms (list): The list of algorithms to run.
     '''
 
-
     if locality_test:
         # Run the simulation without locality
-        table_results_no = simulatePageReplacement(times_to_run, frames, reference_string_length, False, algorithms)
+        table_results_no = runPageReplacementSim(
+            times_to_run, frames, reference_string_length, False, algorithms)
 
         # Run the simulation with locality
-        table_results_local = simulatePageReplacement(times_to_run,
-                                                   frames,
-                                                   reference_string_length,
-                                                   True,
-                                                   algorithms)
-
+        table_results_local = runPageReplacementSim(times_to_run,
+                                                      frames,
+                                                      reference_string_length,
+                                                      True,
+                                                      algorithms)
 
         if plot_results:
-
 
             results_matrix = []
             # loop through the keys in the table results
             for key in table_results_no.keys():
 
-
                 # loop through the results for each algorithm
-                # and add the stats the the matrix
-                for no_locality, locality  in zip(table_results_no[key], table_results_local[key]):
+                # and add the stats the the matrix (Making it long form)
+                for no_locality, locality in zip(
+                        table_results_no[key], table_results_local[key]):
 
                     # adding no locality stats
                     stat = no_locality["stats"]
-                    results_matrix_line = [f"{key}",False,
+                    results_matrix_line = [f"{key}", False,
                                            stat["hit_rate"],
                                            stat["fault_rate"],
                                            stat["num_faults"],
@@ -1050,23 +959,33 @@ def runPageReplacementSim(times_to_run: int = 5,
 
                     results_matrix.append(results_matrix_line)
 
+            results_df = pd.DataFrame(
+                results_matrix,
+                columns=[
+                    "Algorithm",
+                    "locality",
+                    "hit_rate",
+                    "fault_rate",
+                    "num_faults",
+                    "num_hits",
+                    "num_references",
+                    "num_unique_references"])
 
-
-
-
-            results_df = pd.DataFrame(results_matrix, columns = ["Algorithm", "locality", "hit_rate", "fault_rate", "num_faults", "num_hits",
-                                                 "num_references", "num_unique_references"])
-
-            # make the plot dataframe long form
-
-            fig = px.box(results_df, x="Algorithm", y="hit_rate", color="locality")
+            fig = px.box(
+                results_df,
+                x="Algorithm",
+                y="hit_rate",
+                color="locality")
 
             # Update the layout
-            fig.update_layout(title="Hit Rate Over Different Algorithmsv AND Locality",
-                              xaxis_title="Algorithm",
-                              yaxis_title="Hit Rate",
-                              plot_bgcolor="#fcfcd4",
-                              yaxis=dict(zeroline=False, gridcolor='grey'))
+            fig.update_layout(
+                title="Hit Rate Over Different Algorithmsv AND Locality",
+                xaxis_title="Algorithm",
+                yaxis_title="Hit Rate",
+                plot_bgcolor="#fcfcd4",
+                yaxis=dict(
+                    zeroline=False,
+                    gridcolor='grey'))
 
             fig.show()
 
@@ -1077,39 +996,32 @@ def runPageReplacementSim(times_to_run: int = 5,
     # loop through each algorithm in the results dictionary
 
 
-
-
-
-
 def main():
     runPageReplacementSim(times_to_run=50,
-                             frames = 5,
-                             reference_string_length = 100,
-                             locality_test = True,
-                             plot_results = True,
-                             algorithms = [FCFS, LRU, OPTIMAL, LFU, MFU, LFUDA])
+                          frames=5,
+                          reference_string_length=100,
+                          locality_test=True,
+                          plot_results=True,
+                          algorithms=[FCFS, LRU, OPTIMAL, LFU, MFU, LFUDA])
 
-     # Run the simulation
-     # sim_results = simulatePageReplacement(times_to_run = 5,
-     #                                          frames = 5,
-     #                                          reference_string_length = 100,
-     #                                          locality = True,
-     #                                          algorithms = [FCFS, LRU, OPTIMAL])
-     #
-     # first_fcfs = sim_results["FCFS"][1]
-     #
-     # first_lru = sim_results["LRU"][1]
-     #
-     # first_opt = sim_results["OPT"][1]
-     #
-     # plotlyTable(first_opt, "OPT")
-     #
-     # plotlyTable(first_fcfs,"FCFS")
-     #
-     # plotlyTable(first_lru,"LRU")
-
-
-
+    # Run the simulation
+    # sim_results = simulatePageReplacement(times_to_run = 5,
+    #                                          frames = 5,
+    #                                          reference_string_length = 100,
+    #                                          locality = True,
+    #                                          algorithms = [FCFS, LRU, OPTIMAL])
+    #
+    # first_fcfs = sim_results["FCFS"][1]
+    #
+    # first_lru = sim_results["LRU"][1]
+    #
+    # first_opt = sim_results["OPT"][1]
+    #
+    # plotlyTable(first_opt, "OPT")
+    #
+    # plotlyTable(first_fcfs,"FCFS")
+    #
+    # plotlyTable(first_lru,"LRU")
 
 
 if __name__ == "__main__":
