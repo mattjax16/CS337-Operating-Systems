@@ -6,6 +6,7 @@
 
 Yolov5 - the model used for object detection
 ````
+$ git clone https://github.com/ultralytics/yolov5.git
 $ cd yolov5
 $ pip install -r requirements.txt  # install
 
@@ -54,7 +55,7 @@ I would then use parsec to play the game on my PC at home and run the
 
 I then label the data which was a very arduous process even using a GUI. 
 
-Below is a video of the process.
+Below is a video of the process.(click img to play)
 
 
 [![IMAGE ALT TEXT](http://img.youtube.com/vi/c_QWo7zBOMY/0.jpg)](http://www.youtube.com/watch?v=c_QWo7zBOMY "Video Title")
@@ -92,7 +93,7 @@ Now I will run the object detection model using `runModel.py` which is a
 single threaded version of running the model.
 
 
-Here is video of the model running:
+Here is video of the model running (click img to play):
 
 
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/od48ZoMoK_M/0.jpg)](https://www.youtube.com/watch?v=od48ZoMoK_M)
@@ -117,7 +118,7 @@ The overall structure of the code is as follows:
 ![code structure](/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Projects/Proj9/EldenRingAi/readmeimgs/multi_proc_des.png)
 
 
-Here is video of the model running in parallel:
+Here is video of the model running in parallel (click img to play):
 
 
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/NfFF6vOgINQ/0.jpg)](https://www.youtube.com/watch?v=NfFF6vOgINQ)
