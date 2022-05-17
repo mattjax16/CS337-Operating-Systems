@@ -115,7 +115,7 @@ processes.
 
 The overall structure of the code is as follows:
 
-![code structure](/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Projects/Proj9/EldenRingAi/readmeimgs/multi_proc_des.png)
+![code structure]([/Users/matthewbass/Documents/School_Colby/Colby/spring22/CS337-Operating-Systems/Projects/Proj9/EldenRingAi/readmeimgs/multi_proc_des.png](https://github.com/mattjax16/CS337-Operating-Systems/blob/605cd5bfafe8af2ea0fabae83b74fe81ae5c0acb/Projects/Proj9/EldenRingAi/readmeimgs/multi_proc_des.png))
 
 
 Here is video of the model running in parallel (click img to play):
